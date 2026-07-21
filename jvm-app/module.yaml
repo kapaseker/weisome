@@ -1,0 +1,11 @@
+product: jvm/app
+
+dependencies:
+  - ../contracts
+  - ../data
+  - ../shared-ui
+  - $compose.desktop.currentOs
+
+settings:
+  compose: enabled
+
