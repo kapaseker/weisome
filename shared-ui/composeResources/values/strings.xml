@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WeiSome</string>
+    <string name="app_description">将 Markdown 转为可粘贴到微信公众号编辑器的 HTML。</string>
+    <string name="markdown_syntax_hint">支持 #、##、### 标题，段落，列表，**加粗** 与 *斜体*。</string>
+    <string name="markdown_label">Markdown 文章</string>
+    <string name="markdown_placeholder"># 文章标题&#10;&#10;在这里输入正文……</string>
+    <string name="markdown_hint"># 欢迎使用 WeiSome&#10;&#10;这是一段 **加粗文字** 与 *斜体文字*。&#10;&#10;- 使用 Markdown 写作&#10;- 在右侧查看预览&#10;&#10;1. 输入文章&#10;2. 复制到公众号</string>
+    <string name="copy_button">复制为微信公众号 HTML</string>
+    <string name="copy_success">已复制 HTML，可粘贴到微信公众号编辑器。</string>
+    <string name="copy_failure">复制失败，请重试。</string>
+</resources>
