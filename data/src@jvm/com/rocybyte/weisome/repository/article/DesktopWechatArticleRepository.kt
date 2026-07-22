@@ -1,21 +1,39 @@
 package com.rocybyte.weisome.repository.article
 
-import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.article.MarkdownDocumentParser
 import com.rocybyte.weisome.article.MarkdownToWechatHtml
+import com.rocybyte.weisome.article.MarkdownBlock
+import com.rocybyte.weisome.article.MarkdownDocument
+import com.rocybyte.weisome.repository.code.CodeHighlightRepo
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
 
-internal class DesktopWechatArticleRepository : WechatArticleRepository {
+internal class DesktopWechatArticleRepository(
+    private val codeHighlightRepo: CodeHighlightRepo,
+) : WechatArticleRepository {
     /** Parses Markdown for display by the shared article preview. */
     override fun preview(markdown: String): MarkdownDocument = MarkdownDocumentParser.parse(markdown)
+        .withCodeHighlights()
 
     /** Places rendered HTML on the desktop clipboard and reports whether it succeeded. */
     override fun copyAsHtml(markdown: String): Boolean = runCatching {
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(MarkdownToWechatHtml.render(markdown)), null)
+        val html = MarkdownToWechatHtml.render(preview(markdown))
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
     }.isSuccess
+
+    /** Enriches supported code blocks with the shared renderer-neutral highlight spans. */
+    private fun MarkdownDocument.withCodeHighlights(): MarkdownDocument = copy(
+        blocks = blocks.map { block ->
+            val language = (block as? MarkdownBlock.CodeBlock)?.language
+            if (block is MarkdownBlock.CodeBlock && language != null) {
+                block.copy(highlights = codeHighlightRepo.highlight(language, block.code))
+            } else {
+                block
+            }
+        },
+    )
 }
 
 private class HtmlTransferable(private val html: String) : Transferable {

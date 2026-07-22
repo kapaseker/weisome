@@ -1,6 +1,8 @@
 package com.rocybyte.weisome.page.article.widget
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -8,10 +10,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -19,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.WeiSomeLightCodeTheme
 
 /** Renders a structured Markdown document using the WeChat preview styles. */
 @Composable
@@ -58,10 +63,41 @@ internal fun WechatArticlePreview(document: MarkdownDocument, modifier: Modifier
                         }
                     }
                 }
+                is MarkdownBlock.CodeBlock -> Text(
+                    text = highlightedCodeText(block),
+                    color = WeiSomeLightCodeTheme.codeRgb.toComposeColor(),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 14.sp,
+                    lineHeight = 22.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                        .background(WeiSomeLightCodeTheme.backgroundRgb.toComposeColor())
+                        .padding(16.dp),
+                )
             }
         }
     }
 }
+
+/** Builds styled Compose text from the same normalized spans used by HTML export. */
+internal fun highlightedCodeText(block: MarkdownBlock.CodeBlock): AnnotatedString = buildAnnotatedString {
+    append(block.code)
+    block.highlights.forEach { span ->
+        val start = span.start.coerceIn(0, block.code.length)
+        val endExclusive = span.endExclusive.coerceIn(start, block.code.length)
+        if (start < endExclusive) {
+            addStyle(
+                style = SpanStyle(color = span.foregroundRgb.toComposeColor()),
+                start = start,
+                end = endExclusive,
+            )
+        }
+    }
+}
+
+/** Converts a packed RGB value to an opaque Compose color. */
+private fun Int.toComposeColor(): Color = Color(0xFF000000L or (toLong() and 0xFFFFFFL))
 
 /** Converts inline Markdown spans into styled Compose text. */
 private fun inlineText(inlines: List<MarkdownInline>): AnnotatedString = buildAnnotatedString {

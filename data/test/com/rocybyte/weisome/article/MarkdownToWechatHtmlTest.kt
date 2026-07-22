@@ -31,4 +31,31 @@ class MarkdownToWechatHtmlTest {
         )
         assertEquals("", MarkdownToWechatHtml.render("   \n\n"))
     }
+
+    @Test
+    /** Verifies fenced code is escaped and rendered inside a styled preformatted block. */
+    fun `renders escaped fenced code as a preformatted block`() {
+        val html = MarkdownToWechatHtml.render("```kotlin\nval tag = \"<code>\"\n```")
+
+        assertEquals(true, html.startsWith("<pre style=\"background: #f6f8fa;"))
+        assertEquals(true, html.contains("<code>val tag = &quot;&lt;code&gt;&quot;</code>"))
+    }
+
+    @Test
+    /** Verifies exported code uses the exact colors supplied by the shared highlight model. */
+    fun `renders shared code highlights as inline HTML colors`() {
+        val document = MarkdownDocument(
+            listOf(
+                MarkdownBlock.CodeBlock(
+                    language = CodeLanguage.Kotlin,
+                    code = "fun main()",
+                    highlights = listOf(CodeHighlightSpan(0, 3, 0xCF222E)),
+                ),
+            ),
+        )
+
+        val html = MarkdownToWechatHtml.render(document)
+
+        assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span> main()"))
+    }
 }

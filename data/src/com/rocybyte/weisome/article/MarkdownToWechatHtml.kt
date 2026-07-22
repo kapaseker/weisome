@@ -5,7 +5,7 @@ object MarkdownToWechatHtml {
     fun render(markdown: String): String = render(MarkdownDocumentParser.parse(markdown))
 
     /** Renders structured document blocks as styled HTML elements. */
-    private fun render(document: MarkdownDocument): String = document.blocks.joinToString("\n") { block ->
+    internal fun render(document: MarkdownDocument): String = document.blocks.joinToString("\n") { block ->
         when (block) {
             is MarkdownBlock.Heading -> "<h${block.level} style=\"${WechatArticleStyles.headingCss(block.level)}\">${html(block.content)}</h${block.level}>"
             is MarkdownBlock.Paragraph -> "<p style=\"${WechatArticleStyles.paragraphCss}\">${block.lines.joinToString("<br/>", transform = ::html)}</p>"
@@ -13,7 +13,26 @@ object MarkdownToWechatHtml {
                 val tag = if (block.ordered) "ol" else "ul"
                 "<$tag style=\"${WechatArticleStyles.listCss}\">${block.items.joinToString("") { "<li style=\"${WechatArticleStyles.listItemCss}\">${html(it)}</li>" }}</$tag>"
             }
+            is MarkdownBlock.CodeBlock -> codeBlock(block)
         }
+    }
+
+    /** Renders one code block with escaped text and inline color spans. */
+    private fun codeBlock(block: MarkdownBlock.CodeBlock): String {
+        val code = buildString {
+            var cursor = 0
+            block.highlights.forEach { span ->
+                val start = span.start.coerceIn(cursor, block.code.length)
+                val endExclusive = span.endExclusive.coerceIn(start, block.code.length)
+                append(escape(block.code.substring(cursor, start)))
+                append("<span style=\"color: ${span.foregroundRgb.toCssColor()};\">")
+                append(escape(block.code.substring(start, endExclusive)))
+                append("</span>")
+                cursor = endExclusive
+            }
+            append(escape(block.code.substring(cursor)))
+        }
+        return "<pre style=\"${WechatArticleStyles.codeBlockCss}\"><code>$code</code></pre>"
     }
 
     /** Renders inline spans while preserving their emphasis semantics. */
@@ -32,4 +51,7 @@ object MarkdownToWechatHtml {
         .replace(">", "&gt;")
         .replace("\"", "&quot;")
         .replace("'", "&#39;")
+
+    /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
+    private fun Int.toCssColor(): String = "#%06x".format(this and 0xFFFFFF)
 }
