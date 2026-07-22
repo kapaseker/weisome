@@ -4,8 +4,8 @@ dependencies:
   - ../contracts
   - ../data
   - ../shared-ui
+  - io.insert-koin:koin-core:4.2.2
   - $compose.desktop.currentOs
 
 settings:
   compose: enabled
-

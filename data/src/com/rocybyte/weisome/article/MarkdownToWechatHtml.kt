@@ -1,9 +1,9 @@
-package com.rocybyte.weisome.ui
+package com.rocybyte.weisome.article
 
 object MarkdownToWechatHtml {
     fun render(markdown: String): String = render(MarkdownDocumentParser.parse(markdown))
 
-    fun render(document: MarkdownDocument): String = document.blocks.joinToString("\n") { block ->
+    private fun render(document: MarkdownDocument): String = document.blocks.joinToString("\n") { block ->
         when (block) {
             is MarkdownBlock.Heading -> "<h${block.level} style=\"${WechatArticleStyles.headingCss(block.level)}\">${html(block.content)}</h${block.level}>"
             is MarkdownBlock.Paragraph -> "<p style=\"${WechatArticleStyles.paragraphCss}\">${block.lines.joinToString("<br/>", transform = ::html)}</p>"
@@ -22,5 +22,10 @@ object MarkdownToWechatHtml {
         }
     }
 
-    private fun escape(value: String) = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("'", "&#39;")
+    private fun escape(value: String): String = value
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;")
+        .replace("'", "&#39;")
 }

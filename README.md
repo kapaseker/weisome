@@ -1,19 +1,23 @@
 # WeiSome
 
-WeiSome is a JVM Desktop application starter built with Compose Multiplatform.
+WeiSome 是一个桌面 Markdown 写作工具：输入文章内容，实时查看排版效果，然后一键复制为可粘贴到微信公众号编辑器的 HTML。
 
-## Modules
+## 功能
 
-- `contracts`: shared contracts placeholder.
-- `data`: data-layer placeholder.
-- `shared-ui`: Compose UI and resources.
-- `jvm-app`: desktop application entry point.
+- 左侧编辑 Markdown，右侧实时预览文章排版。
+- 支持一级至三级标题、段落、有序与无序列表、加粗和斜体。
+- 将带内联样式的 HTML 复制到剪贴板，可直接粘贴到微信公众号编辑器。
 
-## Verify
+## 使用方式
 
-On Windows, run:
+1. 在左侧输入或粘贴 Markdown 文章。
+2. 在右侧确认预览效果。
+3. 点击“复制到公众号”，再将内容粘贴到微信公众号编辑器。
+
+## 开发验证
+
+Windows 下运行：
 
 ```powershell
 .\kotlin.bat check
 ```
-
