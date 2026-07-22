@@ -1,4 +1,4 @@
-package com.rocybyte.weisome.settings
+package com.rocybyte.weisome.storage.window
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.PreferencesSerializer
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.rocybyte.weisome.window.SavedWindowState
 import java.io.File
 import java.nio.file.Files
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +19,6 @@ import okio.FileSystem
 import okio.Path.Companion.toPath
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 class WindowStateStorageTest {
@@ -37,26 +37,6 @@ class WindowStateStorageTest {
         assertEquals(expected, storage.load())
         dataStore.edit { preferences -> preferences.remove(intPreferencesKey("window_height")) }
         assertNull(storage.load())
-        dataStore.edit { preferences ->
-            preferences[intPreferencesKey("window_width")] = 0
-            preferences[intPreferencesKey("window_height")] = 720
-        }
-        assertNull(storage.load())
-    }
-
-    @Test
-    fun `invalid window dimensions are rejected`() = withPreferences { _, storage ->
-        assertFailsWith<IllegalArgumentException> {
-            storage.save(
-                SavedWindowState(
-                    x = 0,
-                    y = 0,
-                    width = 0,
-                    height = 720,
-                    isMaximized = false,
-                ),
-            )
-        }
     }
 
     private fun withPreferences(

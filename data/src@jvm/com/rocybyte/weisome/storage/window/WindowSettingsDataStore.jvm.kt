@@ -1,4 +1,4 @@
-package com.rocybyte.weisome.settings
+package com.rocybyte.weisome.storage.window
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory

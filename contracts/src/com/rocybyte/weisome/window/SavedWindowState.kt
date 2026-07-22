@@ -1,4 +1,4 @@
-package com.rocybyte.weisome.settings
+package com.rocybyte.weisome.window
 
 data class SavedWindowState(
     val x: Int,
@@ -7,11 +7,5 @@ data class SavedWindowState(
     val height: Int,
     val isMaximized: Boolean,
 )
-
-interface WindowStateStore {
-    suspend fun load(): SavedWindowState?
-
-    suspend fun save(state: SavedWindowState)
-}
 
 fun SavedWindowState.hasValidBounds(): Boolean = width > 0 && height > 0

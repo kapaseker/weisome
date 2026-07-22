@@ -1,6 +1,6 @@
 package com.rocybyte.weisome
 
-import com.rocybyte.weisome.settings.SavedWindowState
+import com.rocybyte.weisome.window.SavedWindowState
 import java.awt.Rectangle
 import kotlin.test.Test
 import kotlin.test.assertEquals

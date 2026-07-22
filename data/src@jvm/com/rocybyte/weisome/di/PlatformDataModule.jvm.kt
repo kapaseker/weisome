@@ -4,13 +4,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.rocybyte.weisome.repository.article.DesktopWechatArticleRepository
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
-import com.rocybyte.weisome.settings.WindowStateStorage
-import com.rocybyte.weisome.settings.WindowStateStore
-import com.rocybyte.weisome.settings.settingsDataStore
+import com.rocybyte.weisome.repository.window.WindowStateRepo
+import com.rocybyte.weisome.repository.window.WindowStateRepository
+import com.rocybyte.weisome.storage.window.WindowStateStorage
+import com.rocybyte.weisome.storage.window.WindowStateStore
+import com.rocybyte.weisome.storage.window.settingsDataStore
 import org.koin.dsl.module
 
 actual val platformDataModule = module {
     single<DataStore<Preferences>> { settingsDataStore }
     single<WindowStateStore> { WindowStateStorage(get()) }
+    single<WindowStateRepo> { WindowStateRepository(get()) }
     single<WechatArticleRepository> { DesktopWechatArticleRepository() }
 }

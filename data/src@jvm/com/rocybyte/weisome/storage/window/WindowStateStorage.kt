@@ -1,10 +1,11 @@
-package com.rocybyte.weisome.settings
+package com.rocybyte.weisome.storage.window
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.rocybyte.weisome.window.SavedWindowState
 import kotlinx.coroutines.flow.first
 
 internal class WindowStateStorage(
@@ -19,11 +20,9 @@ internal class WindowStateStorage(
         val isMaximized = preferences[WindowMaximizedKey] ?: return null
 
         return SavedWindowState(x, y, width, height, isMaximized)
-            .takeIf(SavedWindowState::hasValidBounds)
     }
 
     override suspend fun save(state: SavedWindowState) {
-        require(state.hasValidBounds()) { "Window dimensions must be positive" }
         dataStore.edit { preferences ->
             preferences[WindowXKey] = state.x
             preferences[WindowYKey] = state.y

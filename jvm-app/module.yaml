@@ -4,7 +4,9 @@ dependencies:
   - ../contracts
   - ../data
   - ../shared-ui
+  - org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0
   - io.insert-koin:koin-core:4.2.2
+  - io.insert-koin:koin-compose-viewmodel:4.2.2
   - $compose.desktop.currentOs
 
 settings:

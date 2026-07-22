@@ -17,6 +17,7 @@ dependencies:
 
 dependencies@jvm:
   - $compose.desktop.currentOs
+  - org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2
 
 settings:
   compose:
