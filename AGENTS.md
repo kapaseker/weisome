@@ -8,6 +8,7 @@
 - When editing files containing Chinese or other non-ASCII text, use an explicit UTF-8 read/write path. After writing, read the affected text back as UTF-8 and verify it contains no `?` substitutions or mojibake.
 - Keep tests in the package/directory structure of the code they cover.
 - Share code by proximity first: put a new component or helper with its feature initially; when it is reused by two or more features, promote it to the appropriate shared package. Do not make feature packages depend on each other.
+- Add a KDoc comment (`/** ... */`) to every newly introduced function or method, including private helpers and overrides. Comments must follow KDoc syntax and describe the callable's behavior or contract rather than merely restating its name.
 
 ## Compose UI and Navigation
 
@@ -25,6 +26,8 @@
 - Add `util/` only for feature-specific helpers; promote code to `shared-ui/src/com/rocybyte/weisome/widget/` or another shared package only after it serves two or more features.
 - Follow UI → ViewModel → Repository separation: composables render state and forward user events, ViewModels own UI state and business logic, and repositories encapsulate data access and platform integrations.
 - Callers depend on repository interfaces from `contracts` rather than implementation classes. Bind or construct implementations only at Koin or application composition boundaries.
+- Name repository interfaces `XxxRepo` and their concrete implementations `XxxRepository`; bind the implementation to the interface at the Koin or application composition boundary.
+- Name local data-store interfaces `XxxStore` and their concrete implementations `XxxStorage`; repositories depend on the store interface, and the concrete storage implementation is bound only at the Koin or application composition boundary.
 - Keep UI state focused and cohesive. Do not put unrelated state into one large `UiState` class. When fields change for different reasons, split state by responsibility, feature area, or update flow to avoid unnecessary full-state copies and broad recomposition.
 
 ## Verification
