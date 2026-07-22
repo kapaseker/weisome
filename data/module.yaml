@@ -4,4 +4,7 @@ product:
 
 dependencies:
   - ../contracts
+  - androidx.datastore:datastore:1.2.1
+  - androidx.datastore:datastore-core-okio:1.2.1
+  - androidx.datastore:datastore-preferences:1.2.1
   - io.insert-koin:koin-core:4.2.2

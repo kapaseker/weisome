@@ -3,6 +3,7 @@ package com.rocybyte.weisome
 import com.rocybyte.weisome.di.platformDataModule
 import com.rocybyte.weisome.di.uiModule
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
+import com.rocybyte.weisome.settings.WindowStateStore
 import org.koin.core.context.startKoin
 import kotlin.test.Test
 import kotlin.test.assertNotNull
@@ -14,6 +15,7 @@ class KoinGraphTest {
 
         try {
             assertNotNull(application.koin.get<WechatArticleRepository>())
+            assertNotNull(application.koin.get<WindowStateStore>())
         } finally {
             application.close()
         }
