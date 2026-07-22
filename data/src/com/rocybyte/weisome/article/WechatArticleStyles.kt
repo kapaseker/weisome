@@ -1,12 +1,14 @@
 package com.rocybyte.weisome.article
 
 internal object WechatArticleStyles {
+    /** Returns font size and vertical margins for a normalized heading level. */
     private fun heading(level: Int): Triple<Int, Int, Int> = when (level) {
         1 -> Triple(24, 24, 16)
         2 -> Triple(20, 20, 12)
         else -> Triple(18, 16, 8)
     }
 
+    /** Builds the inline CSS used to render a heading at the requested level. */
     fun headingCss(level: Int): String {
         val (size, top, bottom) = heading(level)
         return "font-size: ${size}px; font-weight: 700; line-height: 1.4; margin: ${top}px 0 ${bottom}px;"

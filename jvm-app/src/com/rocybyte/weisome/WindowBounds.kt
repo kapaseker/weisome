@@ -5,6 +5,7 @@ import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
 import java.awt.Toolkit
 
+/** Fits saved bounds inside the best matching currently available screen work area. */
 internal fun SavedWindowState.clampToVisibleScreen(
     workAreas: List<Rectangle>,
     defaultWorkArea: Rectangle?,
@@ -34,6 +35,7 @@ internal fun SavedWindowState.clampToVisibleScreen(
     )
 }
 
+/** Returns usable work areas for all screens together with the default screen area. */
 internal fun currentScreenWorkAreas(): Pair<List<Rectangle>, Rectangle?> = try {
     val environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
     val toolkit = Toolkit.getDefaultToolkit()
@@ -58,6 +60,7 @@ internal fun currentScreenWorkAreas(): Pair<List<Rectangle>, Rectangle?> = try {
     emptyList<Rectangle>() to null
 }
 
+/** Calculates the overlapping pixel area of two rectangles without integer overflow. */
 private fun intersectionArea(first: Rectangle, second: Rectangle): Long {
     val left = maxOf(first.x.toLong(), second.x.toLong())
     val top = maxOf(first.y.toLong(), second.y.toLong())

@@ -1,8 +1,10 @@
 package com.rocybyte.weisome.article
 
 object MarkdownToWechatHtml {
+    /** Converts Markdown source into clipboard-ready WeChat HTML. */
     fun render(markdown: String): String = render(MarkdownDocumentParser.parse(markdown))
 
+    /** Renders structured document blocks as styled HTML elements. */
     private fun render(document: MarkdownDocument): String = document.blocks.joinToString("\n") { block ->
         when (block) {
             is MarkdownBlock.Heading -> "<h${block.level} style=\"${WechatArticleStyles.headingCss(block.level)}\">${html(block.content)}</h${block.level}>"
@@ -14,6 +16,7 @@ object MarkdownToWechatHtml {
         }
     }
 
+    /** Renders inline spans while preserving their emphasis semantics. */
     private fun html(inlines: List<MarkdownInline>): String = inlines.joinToString("") { inline ->
         when (inline) {
             is MarkdownInline.Text -> escape(inline.value)
@@ -22,6 +25,7 @@ object MarkdownToWechatHtml {
         }
     }
 
+    /** Escapes text that would otherwise be interpreted as HTML markup. */
     private fun escape(value: String): String = value
         .replace("&", "&amp;")
         .replace("<", "&lt;")

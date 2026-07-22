@@ -31,6 +31,7 @@ import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeDimensions
 import org.jetbrains.compose.resources.stringResource
 
+/** Renders the editor, preview, and copy controls for the article workflow. */
 @Composable
 internal fun WechatArticleEditorScreen(
     state: WechatArticleUiState,

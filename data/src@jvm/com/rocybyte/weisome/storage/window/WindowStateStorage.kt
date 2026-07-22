@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 internal class WindowStateStorage(
     private val dataStore: DataStore<Preferences>,
 ) : WindowStateStore {
+    /** Reconstructs window state only when every persisted preference is present. */
     override suspend fun load(): SavedWindowState? {
         val preferences = dataStore.data.first()
         val x = preferences[WindowXKey] ?: return null
@@ -22,6 +23,7 @@ internal class WindowStateStorage(
         return SavedWindowState(x, y, width, height, isMaximized)
     }
 
+    /** Atomically writes all window-state fields to DataStore Preferences. */
     override suspend fun save(state: SavedWindowState) {
         dataStore.edit { preferences ->
             preferences[WindowXKey] = state.x

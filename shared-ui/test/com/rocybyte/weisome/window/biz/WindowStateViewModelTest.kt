@@ -15,6 +15,7 @@ import kotlin.test.assertTrue
 
 class WindowStateViewModelTest {
     @Test
+    /** Verifies restored state is published before the desktop window becomes ready. */
     fun `loads restored state before marking the window ready`() = runBlocking {
         val restored = bounds(x = 40, y = 80)
         val viewModel = loadedViewModel(RecordingWindowStateRepo(restoredState = restored))
@@ -23,6 +24,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies a repository read failure degrades to a ready default window. */
     fun `load failure falls back to a ready default window`() = runBlocking {
         val viewModel = loadedViewModel(RecordingWindowStateRepo(loadFailure = true))
 
@@ -31,6 +33,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies the first stable observation is treated as a baseline rather than a change. */
     fun `initial floating observation establishes a baseline without saving`() = runBlocking {
         val repository = RecordingWindowStateRepo()
         val viewModel = loadedViewModel(repository)
@@ -43,6 +46,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies maximizing stores the last floating bounds with a maximized marker. */
     fun `maximizing preserves the last floating bounds`() = runBlocking {
         val floating = bounds(x = 80, y = 60, width = 1200, height = 800)
         val repository = RecordingWindowStateRepo(restoredState = floating)
@@ -61,6 +65,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies minimized observations neither replace bounds nor trigger persistence. */
     fun `minimized observations do not change persisted state`() = runBlocking {
         val floating = bounds()
         val repository = RecordingWindowStateRepo(restoredState = floating)
@@ -80,6 +85,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies trailing-edge debounce persists only the most recent observation. */
     fun `debounce persists only the latest state`() = runBlocking {
         val repository = RecordingWindowStateRepo()
         val viewModel = loadedViewModel(repository, debounceMillis = 30)
@@ -95,6 +101,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies shutdown flush bypasses a pending debounce delay. */
     fun `flush immediately persists pending state`() = runBlocking {
         val repository = RecordingWindowStateRepo()
         val viewModel = loadedViewModel(repository, debounceMillis = 10_000)
@@ -108,6 +115,7 @@ class WindowStateViewModelTest {
     }
 
     @Test
+    /** Verifies a failed write does not prevent a later state from being persisted. */
     fun `save failure does not prevent a later state from being saved`() = runBlocking {
         val repository = RecordingWindowStateRepo(saveFailure = true)
         val viewModel = loadedViewModel(repository, debounceMillis = 10_000)
@@ -124,6 +132,7 @@ class WindowStateViewModelTest {
         assertEquals(listOf(recovered), repository.savedStates)
     }
 
+    /** Creates a ViewModel and waits until its initial repository read completes. */
     private suspend fun loadedViewModel(
         repository: WindowStateRepo,
         debounceMillis: Long = 500,
@@ -135,6 +144,7 @@ class WindowStateViewModelTest {
         return viewModel
     }
 
+    /** Creates a platform-independent window observation fixture. */
     private fun observation(
         mode: WindowMode = WindowMode.Floating,
         isMinimized: Boolean = false,
@@ -145,6 +155,7 @@ class WindowStateViewModelTest {
         bounds = bounds,
     )
 
+    /** Creates a saved-window-state fixture with configurable bounds. */
     private fun bounds(
         x: Int = 100,
         y: Int = 100,
@@ -165,11 +176,13 @@ class WindowStateViewModelTest {
     ) : WindowStateRepo {
         val savedStates = CopyOnWriteArrayList<SavedWindowState>()
 
+        /** Returns configured state or raises the configured load failure. */
         override suspend fun load(): SavedWindowState? {
             if (loadFailure) error("load failed")
             return restoredState
         }
 
+        /** Records saved state unless the repository is configured to fail. */
         override suspend fun save(state: SavedWindowState) {
             if (saveFailure) error("save failed")
             savedStates += state

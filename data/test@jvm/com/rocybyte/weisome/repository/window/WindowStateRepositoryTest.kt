@@ -10,6 +10,7 @@ import kotlin.test.assertNull
 
 class WindowStateRepositoryTest {
     @Test
+    /** Verifies that valid state reaches the configured storage interface unchanged. */
     fun `valid state is delegated to storage`() = runBlocking {
         val store = RecordingWindowStateStore()
         val repository = WindowStateRepository(store)
@@ -21,6 +22,7 @@ class WindowStateRepositoryTest {
     }
 
     @Test
+    /** Verifies that invalid dimensions loaded from storage are not exposed to callers. */
     fun `invalid stored state is ignored`() = runBlocking {
         val store = RecordingWindowStateStore(loadedState = savedWindow(width = 0))
         val repository = WindowStateRepository(store)
@@ -29,6 +31,7 @@ class WindowStateRepositoryTest {
     }
 
     @Test
+    /** Verifies that invalid state is rejected before a storage write occurs. */
     fun `invalid state is rejected before storage`() = runBlocking {
         val store = RecordingWindowStateStore()
         val repository = WindowStateRepository(store)
@@ -39,6 +42,7 @@ class WindowStateRepositoryTest {
         assertNull(store.savedState)
     }
 
+    /** Creates a window-state fixture with configurable dimensions. */
     private fun savedWindow(
         width: Int = 1280,
         height: Int = 720,
@@ -55,8 +59,10 @@ class WindowStateRepositoryTest {
     ) : WindowStateStore {
         var savedState: SavedWindowState? = null
 
+        /** Returns the state configured for the current repository test. */
         override suspend fun load(): SavedWindowState? = loadedState
 
+        /** Records the state delegated by the repository. */
         override suspend fun save(state: SavedWindowState) {
             savedState = state
         }

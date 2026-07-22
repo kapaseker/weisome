@@ -6,6 +6,7 @@ object MarkdownDocumentParser {
     private val ordered = Regex("^\\d+\\.\\s+(.+)$")
     private val emphasis = Regex("\\*\\*([^*\\n]+)\\*\\*|(?<!\\*)\\*([^*\\n]+)\\*(?!\\*)")
 
+    /** Parses supported Markdown blocks and inline markup into a structured document. */
     fun parse(markdown: String): MarkdownDocument {
         if (markdown.isBlank()) return MarkdownDocument(emptyList())
         val blocks = mutableListOf<MarkdownBlock>()
@@ -13,12 +14,14 @@ object MarkdownDocumentParser {
         val items = mutableListOf<List<MarkdownInline>>()
         var orderedList: Boolean? = null
 
+        /** Emits the accumulated paragraph lines and clears their buffer. */
         fun flushParagraph() {
             if (paragraph.isNotEmpty()) {
                 blocks += MarkdownBlock.Paragraph(paragraph.toList())
                 paragraph.clear()
             }
         }
+        /** Emits the accumulated list items and resets the active list. */
         fun flushList() {
             orderedList?.let {
                 blocks += MarkdownBlock.ListBlock(it, items.toList())
@@ -26,6 +29,7 @@ object MarkdownDocumentParser {
                 orderedList = null
             }
         }
+        /** Adds an item while splitting the active list when its ordering mode changes. */
         fun addList(isOrdered: Boolean, text: String) {
             flushParagraph()
             if (orderedList != null && orderedList != isOrdered) flushList()
@@ -58,6 +62,7 @@ object MarkdownDocumentParser {
         return MarkdownDocument(blocks)
     }
 
+    /** Parses bold, italic, and plain inline spans from a text fragment. */
     private fun inline(text: String): List<MarkdownInline> {
         val result = mutableListOf<MarkdownInline>()
         var cursor = 0

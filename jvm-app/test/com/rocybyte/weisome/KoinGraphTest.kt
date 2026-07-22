@@ -12,6 +12,7 @@ import kotlin.test.assertNotNull
 
 class KoinGraphTest {
     @Test
+    /** Verifies production repository, store, and ViewModel bindings resolve together. */
     fun `production repository binding resolves from the application graph`() {
         val application = startKoin { modules(uiModule, platformDataModule) }
 

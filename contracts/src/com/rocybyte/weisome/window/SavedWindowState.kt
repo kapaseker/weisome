@@ -8,4 +8,5 @@ data class SavedWindowState(
     val isMaximized: Boolean,
 )
 
+/** Returns whether both persisted window dimensions are positive. */
 fun SavedWindowState.hasValidBounds(): Boolean = width > 0 && height > 0

@@ -23,6 +23,7 @@ import kotlin.test.assertNull
 
 class WindowStateStorageTest {
     @Test
+    /** Verifies complete state round trips and incomplete records are rejected. */
     fun `window state can be saved and loaded`() = withPreferences { dataStore, storage ->
         val expected = SavedWindowState(
             x = -1280,
@@ -39,6 +40,7 @@ class WindowStateStorageTest {
         assertNull(storage.load())
     }
 
+    /** Runs a storage assertion against an isolated temporary Preferences DataStore. */
     private fun withPreferences(
         test: suspend (DataStore<Preferences>, WindowStateStorage) -> Unit,
     ) = runBlocking {
@@ -54,6 +56,7 @@ class WindowStateStorageTest {
         }
     }
 
+    /** Creates the file-backed Preferences DataStore used by a storage test. */
     private fun createDataStore(
         directory: File,
         scope: CoroutineScope,

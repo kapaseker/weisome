@@ -21,12 +21,14 @@ class WechatArticleViewModel(
     private val _uiState = MutableStateFlow(WechatArticleUiState(preview = repository.preview(previewMarkdown)))
     val uiState: StateFlow<WechatArticleUiState> = _uiState.asStateFlow()
 
+    /** Updates the source and preview while clearing the previous copy result. */
     fun onMarkdownChanged(markdown: String) {
         _uiState.update {
             it.copy(markdown = markdown, preview = repository.preview(markdown), copySucceeded = null)
         }
     }
 
+    /** Copies the current non-blank article and records whether the operation succeeded. */
     fun copyAsHtml() {
         val markdown = _uiState.value.markdown
         if (markdown.isBlank()) return

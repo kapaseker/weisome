@@ -9,11 +9,13 @@ import kotlin.test.assertNotNull
 class ResourceSmokeTest {
 
     @Test
+    /** Verifies Compose resource generation includes the welcome drawable accessor. */
     fun `welcome drawable accessor is generated`() {
         assertNotNull(Res.drawable.ic_welcome)
     }
 
     @Test
+    /** Verifies Compose resource generation includes the application-name accessor. */
     fun `app name string accessor is generated`() {
         assertNotNull(Res.string.app_name)
     }

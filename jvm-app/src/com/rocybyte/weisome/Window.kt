@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
+/** Hosts the application-level ViewModel and creates the window after state restoration completes. */
 @Composable
 internal fun ApplicationScope.WeiSomeApplication() {
     val viewModelStoreOwner = remember {
@@ -59,6 +60,7 @@ internal fun ApplicationScope.WeiSomeApplication() {
     }
 }
 
+/** Creates the desktop window and forwards platform window changes to the ViewModel. */
 @Composable
 private fun ApplicationScope.WeiSomeWindow(
     initialState: SavedWindowState?,
@@ -104,6 +106,7 @@ private fun ApplicationScope.WeiSomeWindow(
     }
 }
 
+/** Converts Compose Desktop window state into a platform-independent observation. */
 internal fun WindowState.toObservation(): WindowObservation {
     val x = position.x.value
     val y = position.y.value
@@ -136,6 +139,7 @@ internal fun WindowState.toObservation(): WindowObservation {
     )
 }
 
+/** Maps a Compose Desktop placement to the shared window mode. */
 internal fun WindowPlacement.toWindowMode(): WindowMode = when (this) {
     WindowPlacement.Floating -> WindowMode.Floating
     WindowPlacement.Maximized -> WindowMode.Maximized

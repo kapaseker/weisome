@@ -47,6 +47,7 @@ class WindowStateViewModel(
         }
     }
 
+    /** Records a platform-independent window observation and schedules meaningful changes for saving. */
     fun onWindowChanged(observation: WindowObservation) {
         if (!_uiState.value.isLoaded || observation.isMinimized) return
 
@@ -69,12 +70,14 @@ class WindowStateViewModel(
         submit(currentState)
     }
 
+    /** Cancels the debounce delay and persists the latest pending state before shutdown. */
     suspend fun flush() {
         debounceJob?.cancelAndJoin()
         debounceJob = null
         persistPendingState()
     }
 
+    /** Replaces the pending state and restarts the trailing-edge debounce timer. */
     private fun submit(state: SavedWindowState) {
         pendingState = state
         debounceJob?.cancel()
@@ -84,6 +87,7 @@ class WindowStateViewModel(
         }
     }
 
+    /** Saves the pending state and retains it when persistence fails. */
     private suspend fun persistPendingState() {
         val state = pendingState ?: return
         try {

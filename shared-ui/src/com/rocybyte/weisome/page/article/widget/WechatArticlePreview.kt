@@ -20,6 +20,7 @@ import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.article.MarkdownInline
 
+/** Renders a structured Markdown document using the WeChat preview styles. */
 @Composable
 internal fun WechatArticlePreview(document: MarkdownDocument, modifier: Modifier = Modifier) {
     Column(modifier) {
@@ -62,6 +63,7 @@ internal fun WechatArticlePreview(document: MarkdownDocument, modifier: Modifier
     }
 }
 
+/** Converts inline Markdown spans into styled Compose text. */
 private fun inlineText(inlines: List<MarkdownInline>): AnnotatedString = buildAnnotatedString {
     inlines.forEach { inline ->
         when (inline) {
@@ -73,6 +75,7 @@ private fun inlineText(inlines: List<MarkdownInline>): AnnotatedString = buildAn
 }
 
 private object WechatArticlePreviewStyles {
+    /** Returns font size and vertical margins for the requested heading level. */
     private fun heading(level: Int): Triple<Int, Int, Int> = when (level) {
         1 -> Triple(24, 24, 16)
         2 -> Triple(20, 20, 12)
@@ -81,7 +84,12 @@ private object WechatArticlePreviewStyles {
 
     val bodyFontSize = 16.sp
     val bodyLineHeight = 28.sp
+    /** Returns the configured font size for a heading level. */
     fun headingFontSize(level: Int) = heading(level).first.sp
+
+    /** Returns the configured top margin for a heading level. */
     fun headingTopMargin(level: Int) = heading(level).second.dp
+
+    /** Returns the configured bottom margin for a heading level. */
     fun headingBottomMargin(level: Int) = heading(level).third.dp
 }

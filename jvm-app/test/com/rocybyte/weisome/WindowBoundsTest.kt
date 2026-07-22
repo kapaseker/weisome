@@ -11,6 +11,7 @@ class WindowBoundsTest {
     private val secondary = Rectangle(-1280, 0, 1280, 1024)
 
     @Test
+    /** Verifies visible bounds remain unchanged on their existing display. */
     fun `valid bounds remain on their current display`() {
         val saved = savedWindow(x = -1200, y = 100, width = 900, height = 700)
 
@@ -18,6 +19,7 @@ class WindowBoundsTest {
     }
 
     @Test
+    /** Verifies partially hidden bounds are moved fully into the best matching display. */
     fun `partially off-screen bounds are moved into the overlapping display`() {
         val saved = savedWindow(x = 1700, y = 900, width = 800, height = 600)
 
@@ -28,6 +30,7 @@ class WindowBoundsTest {
     }
 
     @Test
+    /** Verifies bounds from a disconnected display fall back to the default display. */
     fun `disconnected display falls back to the default display`() {
         val saved = savedWindow(x = 3000, y = 200, width = 1000, height = 700)
 
@@ -38,6 +41,7 @@ class WindowBoundsTest {
     }
 
     @Test
+    /** Verifies a window larger than its display is reduced to the available work area. */
     fun `oversized bounds shrink to the target work area`() {
         val saved = savedWindow(x = -200, y = -100, width = 2400, height = 1400)
 
@@ -48,10 +52,12 @@ class WindowBoundsTest {
     }
 
     @Test
+    /** Verifies restoration is abandoned when no usable display information exists. */
     fun `missing displays produce no restorable bounds`() {
         assertNull(savedWindow().clampToVisibleScreen(emptyList(), null))
     }
 
+    /** Creates a saved-window-state fixture for display-boundary assertions. */
     private fun savedWindow(
         x: Int = 0,
         y: Int = 0,

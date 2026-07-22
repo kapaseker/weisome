@@ -10,6 +10,7 @@ import kotlin.test.assertTrue
 
 class WechatArticleViewModelTest {
     @Test
+    /** Verifies source edits refresh preview state and clear the previous copy result. */
     fun `updates the preview and clears copy status when markdown changes`() {
         val repository = FakeWechatArticleRepository()
         val viewModel = WechatArticleViewModel(repository, "Welcome")
@@ -23,6 +24,7 @@ class WechatArticleViewModelTest {
     }
 
     @Test
+    /** Verifies blank content is ignored and non-blank content reaches the repository. */
     fun `copies only non-blank markdown through the repository`() {
         val repository = FakeWechatArticleRepository(copyResult = false)
         val viewModel = WechatArticleViewModel(repository, "Welcome")
@@ -44,11 +46,13 @@ private class FakeWechatArticleRepository(
     var lastPreviewMarkdown = ""
     var copyCalled = false
 
+    /** Records preview input and returns a minimal document fixture. */
     override fun preview(markdown: String): MarkdownDocument {
         lastPreviewMarkdown = markdown
         return MarkdownDocument(emptyList())
     }
 
+    /** Records copied Markdown and returns the configured result. */
     override fun copyAsHtml(markdown: String): Boolean {
         copyCalled = true
         return copyResult

@@ -13,6 +13,7 @@ private val weiSomeColorScheme = lightColorScheme(
     surface = WeiSomeColors.Surface,
 )
 
+/** Applies WeiSome colors, typography, and component defaults to [content]. */
 @Composable
 internal fun WeiSomeTheme(content: @Composable () -> Unit) {
     MaterialTheme(
