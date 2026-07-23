@@ -5,6 +5,9 @@ import java.awt.GraphicsEnvironment
 import java.awt.Rectangle
 import java.awt.Toolkit
 
+internal const val MinimumWindowWidth = 1280
+internal const val MinimumWindowHeight = 720
+
 /** Fits saved bounds inside the best matching currently available screen work area. */
 internal fun SavedWindowState.clampToVisibleScreen(
     workAreas: List<Rectangle>,
@@ -20,12 +23,16 @@ internal fun SavedWindowState.clampToVisibleScreen(
         ?: defaultWorkArea?.takeIf { area -> area.width > 0 && area.height > 0 }
         ?: availableAreas.first()
 
-    val clampedWidth = width.coerceAtMost(targetArea.width)
-    val clampedHeight = height.coerceAtMost(targetArea.height)
+    val clampedWidth = width
+        .coerceAtLeast(MinimumWindowWidth)
+        .coerceAtMost(targetArea.width.coerceAtLeast(MinimumWindowWidth))
+    val clampedHeight = height
+        .coerceAtLeast(MinimumWindowHeight)
+        .coerceAtMost(targetArea.height.coerceAtLeast(MinimumWindowHeight))
     val minimumX = targetArea.x.toLong()
     val minimumY = targetArea.y.toLong()
-    val maximumX = minimumX + targetArea.width - clampedWidth
-    val maximumY = minimumY + targetArea.height - clampedHeight
+    val maximumX = minimumX + (targetArea.width - clampedWidth).coerceAtLeast(0)
+    val maximumY = minimumY + (targetArea.height - clampedHeight).coerceAtLeast(0)
 
     return copy(
         x = x.toLong().coerceIn(minimumX, maximumX).toInt(),

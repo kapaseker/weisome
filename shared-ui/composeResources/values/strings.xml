@@ -11,4 +11,7 @@
     <string name="copy_success">已复制 HTML，可粘贴到微信公众号编辑器。</string>
     <string name="copy_juejin_success">已复制 Markdown 原文，可粘贴到掘金编辑器。</string>
     <string name="copy_failure">复制失败，请重试。</string>
+    <string name="article_layout_editor_only">仅显示编辑区</string>
+    <string name="article_layout_split">左右分栏</string>
+    <string name="article_layout_preview_only">仅显示预览区</string>
 </resources>

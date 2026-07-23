@@ -15,6 +15,5 @@ internal object WeiSomeColors {
 internal object WeiSomeDimensions {
     val PagePadding = 24.dp
     val ContentSpacing = 16.dp
-    val ContentMaxWidth = 900.dp
     const val EditorMinLines = 12
 }

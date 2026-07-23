@@ -27,6 +27,7 @@ import com.rocybyte.weisome.window.SavedWindowState
 import com.rocybyte.weisome.window.biz.WindowMode
 import com.rocybyte.weisome.window.biz.WindowObservation
 import com.rocybyte.weisome.window.biz.WindowStateViewModel
+import java.awt.Dimension
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,7 +68,10 @@ private fun ApplicationScope.WeiSomeWindow(
     viewModel: WindowStateViewModel,
 ) {
     val windowState = if (initialState == null) {
-        rememberWindowState()
+        rememberWindowState(
+            width = MinimumWindowWidth.dp,
+            height = MinimumWindowHeight.dp,
+        )
     } else {
         rememberWindowState(
             placement = if (initialState.isMaximized) {
@@ -102,6 +106,10 @@ private fun ApplicationScope.WeiSomeWindow(
         state = windowState,
         title = "WeiSome",
     ) {
+        DisposableEffect(window) {
+            window.minimumSize = Dimension(MinimumWindowWidth, MinimumWindowHeight)
+            onDispose {}
+        }
         WeiSomeApp()
     }
 }

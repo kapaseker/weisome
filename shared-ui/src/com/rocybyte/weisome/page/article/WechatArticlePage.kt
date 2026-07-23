@@ -17,11 +17,14 @@ internal fun WechatArticlePage() {
     val hint = stringResource(Res.string.markdown_hint)
     val viewModel = koinViewModel<WechatArticleViewModel> { parametersOf(hint) }
     val state by viewModel.uiState.collectAsState()
+    val layoutState by viewModel.layoutState.collectAsState()
 
     WechatArticleEditorScreen(
         state = state,
+        layoutState = layoutState,
         onMarkdownChanged = viewModel::onMarkdownChanged,
         onCopyAsHtml = viewModel::copyAsHtml,
         onCopyForJuejin = viewModel::copyForJuejin,
+        onLayoutModeSelected = viewModel::onLayoutModeSelected,
     )
 }

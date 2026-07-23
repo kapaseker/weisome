@@ -7,5 +7,5 @@ import org.koin.dsl.module
 
 val uiModule = module {
     viewModel { WindowStateViewModel(get()) }
-    viewModel { parameters -> WechatArticleViewModel(get(), parameters.get<String>()) }
+    viewModel { parameters -> WechatArticleViewModel(get(), get(), parameters.get<String>()) }
 }
