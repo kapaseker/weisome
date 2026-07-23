@@ -9,4 +9,7 @@ interface WechatArticleRepository {
 
     /** Converts Markdown to WeChat HTML and copies it to the platform clipboard. */
     fun copyAsHtml(markdown: String): Boolean
+
+    /** Copies the original Markdown for pasting into Juejin's Markdown editor. */
+    fun copyForJuejin(markdown: String): Boolean
 }

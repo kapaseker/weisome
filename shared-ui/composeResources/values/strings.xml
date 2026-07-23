@@ -7,6 +7,8 @@
     <string name="markdown_placeholder"># 文章标题&#10;&#10;在这里输入正文……</string>
     <string name="markdown_hint"># 欢迎使用 WeiSome&#10;&#10;这是一段 **加粗文字** 与 *斜体文字*。&#10;&#10;- 使用 Markdown 写作&#10;- 在右侧查看预览&#10;&#10;## Kotlin 示例&#10;&#10;```kotlin&#10;data class Article(val title: String)&#10;&#10;fun main() {&#10;    println(Article(&quot;WeiSome&quot;))&#10;}&#10;```&#10;&#10;## Rust 示例&#10;&#10;```rust&#10;fn main() {&#10;    let article = &quot;WeiSome&quot;;&#10;    println!(&quot;Hello, {article}!&quot;);&#10;}&#10;```</string>
     <string name="copy_button">复制到公众号</string>
+    <string name="copy_juejin_button">复制到掘金</string>
     <string name="copy_success">已复制 HTML，可粘贴到微信公众号编辑器。</string>
+    <string name="copy_juejin_success">已复制 Markdown 原文，可粘贴到掘金编辑器。</string>
     <string name="copy_failure">复制失败，请重试。</string>
 </resources>

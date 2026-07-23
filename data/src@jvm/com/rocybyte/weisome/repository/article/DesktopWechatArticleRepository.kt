@@ -7,6 +7,7 @@ import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.repository.code.CodeHighlightRepo
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
 
@@ -23,6 +24,11 @@ internal class DesktopWechatArticleRepository(
         Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
     }.isSuccess
 
+    /** Places the original Markdown on the clipboard as plain text for Juejin. */
+    override fun copyForJuejin(markdown: String): Boolean = runCatching {
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(createJuejinTransferable(markdown), null)
+    }.isSuccess
+
     /** Enriches supported code blocks with the shared renderer-neutral highlight spans. */
     private fun MarkdownDocument.withCodeHighlights(): MarkdownDocument = copy(
         blocks = blocks.map { block ->
@@ -35,6 +41,9 @@ internal class DesktopWechatArticleRepository(
         },
     )
 }
+
+/** Creates a plain-string clipboard payload so Juejin inserts the original Markdown. */
+internal fun createJuejinTransferable(markdown: String): Transferable = StringSelection(markdown)
 
 private class HtmlTransferable(private val html: String) : Transferable {
     private val htmlFlavor = DataFlavor("text/html;class=java.lang.String")

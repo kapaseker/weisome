@@ -17,5 +17,6 @@ internal object WechatArticleStyles {
     const val paragraphCss = "font-size: 16px; line-height: 1.75; margin: 0 0 16px;"
     const val listCss = "padding-left: 24px; margin: 0 0 16px;"
     const val listItemCss = "font-size: 16px; line-height: 1.75;"
+    val inlineCodeCss = "color: #${WeiSomeLightCodeTheme.codeRgb.toString(16).padStart(6, '0')}; background: #${WeiSomeLightCodeTheme.backgroundRgb.toString(16).padStart(6, '0')}; padding: 2px 4px; border-radius: 4px; font-family: inherit; font-size: inherit; font-weight: 400; font-style: normal; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
     val codeBlockCss = "background: #${WeiSomeLightCodeTheme.backgroundRgb.toString(16).padStart(6, '0')}; color: #${WeiSomeLightCodeTheme.codeRgb.toString(16).padStart(6, '0')}; font-family: monospace; font-size: 14px; line-height: 1.6; padding: 16px; margin: 0 0 16px; white-space: pre-wrap; word-break: break-word;"
 }

@@ -23,9 +23,12 @@ import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.app_name
 import com.rocybyte.weisome.generated.resources.copy_button
 import com.rocybyte.weisome.generated.resources.copy_failure
+import com.rocybyte.weisome.generated.resources.copy_juejin_button
+import com.rocybyte.weisome.generated.resources.copy_juejin_success
 import com.rocybyte.weisome.generated.resources.copy_success
 import com.rocybyte.weisome.generated.resources.markdown_hint
 import com.rocybyte.weisome.generated.resources.markdown_label
+import com.rocybyte.weisome.page.article.biz.ArticleCopyTarget
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeDimensions
@@ -37,6 +40,7 @@ internal fun WechatArticleEditorScreen(
     state: WechatArticleUiState,
     onMarkdownChanged: (String) -> Unit,
     onCopyAsHtml: () -> Unit,
+    onCopyForJuejin: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(WeiSomeDimensions.PagePadding),
@@ -45,12 +49,21 @@ internal fun WechatArticleEditorScreen(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)
-            Button(enabled = state.markdown.isNotBlank(), onClick = onCopyAsHtml) {
-                Text(stringResource(Res.string.copy_button))
+            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeDimensions.ContentSpacing)) {
+                Button(enabled = state.markdown.isNotBlank(), onClick = onCopyForJuejin) {
+                    Text(stringResource(Res.string.copy_juejin_button))
+                }
+                Button(enabled = state.markdown.isNotBlank(), onClick = onCopyAsHtml) {
+                    Text(stringResource(Res.string.copy_button))
+                }
             }
         }
         state.copySucceeded?.let { succeeded ->
-            val message = if (succeeded) stringResource(Res.string.copy_success) else stringResource(Res.string.copy_failure)
+            val message = when {
+                !succeeded -> stringResource(Res.string.copy_failure)
+                state.copyTarget == ArticleCopyTarget.Juejin -> stringResource(Res.string.copy_juejin_success)
+                else -> stringResource(Res.string.copy_success)
+            }
             Text(message, style = MaterialTheme.typography.bodyMedium)
         }
         val hint = stringResource(Res.string.markdown_hint)

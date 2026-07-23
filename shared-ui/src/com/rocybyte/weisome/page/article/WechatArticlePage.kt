@@ -22,5 +22,6 @@ internal fun WechatArticlePage() {
         state = state,
         onMarkdownChanged = viewModel::onMarkdownChanged,
         onCopyAsHtml = viewModel::copyAsHtml,
+        onCopyForJuejin = viewModel::copyForJuejin,
     )
 }

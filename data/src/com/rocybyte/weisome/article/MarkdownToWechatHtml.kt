@@ -41,6 +41,7 @@ object MarkdownToWechatHtml {
             is MarkdownInline.Text -> escape(inline.value)
             is MarkdownInline.Bold -> "<strong>${escape(inline.value)}</strong>"
             is MarkdownInline.Italic -> "<em>${escape(inline.value)}</em>"
+            is MarkdownInline.Code -> "<code style=\"${WechatArticleStyles.inlineCodeCss}\">${escape(inline.value)}</code>"
         }
     }
 

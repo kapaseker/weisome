@@ -5,6 +5,17 @@ import kotlin.test.assertEquals
 
 class MarkdownToWechatHtmlTest {
     @Test
+    /** Verifies inline code exports as a rounded literal label with shared colors. */
+    fun `renders styled literal inline code`() {
+        val html = MarkdownToWechatHtml.render("Call `launch(<tag>)` now")
+
+        assertEquals(
+            "<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">Call <code style=\"color: #24292f; background: #f6f8fa; padding: 2px 4px; border-radius: 4px; font-family: inherit; font-size: inherit; font-weight: 400; font-style: normal; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;\">launch(&lt;tag&gt;)</code> now</p>",
+            html,
+        )
+    }
+
+    @Test
     /** Verifies that a level-one heading receives the expected inline style. */
     fun `renders a level one heading with inline style`() {
         assertEquals(

@@ -9,6 +9,14 @@ import kotlin.test.assertEquals
 
 class WechatArticlePreviewTest {
     @Test
+    /** Verifies ordinary labels stay atomic while an overlong label is split to fit. */
+    fun `splits only code labels wider than the available line`() {
+        assertEquals(listOf("launch"), inlineCodeChunks("launch", 8f) { it.length.toFloat() })
+        assertEquals(listOf("laun", "ch"), inlineCodeChunks("launch", 4f) { it.length.toFloat() })
+        assertEquals(listOf("😀", "x"), inlineCodeChunks("😀x", 1f) { it.length.toFloat() })
+    }
+
+    @Test
     /** Verifies Compose text applies the exact RGB ranges carried by the shared code model. */
     fun `uses shared highlight spans in compose code text`() {
         val text = highlightedCodeText(

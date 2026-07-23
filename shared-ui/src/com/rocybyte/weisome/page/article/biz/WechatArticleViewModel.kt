@@ -12,7 +12,14 @@ data class WechatArticleUiState(
     val markdown: String = "",
     val preview: MarkdownDocument = MarkdownDocument(emptyList()),
     val copySucceeded: Boolean? = null,
+    val copyTarget: ArticleCopyTarget? = null,
 )
+
+/** Identifies the destination used by the latest article copy operation. */
+enum class ArticleCopyTarget {
+    Wechat,
+    Juejin,
+}
 
 class WechatArticleViewModel(
     private val repository: WechatArticleRepository,
@@ -24,7 +31,12 @@ class WechatArticleViewModel(
     /** Updates the source and preview while clearing the previous copy result. */
     fun onMarkdownChanged(markdown: String) {
         _uiState.update {
-            it.copy(markdown = markdown, preview = repository.preview(markdown), copySucceeded = null)
+            it.copy(
+                markdown = markdown,
+                preview = repository.preview(markdown),
+                copySucceeded = null,
+                copyTarget = null,
+            )
         }
     }
 
@@ -32,6 +44,23 @@ class WechatArticleViewModel(
     fun copyAsHtml() {
         val markdown = _uiState.value.markdown
         if (markdown.isBlank()) return
-        _uiState.update { it.copy(copySucceeded = repository.copyAsHtml(markdown)) }
+        _uiState.update {
+            it.copy(
+                copySucceeded = repository.copyAsHtml(markdown),
+                copyTarget = ArticleCopyTarget.Wechat,
+            )
+        }
+    }
+
+    /** Copies the original Markdown for Juejin and records the result. */
+    fun copyForJuejin() {
+        val markdown = _uiState.value.markdown
+        if (markdown.isBlank()) return
+        _uiState.update {
+            it.copy(
+                copySucceeded = repository.copyForJuejin(markdown),
+                copyTarget = ArticleCopyTarget.Juejin,
+            )
+        }
     }
 }
