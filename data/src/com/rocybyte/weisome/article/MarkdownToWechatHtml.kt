@@ -32,7 +32,7 @@ object MarkdownToWechatHtml {
             }
             append(escape(block.code.substring(cursor)))
         }
-        return "<pre style=\"${WechatArticleStyles.codeBlockCss}\"><code>$code</code></pre>"
+        return "<pre style=\"${WechatArticleStyles.codeBlockCss}\"><code style=\"${WechatArticleStyles.codeElementCss}\">$code</code></pre>"
     }
 
     /** Renders inline spans while preserving their emphasis semantics. */

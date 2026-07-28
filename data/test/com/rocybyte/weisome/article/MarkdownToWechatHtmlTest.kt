@@ -2,6 +2,8 @@ package com.rocybyte.weisome.article
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class MarkdownToWechatHtmlTest {
     @Test
@@ -44,12 +46,30 @@ class MarkdownToWechatHtmlTest {
     }
 
     @Test
-    /** Verifies fenced code is escaped and rendered inside a styled preformatted block. */
-    fun `renders escaped fenced code as a preformatted block`() {
+    /** Verifies fenced code is escaped inside the pre and scrollable code hierarchy used for export. */
+    fun `renders escaped fenced code in the scrollable export structure`() {
         val html = MarkdownToWechatHtml.render("```kotlin\nval tag = \"<code>\"\n```")
 
-        assertEquals(true, html.startsWith("<pre style=\"background: #f6f8fa;"))
-        assertEquals(true, html.contains("<code>val tag = &quot;&lt;code&gt;&quot;</code>"))
+        assertTrue(html.startsWith("<pre style=\"background: #f6f8fa;"))
+        assertTrue(html.contains("<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto;\">val tag = &quot;&lt;code&gt;&quot;</code>"))
+        assertTrue(html.endsWith("</code></pre>"))
+    }
+
+    @Test
+    /** Verifies exported fenced code preserves authored lines and scrolls instead of wrapping. */
+    fun `exports fenced code without automatic wrapping`() {
+        val html = MarkdownToWechatHtml.render("```kotlin\nval longValue = someVeryLongExpression()\n```")
+
+        val codeStyle = html.substringAfter("<code style=\"").substringBefore("\"")
+        val preStyle = html.substringAfter("<pre style=\"").substringBefore("\"")
+
+        assertTrue(preStyle.contains("white-space: pre;"))
+        assertTrue(codeStyle.contains("overflow-x: auto;"))
+        assertTrue(codeStyle.contains("display: -webkit-box;"))
+        assertTrue(preStyle.contains("word-break: normal;"))
+        assertFalse(html.contains("white-space: pre-wrap;"))
+        assertFalse(html.contains("word-break: break-word;"))
+        assertFalse(preStyle.contains("overflow-x"))
     }
 
     @Test

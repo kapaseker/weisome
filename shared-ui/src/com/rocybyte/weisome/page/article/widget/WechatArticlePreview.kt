@@ -1,6 +1,10 @@
 package com.rocybyte.weisome.page.article.widget
 
+import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.layout.Box
@@ -8,10 +12,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -75,19 +81,51 @@ internal fun WechatArticlePreview(document: MarkdownDocument, modifier: Modifier
                         }
                     }
                 }
-                is MarkdownBlock.CodeBlock -> Text(
+                is MarkdownBlock.CodeBlock -> PreviewCodeBlock(block)
+            }
+        }
+    }
+}
+
+/** Renders authored code lines without soft wrapping and exposes overflow through a local scrollbar. */
+@Composable
+private fun PreviewCodeBlock(block: MarkdownBlock.CodeBlock) {
+    val horizontalScrollState = rememberScrollState()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .background(WeiSomeLightCodeTheme.backgroundRgb.toComposeColor())
+            .padding(top = 16.dp, bottom = 8.dp),
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val minimumTextWidth = (maxWidth - 32.dp).coerceAtLeast(0.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(horizontalScrollState)
+                    .padding(horizontal = 16.dp),
+            ) {
+                Text(
                     text = highlightedCodeText(block),
                     color = WeiSomeLightCodeTheme.codeRgb.toComposeColor(),
                     fontFamily = FontFamily.Monospace,
                     fontSize = 14.sp,
                     lineHeight = 22.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .background(WeiSomeLightCodeTheme.backgroundRgb.toComposeColor())
-                        .padding(16.dp),
+                    softWrap = false,
+                    modifier = Modifier.widthIn(min = minimumTextWidth),
                 )
             }
+        }
+        if (horizontalScrollState.maxValue > 0) {
+            HorizontalScrollbar(
+                adapter = rememberScrollbarAdapter(horizontalScrollState),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(top = 8.dp)
+                    .height(8.dp),
+            )
         }
     }
 }
