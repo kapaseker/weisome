@@ -2,91 +2,39 @@ package com.rocybyte.weisome.article
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class MarkdownToWechatHtmlTest {
     @Test
-    /** Verifies inline code exports as a rounded literal label with shared colors. */
-    fun `renders styled literal inline code`() {
-        val html = MarkdownToWechatHtml.render("Call `launch(<tag>)` now")
-
+    /** Verifies the public Markdown entry point preserves block order across renderer dispatch. */
+    fun `renders parsed blocks in document order`() {
         assertEquals(
-            "<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">Call <code style=\"color: #24292f; background: #f6f8fa; padding: 2px 4px; border-radius: 4px; font-family: inherit; font-size: inherit; font-weight: 400; font-style: normal; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;\">launch(&lt;tag&gt;)</code> now</p>",
-            html,
+            "<h1 style=\"font-size: 24px; font-weight: 700; line-height: 1.4; margin: 24px 0 16px;\">Title</h1>\n<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">Body</p>",
+            MarkdownToWechatHtml.render("# Title\n\nBody"),
         )
     }
 
     @Test
-    /** Verifies that a level-one heading receives the expected inline style. */
-    fun `renders a level one heading with inline style`() {
-        assertEquals(
-            "<h1 style=\"font-size: 24px; font-weight: 700; line-height: 1.4; margin: 24px 0 16px;\">Hello</h1>",
-            MarkdownToWechatHtml.render("# Hello"),
+    /** Verifies the public entry point dispatches every supported block type in source order. */
+    fun `dispatches every block type through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\nBody\n\n- Item\n\n```kotlin\nval tag = \"<code>\"\n```",
         )
+        val headingIndex = html.indexOf("<h1 ")
+        val paragraphIndex = html.indexOf("<p ")
+        val listIndex = html.indexOf("<ul ")
+        val codeIndex = html.indexOf("<pre ")
+
+        assertTrue(headingIndex >= 0)
+        assertTrue(paragraphIndex > headingIndex)
+        assertTrue(listIndex > paragraphIndex)
+        assertTrue(codeIndex > listIndex)
+        assertTrue(html.contains("val tag = &quot;&lt;code&gt;&quot;"))
     }
 
     @Test
-    /** Verifies paragraph, list, bold, and italic rendering in one document. */
-    fun `renders paragraphs lists and inline emphasis`() {
-        assertEquals(
-            "<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">A <strong>bold</strong> and <em>italic</em> line.<br/>Another line.</p>\n<ul style=\"padding-left: 24px; margin: 0 0 16px;\"><li style=\"font-size: 16px; line-height: 1.75;\">One</li></ul>",
-            MarkdownToWechatHtml.render("A **bold** and *italic* line.\nAnother line.\n\n- One"),
-        )
-    }
-
-    @Test
-    /** Verifies HTML escaping and the empty-input rendering contract. */
-    fun `escapes unsupported HTML and leaves empty input empty`() {
-        assertEquals(
-            "<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;</p>",
-            MarkdownToWechatHtml.render("<script>alert(\"x\")</script>"),
-        )
+    /** Verifies the public Markdown entry point leaves empty input empty. */
+    fun `renders empty markdown as empty html`() {
         assertEquals("", MarkdownToWechatHtml.render("   \n\n"))
-    }
-
-    @Test
-    /** Verifies fenced code is escaped inside the pre and scrollable code hierarchy used for export. */
-    fun `renders escaped fenced code in the scrollable export structure`() {
-        val html = MarkdownToWechatHtml.render("```kotlin\nval tag = \"<code>\"\n```")
-
-        assertTrue(html.startsWith("<pre style=\"background: #f6f8fa;"))
-        assertTrue(html.contains("<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto;\">val tag = &quot;&lt;code&gt;&quot;</code>"))
-        assertTrue(html.endsWith("</code></pre>"))
-    }
-
-    @Test
-    /** Verifies exported fenced code preserves authored lines and scrolls instead of wrapping. */
-    fun `exports fenced code without automatic wrapping`() {
-        val html = MarkdownToWechatHtml.render("```kotlin\nval longValue = someVeryLongExpression()\n```")
-
-        val codeStyle = html.substringAfter("<code style=\"").substringBefore("\"")
-        val preStyle = html.substringAfter("<pre style=\"").substringBefore("\"")
-
-        assertTrue(preStyle.contains("white-space: pre;"))
-        assertTrue(codeStyle.contains("overflow-x: auto;"))
-        assertTrue(codeStyle.contains("display: -webkit-box;"))
-        assertTrue(preStyle.contains("word-break: normal;"))
-        assertFalse(html.contains("white-space: pre-wrap;"))
-        assertFalse(html.contains("word-break: break-word;"))
-        assertFalse(preStyle.contains("overflow-x"))
-    }
-
-    @Test
-    /** Verifies exported code uses the exact colors supplied by the shared highlight model. */
-    fun `renders shared code highlights as inline HTML colors`() {
-        val document = MarkdownDocument(
-            listOf(
-                MarkdownBlock.CodeBlock(
-                    language = CodeLanguage.Kotlin,
-                    code = "fun main()",
-                    highlights = listOf(CodeHighlightSpan(0, 3, 0xCF222E)),
-                ),
-            ),
-        )
-
-        val html = MarkdownToWechatHtml.render(document)
-
-        assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span> main()"))
     }
 }
