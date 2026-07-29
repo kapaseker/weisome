@@ -8,3 +8,6 @@ internal sealed interface WeiSomeRoute : NavKey
 
 @Serializable
 internal data object WechatArticleRoute : WeiSomeRoute
+
+@Serializable
+internal data object SettingsRoute : WeiSomeRoute

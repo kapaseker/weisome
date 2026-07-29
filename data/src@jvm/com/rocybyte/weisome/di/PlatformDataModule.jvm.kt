@@ -8,10 +8,14 @@ import com.rocybyte.weisome.repository.article.DesktopWechatArticleRepository
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
 import com.rocybyte.weisome.repository.code.CodeHighlightRepo
 import com.rocybyte.weisome.repository.code.CodeHighlightRepository
+import com.rocybyte.weisome.repository.settings.DisplaySettingsRepo
+import com.rocybyte.weisome.repository.settings.DisplaySettingsRepository
 import com.rocybyte.weisome.repository.window.WindowStateRepo
 import com.rocybyte.weisome.repository.window.WindowStateRepository
 import com.rocybyte.weisome.storage.article.ArticleLayoutStorage
 import com.rocybyte.weisome.storage.article.ArticleLayoutStore
+import com.rocybyte.weisome.storage.settings.DisplaySettingsStorage
+import com.rocybyte.weisome.storage.settings.DisplaySettingsStore
 import com.rocybyte.weisome.storage.window.WindowStateStorage
 import com.rocybyte.weisome.storage.window.WindowStateStore
 import com.rocybyte.weisome.storage.window.settingsDataStore
@@ -21,6 +25,8 @@ actual val platformDataModule = module {
     single<DataStore<Preferences>> { settingsDataStore }
     single<ArticleLayoutStore> { ArticleLayoutStorage(get()) }
     single<ArticleLayoutRepo> { ArticleLayoutRepository(get()) }
+    single<DisplaySettingsStore> { DisplaySettingsStorage(get()) }
+    single<DisplaySettingsRepo> { DisplaySettingsRepository(get()) }
     single<WindowStateStore> { WindowStateStorage(get()) }
     single<WindowStateRepo> { WindowStateRepository(get()) }
     single<CodeHighlightRepo> { CodeHighlightRepository() }

@@ -3,6 +3,8 @@ package com.rocybyte.weisome.ui
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.app_name
 import com.rocybyte.weisome.generated.resources.ic_welcome
+import com.rocybyte.weisome.generated.resources.ic_settings
+import com.rocybyte.weisome.generated.resources.settings
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -18,5 +20,12 @@ class ResourceSmokeTest {
     /** Verifies Compose resource generation includes the application-name accessor. */
     fun `app name string accessor is generated`() {
         assertNotNull(Res.string.app_name)
+    }
+
+    @Test
+    /** Verifies settings navigation resources generate typed accessors. */
+    fun `settings resources are generated`() {
+        assertNotNull(Res.drawable.ic_settings)
+        assertNotNull(Res.string.settings)
     }
 }

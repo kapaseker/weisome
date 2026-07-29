@@ -14,4 +14,22 @@
     <string name="article_layout_editor_only">仅显示编辑区</string>
     <string name="article_layout_split">左右分栏</string>
     <string name="article_layout_preview_only">仅显示预览区</string>
+    <string name="settings">设置</string>
+    <string name="back">返回</string>
+    <string name="text_scale">字体缩放</string>
+    <string name="device_default_scale">设备默认（%1$s）</string>
+    <string name="custom_scale">当前倍率：%1$s</string>
+    <string name="reset_text_scale">恢复设备默认字体</string>
+    <string name="ui_scale">界面缩放</string>
+    <string name="default_ui_scale">默认界面倍率（%1$s）</string>
+    <string name="reset_ui_scale">恢复默认界面倍率</string>
+    <string name="preview">效果预览</string>
+    <string name="preview_title">预览标题</string>
+    <string name="preview_body">这段文字用于预览当前字体缩放效果。</string>
+    <string name="preview_label">辅助说明文字</string>
+    <string name="preview_button">预览按钮</string>
+    <string name="text_scale_load_failed">字体缩放读取失败，已使用设备默认值。</string>
+    <string name="text_scale_save_failed">字体缩放保存失败。</string>
+    <string name="ui_scale_load_failed">界面缩放读取失败，已使用 1.0x。</string>
+    <string name="ui_scale_save_failed">界面缩放保存失败。</string>
 </resources>

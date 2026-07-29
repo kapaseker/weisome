@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -38,15 +39,19 @@ import com.rocybyte.weisome.generated.resources.copy_success
 import com.rocybyte.weisome.generated.resources.ic_all_expand
 import com.rocybyte.weisome.generated.resources.ic_left_expand
 import com.rocybyte.weisome.generated.resources.ic_right_expand
+import com.rocybyte.weisome.generated.resources.ic_settings
 import com.rocybyte.weisome.generated.resources.markdown_hint
 import com.rocybyte.weisome.generated.resources.markdown_label
+import com.rocybyte.weisome.generated.resources.settings
 import com.rocybyte.weisome.page.article.biz.ArticleCopyTarget
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeDimensions
+import com.rocybyte.weisome.widget.MediumIconButton
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.unit.dp
 
 /** Renders the editor, preview, and copy controls for the article workflow. */
 @Composable
@@ -57,6 +62,7 @@ internal fun WechatArticleEditorScreen(
     onCopyAsHtml: () -> Unit,
     onCopyForJuejin: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(WeiSomeDimensions.PagePadding),
@@ -76,11 +82,23 @@ internal fun WechatArticleEditorScreen(
                 }
             }
             if (layoutState.isLoaded) {
-                ArticleLayoutSelector(
-                    selectedMode = layoutState.mode,
-                    onModeSelected = onLayoutModeSelected,
+                Row(
                     modifier = Modifier.align(Alignment.Center),
-                )
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(Modifier.size(52.dp))
+                    Spacer(Modifier.size(width = WeiSomeDimensions.ContentSpacing, height = 1.dp))
+                    ArticleLayoutSelector(
+                        selectedMode = layoutState.mode,
+                        onModeSelected = onLayoutModeSelected,
+                    )
+                    Spacer(Modifier.size(width = WeiSomeDimensions.ContentSpacing, height = 1.dp))
+                    MediumIconButton(
+                        onClick = onOpenSettings,
+                        painter = painterResource(Res.drawable.ic_settings),
+                        contentDescription = stringResource(Res.string.settings),
+                    )
+                }
             }
         }
         state.copySucceeded?.let { succeeded ->

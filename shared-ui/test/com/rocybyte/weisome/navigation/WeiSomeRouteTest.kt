@@ -13,4 +13,12 @@ class WeiSomeRouteTest {
 
         assertEquals(WechatArticleRoute, Json.decodeFromString<WeiSomeRoute>(encoded))
     }
+
+    @Test
+    /** Verifies that the settings destination survives Navigation 3 state restoration. */
+    fun `settings route survives serialization round trip`() {
+        val encoded = Json.encodeToString<WeiSomeRoute>(SettingsRoute)
+
+        assertEquals(SettingsRoute, Json.decodeFromString<WeiSomeRoute>(encoded))
+    }
 }
