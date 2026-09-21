@@ -4,13 +4,41 @@ import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.article.WechatArticleStyles
 
 /** Renders inline spans while preserving their emphasis semantics. */
-internal fun renderInline(inlines: List<MarkdownInline>): String = inlines.joinToString("") { inline ->
+internal fun renderInline(
+    inlines: List<MarkdownInline>,
+    imageShadow: Boolean = true,
+): String = inlines.joinToString("") { inline ->
     when (inline) {
         is MarkdownInline.Text -> escapeHtml(inline.value)
         is MarkdownInline.Bold -> "<strong>${escapeHtml(inline.value)}</strong>"
-        is MarkdownInline.Italic -> "<em>${escapeHtml(inline.value)}</em>"
+        is MarkdownInline.Italic -> "<em style=\"${WechatArticleStyles.emCss}\">${escapeHtml(inline.value)}</em>"
         is MarkdownInline.Code -> "<code style=\"${WechatArticleStyles.inlineCodeCss}\">${escapeHtml(inline.value)}</code>"
+        is MarkdownInline.Link ->
+            "<a href=\"${escapeHtml(inline.url)}\" style=\"${WechatArticleStyles.linkCss}\">${escapeHtml(inline.text)}</a>${WechatArticleStyles.linkIconSpan}"
+
+        is MarkdownInline.Strikethrough -> "<del style=\"${WechatArticleStyles.strikethroughCss}\">${escapeHtml(inline.value)}</del>"
+        is MarkdownInline.Image ->
+            "<img src=\"${escapeHtml(inline.url)}\" alt=\"${escapeHtml(inline.alt)}\" style=\"${if (imageShadow) WechatArticleStyles.imgCss else WechatArticleStyles.tableImgCss}\">"
     }
+}
+
+/**
+ * Uppercases the first letter of the leading text-bearing inline, reproducing the
+ * hydrogen `h2, h3, p::first-letter { text-transform: capitalize }` rule. Code and image
+ * inlines are skipped because their content is not plain flowing text.
+ */
+internal fun capitalizeFirstLetter(inlines: List<MarkdownInline>): List<MarkdownInline> {
+    if (inlines.isEmpty()) return inlines
+    val head = inlines.first()
+    val uppercased = when (head) {
+        is MarkdownInline.Text -> head.copy(value = head.value.replaceFirstChar { it.uppercaseChar() })
+        is MarkdownInline.Bold -> head.copy(value = head.value.replaceFirstChar { it.uppercaseChar() })
+        is MarkdownInline.Italic -> head.copy(value = head.value.replaceFirstChar { it.uppercaseChar() })
+        is MarkdownInline.Strikethrough -> head.copy(value = head.value.replaceFirstChar { it.uppercaseChar() })
+        is MarkdownInline.Link -> head.copy(text = head.text.replaceFirstChar { it.uppercaseChar() })
+        is MarkdownInline.Code, is MarkdownInline.Image -> return inlines
+    }
+    return listOf(uppercased) + inlines.drop(1)
 }
 
 /** Escapes text that would otherwise be interpreted as HTML markup. */

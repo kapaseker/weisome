@@ -6,13 +6,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.MarkdownBlock
 
-/** Renders a paragraph block with shared body typography and trailing spacing. */
+/** Renders a paragraph block with hydrogen body typography and the first-letter rule. */
 @Composable
-internal fun Paragraph(block: MarkdownBlock.Paragraph) {
+internal fun Paragraph(block: MarkdownBlock.Paragraph, inQuote: Boolean = false) {
+    val lines = block.lines.mapIndexed { index, line ->
+        if (index == 0) capitalizeFirstLetter(line) else line
+    }
+    val color = if (inQuote) WechatArticlePreviewStyles.quoteColor else WechatArticlePreviewStyles.bodyColor
     InlineMarkdownText(
-        lines = block.lines,
+        lines = lines,
         fontSize = WechatArticlePreviewStyles.bodyFontSize,
         lineHeight = WechatArticlePreviewStyles.bodyLineHeight,
-        modifier = Modifier.padding(bottom = 16.dp),
+        color = color,
+        modifier = if (inQuote) {
+            Modifier.padding(top = 10.dp, bottom = 10.dp)
+        } else {
+            Modifier.padding(top = 22.dp, bottom = 22.dp)
+        },
     )
 }

@@ -10,13 +10,22 @@ import com.rocybyte.weisome.article.MarkdownDocument
 @Composable
 internal fun WechatArticlePreview(document: MarkdownDocument, modifier: Modifier = Modifier) {
     Column(modifier) {
-        document.blocks.forEach { block ->
-            when (block) {
-                is MarkdownBlock.Heading -> Heading(block)
-                is MarkdownBlock.Paragraph -> Paragraph(block)
-                is MarkdownBlock.ListBlock -> ListBlock(block)
-                is MarkdownBlock.CodeBlock -> CodeBlock(block)
-            }
+        RenderBlocks(document.blocks)
+    }
+}
+
+/** Dispatches each block type to its hydrogen-styled preview widget. */
+@Composable
+internal fun RenderBlocks(blocks: List<MarkdownBlock>, inQuote: Boolean = false) {
+    blocks.forEach { block ->
+        when (block) {
+            is MarkdownBlock.Heading -> Heading(block)
+            is MarkdownBlock.Paragraph -> Paragraph(block, inQuote)
+            is MarkdownBlock.ListBlock -> ListBlock(block)
+            is MarkdownBlock.CodeBlock -> CodeBlock(block)
+            is MarkdownBlock.BlockQuote -> BlockQuote(block, nested = inQuote)
+            is MarkdownBlock.HorizontalRule -> HorizontalRule()
+            is MarkdownBlock.Table -> Table(block)
         }
     }
 }

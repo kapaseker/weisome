@@ -14,8 +14,14 @@ class CodeBlockTest {
     fun `renders escaped fenced code in the scrollable structure`() {
         val html = renderCodeBlock(codeBlock("val tag = \"<code>\""))
 
-        assertTrue(html.startsWith("<pre style=\"background: #f6f8fa;"))
-        assertTrue(html.contains("<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto;\">val tag = &quot;&lt;code&gt;&quot;</code>"))
+        assertTrue(html.startsWith("<pre style=\"font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; line-height: 1.75;"))
+        assertTrue(
+            html.contains(
+                "<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+                    "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+                    "white-space: pre; color: #333333; background: #f8f8f8; border-radius: 0 4px;\">val tag = &quot;&lt;code&gt;&quot;</code>",
+            ),
+        )
         assertTrue(html.endsWith("</code></pre>"))
     }
 
@@ -29,7 +35,7 @@ class CodeBlockTest {
         assertTrue(preStyle.contains("white-space: pre;"))
         assertTrue(codeStyle.contains("overflow-x: auto;"))
         assertTrue(codeStyle.contains("display: -webkit-box;"))
-        assertTrue(preStyle.contains("word-break: normal;"))
+        assertTrue(codeStyle.contains("word-break: normal;"))
         assertFalse(html.contains("white-space: pre-wrap;"))
         assertFalse(html.contains("word-break: break-word;"))
         assertFalse(preStyle.contains("overflow-x"))

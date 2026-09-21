@@ -25,24 +25,21 @@ import com.rocybyte.weisome.generated.resources.article_layout_preview_only
 import com.rocybyte.weisome.generated.resources.article_layout_split
 import com.rocybyte.weisome.generated.resources.copy_button
 import com.rocybyte.weisome.generated.resources.copy_failure
-import com.rocybyte.weisome.generated.resources.copy_juejin_button
-import com.rocybyte.weisome.generated.resources.copy_juejin_success
 import com.rocybyte.weisome.generated.resources.copy_success
 import com.rocybyte.weisome.generated.resources.ic_all_expand
+import com.rocybyte.weisome.generated.resources.ic_copy
 import com.rocybyte.weisome.generated.resources.ic_left_expand
 import com.rocybyte.weisome.generated.resources.ic_right_expand
 import com.rocybyte.weisome.generated.resources.ic_settings
 import com.rocybyte.weisome.generated.resources.markdown_hint
 import com.rocybyte.weisome.generated.resources.markdown_label
 import com.rocybyte.weisome.generated.resources.settings
-import com.rocybyte.weisome.page.article.biz.ArticleCopyTarget
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.MediumIconButton
-import com.rocybyte.weisome.widget.WeiSomePrimaryButton
 import com.rocybyte.weisome.widget.WeiSomeSecondaryButton
 import com.rocybyte.weisome.widget.WeiSomeSegmentedControl
 import com.rocybyte.weisome.widget.WeiSomeSegmentedOption
@@ -61,7 +58,6 @@ internal fun WechatArticleEditorScreen(
     layoutState: ArticleLayoutUiState,
     onMarkdownChanged: (String) -> Unit,
     onCopyAsHtml: () -> Unit,
-    onCopyForJuejin: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
@@ -73,18 +69,12 @@ internal fun WechatArticleEditorScreen(
         Box(Modifier.fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 WeiSomeText(stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
-                Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm)) {
-                    WeiSomeSecondaryButton(
-                        text = stringResource(Res.string.copy_juejin_button),
-                        onClick = onCopyForJuejin,
-                        enabled = state.markdown.isNotBlank(),
-                    )
-                    WeiSomePrimaryButton(
-                        text = stringResource(Res.string.copy_button),
-                        onClick = onCopyAsHtml,
-                        enabled = state.markdown.isNotBlank(),
-                    )
-                }
+                WeiSomeSecondaryButton(
+                    text = stringResource(Res.string.copy_button),
+                    onClick = onCopyAsHtml,
+                    enabled = state.markdown.isNotBlank(),
+                    icon = painterResource(Res.drawable.ic_copy),
+                )
             }
             if (layoutState.isLoaded) {
                 Row(
@@ -107,11 +97,9 @@ internal fun WechatArticleEditorScreen(
             }
         }
         state.copySucceeded?.let { succeeded ->
-            val message = when {
-                !succeeded -> stringResource(Res.string.copy_failure)
-                state.copyTarget == ArticleCopyTarget.Juejin -> stringResource(Res.string.copy_juejin_success)
-                else -> stringResource(Res.string.copy_success)
-            }
+            val message =
+                if (succeeded) stringResource(Res.string.copy_success)
+                else stringResource(Res.string.copy_failure)
             WeiSomeText(message, style = WeiSomeTypography.bodyMd)
         }
         val hint = stringResource(Res.string.markdown_hint)

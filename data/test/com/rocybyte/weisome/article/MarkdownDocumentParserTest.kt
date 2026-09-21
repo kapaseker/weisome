@@ -110,4 +110,112 @@ class MarkdownDocumentParserTest {
             MarkdownDocumentParser.parse(markdown).blocks.single(),
         )
     }
+
+    @Test
+    /** Verifies thematic breaks in all marker styles parse as horizontal rules. */
+    fun `parses thematic breaks as horizontal rules`() {
+        assertEquals(
+            listOf(
+                MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Above")))),
+                MarkdownBlock.HorizontalRule,
+                MarkdownBlock.HorizontalRule,
+                MarkdownBlock.HorizontalRule,
+            ),
+            MarkdownDocumentParser.parse("Above\n\n---\n\n***\n\n___").blocks,
+        )
+    }
+
+    @Test
+    /** Verifies headings up to level six are recognized. */
+    fun `parses level six headings`() {
+        assertEquals(
+            MarkdownBlock.Heading(6, listOf(MarkdownInline.Text("Deep"))),
+            MarkdownDocumentParser.parse("###### Deep").blocks.single(),
+        )
+    }
+
+    @Test
+    /** Verifies blockquote content parses recursively and nesting is preserved. */
+    fun `parses nested blockquotes recursively`() {
+        assertEquals(
+            MarkdownBlock.BlockQuote(
+                listOf(
+                    MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Outer")))),
+                    MarkdownBlock.BlockQuote(
+                        listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Inner"))))),
+                    ),
+                ),
+            ),
+            MarkdownDocumentParser.parse("> Outer\n> > Inner").blocks.single(),
+        )
+    }
+
+    @Test
+    /** Verifies GFM tables parse into header and body rows of inline content. */
+    fun `parses gfm tables with header and rows`() {
+        assertEquals(
+            MarkdownBlock.Table(
+                header = listOf(
+                    listOf(MarkdownInline.Text("Name")),
+                    listOf(MarkdownInline.Bold("Value")),
+                ),
+                rows = listOf(
+                    listOf(listOf(MarkdownInline.Text("a")), listOf(MarkdownInline.Text("1"))),
+                    listOf(listOf(MarkdownInline.Text("b")), listOf(MarkdownInline.Text("2"))),
+                ),
+            ),
+            MarkdownDocumentParser.parse("| Name | **Value** |\n| --- | --- |\n| a | 1 |\n| b | 2 |").blocks.single(),
+        )
+    }
+
+    @Test
+    /** Verifies indented list items become nested children of the previous item. */
+    fun `parses nested list items as children`() {
+        assertEquals(
+            MarkdownBlock.ListBlock(
+                ordered = false,
+                items = listOf(
+                    ListItem(
+                        content = listOf(MarkdownInline.Text("Parent")),
+                        child = MarkdownBlock.ListBlock(
+                            ordered = true,
+                            items = listOf(ListItem(listOf(MarkdownInline.Text("Child")))),
+                        ),
+                    ),
+                ),
+            ),
+            MarkdownDocumentParser.parse("- Parent\n  1. Child").blocks.single(),
+        )
+    }
+
+    @Test
+    /** Verifies task list markers capture their checked state. */
+    fun `parses task list markers`() {
+        assertEquals(
+            MarkdownBlock.ListBlock(
+                ordered = false,
+                items = listOf(
+                    ListItem(listOf(MarkdownInline.Text("todo")), task = false),
+                    ListItem(listOf(MarkdownInline.Text("done")), task = true),
+                ),
+            ),
+            MarkdownDocumentParser.parse("- [ ] todo\n- [x] done").blocks.single(),
+        )
+    }
+
+    @Test
+    /** Verifies links, strikethrough, and images parse as inline constructs. */
+    fun `parses links strikethrough and images`() {
+        assertEquals(
+            listOf(
+                MarkdownInline.Link("site", "https://example.com"),
+                MarkdownInline.Text(" "),
+                MarkdownInline.Strikethrough("gone"),
+                MarkdownInline.Text(" "),
+                MarkdownInline.Image("pic", "https://example.com/i.png"),
+            ),
+            MarkdownDocumentParser.parse("[site](https://example.com) ~~gone~~ ![pic](https://example.com/i.png)")
+                .blocks.single().let { it as MarkdownBlock.Paragraph }.lines.single(),
+        )
+    }
 }

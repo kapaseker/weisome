@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
-import com.rocybyte.weisome.article.WeiSomeLightCodeTheme
 import com.rocybyte.weisome.widget.WeiSomeText
 
 /** Renders authored code lines without soft wrapping and exposes overflow through a local scrollbar. */
@@ -31,24 +31,23 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
-            .background(WeiSomeLightCodeTheme.backgroundRgb.toComposeColor())
-            .padding(top = 16.dp, bottom = 8.dp),
+            .padding(top = 22.dp, bottom = 22.dp)
+            .background(WechatArticlePreviewStyles.codeBlockBackground, RoundedCornerShape(0.dp, 4.dp, 0.dp, 4.dp)),
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val minimumTextWidth = (maxWidth - 32.dp).coerceAtLeast(0.dp)
+            val minimumTextWidth = (maxWidth - 24.dp).coerceAtLeast(0.dp)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(horizontalScrollState)
-                    .padding(horizontal = 16.dp),
+                    .padding(top = 15.dp, bottom = 15.dp, start = 12.dp, end = 12.dp),
             ) {
                 WeiSomeText(
                     text = highlightedCodeText(block),
-                    color = WeiSomeLightCodeTheme.codeRgb.toComposeColor(),
+                    color = WechatArticlePreviewStyles.codeBlockColor,
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp,
-                    lineHeight = 22.sp,
+                    fontSize = 12.sp,
+                    lineHeight = 21.sp,
                     softWrap = false,
                     modifier = Modifier.widthIn(min = minimumTextWidth),
                 )

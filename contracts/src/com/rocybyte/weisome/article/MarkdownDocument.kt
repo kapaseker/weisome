@@ -6,13 +6,26 @@ data class MarkdownDocument(val blocks: List<MarkdownBlock>)
 sealed interface MarkdownBlock {
     data class Heading(val level: Int, val content: List<MarkdownInline>) : MarkdownBlock
     data class Paragraph(val lines: List<List<MarkdownInline>>) : MarkdownBlock
-    data class ListBlock(val ordered: Boolean, val items: List<List<MarkdownInline>>) : MarkdownBlock
+    data class ListBlock(val ordered: Boolean, val items: List<ListItem>) : MarkdownBlock
     data class CodeBlock(
         val language: CodeLanguage?,
         val code: String,
         val highlights: List<CodeHighlightSpan> = emptyList(),
     ) : MarkdownBlock
+    data class BlockQuote(val blocks: List<MarkdownBlock>) : MarkdownBlock
+    data object HorizontalRule : MarkdownBlock
+    data class Table(
+        val header: List<List<MarkdownInline>>,
+        val rows: List<List<List<MarkdownInline>>>,
+    ) : MarkdownBlock
 }
+
+/** One list entry with optional GFM task state and an optional nested sub-list. */
+data class ListItem(
+    val content: List<MarkdownInline>,
+    val task: Boolean? = null,
+    val child: MarkdownBlock.ListBlock? = null,
+)
 
 enum class CodeLanguage {
     Java,
@@ -57,4 +70,7 @@ sealed interface MarkdownInline {
     data class Bold(val value: String) : MarkdownInline
     data class Italic(val value: String) : MarkdownInline
     data class Code(val value: String) : MarkdownInline
+    data class Link(val text: String, val url: String) : MarkdownInline
+    data class Strikethrough(val value: String) : MarkdownInline
+    data class Image(val alt: String, val url: String) : MarkdownInline
 }

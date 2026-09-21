@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.widget
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,8 +8,12 @@ import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -19,6 +24,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
@@ -69,13 +76,17 @@ internal fun WeiSomePrimaryButton(
     }
 }
 
-/** Secondary button: white surface with a thin high-contrast border and primary label text. */
+/**
+ * Secondary button: white surface with a thin high-contrast border and primary label text.
+ * An optional [icon] is rendered before the label, tinted to match the label color.
+ */
 @Composable
 internal fun WeiSomeSecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    icon: Painter? = null,
 ) {
     val shape = WeiSomeShapes.default
 
@@ -90,6 +101,17 @@ internal fun WeiSomeSecondaryButton(
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 12.dp),
     ) {
-        WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = WeiSomeColors.primary)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (icon != null) {
+                Image(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    colorFilter = ColorFilter.tint(WeiSomeColors.primary),
+                )
+                Spacer(Modifier.width(6.dp))
+            }
+            WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = WeiSomeColors.primary)
+        }
     }
 }

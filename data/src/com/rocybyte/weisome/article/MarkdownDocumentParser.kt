@@ -1,20 +1,30 @@
 package com.rocybyte.weisome.article
 
 object MarkdownDocumentParser {
-    private val heading = Regex("^(#{1,3})\\s+(.+)$")
-    private val unordered = Regex("^[-*]\\s+(.+)$")
-    private val ordered = Regex("^\\d+\\.\\s+(.+)$")
-    private val emphasis = Regex("\\*\\*([^*\\n]+)\\*\\*|(?<!\\*)\\*([^*\\n]+)\\*(?!\\*)")
+    private val heading = Regex("^(#{1,6})\\s+(.+)$")
+    private val unordered = Regex("^(\\s*)[-*+]\\s+(.+)$")
+    private val ordered = Regex("^(\\s*)\\d+\\.\\s+(.+)$")
+    private val thematicBreak = Regex("^ {0,3}([-*_])(?:\\s*\\1){2,}\\s*$")
+    private val quoteLine = Regex("^ {0,3}>")
+    private val quotePrefix = Regex("^ {0,3}> ?")
+    private val tableSeparator = Regex("^\\s*\\|?\\s*:?-+:?\\s*(\\|\\s*:?-+:?\\s*)*\\|?\\s*$")
+    private val taskMarker = Regex("^\\[([ xX])]\\s+(.+)$")
+    private val inlineToken = Regex(
+        "!\\[([^\\]\\n]*)]\\(([^)\\s]+)\\)" + // 1, 2: image alt and url
+            "|\\[([^\\]\\n]*)]\\(([^)\\s]+)\\)" + // 3, 4: link text and url
+            "|~~([^~\\n]+)~~" + // 5: strikethrough
+            "|\\*\\*([^*\\n]+)\\*\\*" + // 6: bold
+            "|(?<!\\*)\\*([^*\\n]+)\\*(?!\\*)", // 7: italic
+    )
     private val codeFence = Regex("^```\\s*([^\\s`]*)\\s*$")
     private const val CodePlaceholder = '\uFFFC'
 
     /** Parses supported Markdown blocks and inline markup into a structured document. */
     fun parse(markdown: String): MarkdownDocument {
         if (markdown.isBlank()) return MarkdownDocument(emptyList())
+        val lines = markdown.replace("\r\n", "\n").lines()
         val blocks = mutableListOf<MarkdownBlock>()
         val paragraph = mutableListOf<String>()
-        val items = mutableListOf<List<MarkdownInline>>()
-        var orderedList: Boolean? = null
         var codeLanguage: CodeLanguage? = null
         var codeLines: MutableList<String>? = null
 
@@ -25,71 +35,173 @@ object MarkdownDocumentParser {
                 paragraph.clear()
             }
         }
-        /** Emits the accumulated list items and resets the active list. */
-        fun flushList() {
-            orderedList?.let {
-                blocks += MarkdownBlock.ListBlock(it, items.toList())
-                items.clear()
-                orderedList = null
-            }
-        }
-        /** Adds an item while splitting the active list when its ordering mode changes. */
-        fun addList(isOrdered: Boolean, text: String) {
-            flushParagraph()
-            if (orderedList != null && orderedList != isOrdered) flushList()
-            orderedList = isOrdered
-            items += inline(text)
-        }
+
         /** Emits the active fenced code block and clears its parsing state. */
         fun flushCode() {
-            val lines = codeLines ?: return
-            blocks += MarkdownBlock.CodeBlock(codeLanguage, lines.joinToString("\n"))
+            val linesInCode = codeLines ?: return
+            blocks += MarkdownBlock.CodeBlock(codeLanguage, linesInCode.joinToString("\n"))
             codeLanguage = null
             codeLines = null
         }
 
-        markdown.replace("\r\n", "\n").lines().forEach { line ->
+        var index = 0
+        while (index < lines.size) {
+            val line = lines[index]
+
             if (codeLines != null) {
                 if (line.trim() == "```") {
                     flushCode()
                 } else {
                     codeLines?.add(line)
                 }
-                return@forEach
+                index++
+                continue
             }
 
             val codeFenceMatch = codeFence.matchEntire(line)
-            if (codeFenceMatch != null) {
-                flushParagraph()
-                flushList()
-                codeLanguage = codeLanguage(codeFenceMatch.groupValues[1])
-                codeLines = mutableListOf()
-                return@forEach
-            }
-
-            val headingMatch = heading.matchEntire(line)
             when {
-                line.isBlank() -> {
+                codeFenceMatch != null -> {
                     flushParagraph()
-                    flushList()
+                    codeLanguage = codeLanguage(codeFenceMatch.groupValues[1])
+                    codeLines = mutableListOf()
                 }
-                headingMatch != null -> {
+
+                line.isBlank() -> flushParagraph()
+
+                thematicBreak.matches(line) -> {
                     flushParagraph()
-                    flushList()
-                    blocks += MarkdownBlock.Heading(headingMatch.groupValues[1].length, inline(headingMatch.groupValues[2]))
+                    blocks += MarkdownBlock.HorizontalRule
                 }
-                unordered.matches(line) -> addList(false, unordered.matchEntire(line)!!.groupValues[1])
-                ordered.matches(line) -> addList(true, ordered.matchEntire(line)!!.groupValues[1])
+
                 else -> {
-                    flushList()
-                    paragraph += line
+                    val headingMatch = heading.matchEntire(line)
+                    val startsQuote = quoteLine.containsMatchIn(line)
+                    val isTable = line.contains('|') && index + 1 < lines.size &&
+                        lines[index + 1].contains('|') && tableSeparator.matches(lines[index + 1])
+                    val isListItem = unordered.matches(line) || ordered.matches(line)
+                    when {
+                        headingMatch != null -> {
+                            flushParagraph()
+                            blocks += MarkdownBlock.Heading(
+                                headingMatch.groupValues[1].length,
+                                inline(headingMatch.groupValues[2]),
+                            )
+                        }
+
+                        startsQuote -> {
+                            flushParagraph()
+                            val quoted = mutableListOf<String>()
+                            while (index < lines.size && quoteLine.containsMatchIn(lines[index])) {
+                                quoted += quotePrefix.replaceFirst(lines[index], "")
+                                index++
+                            }
+                            blocks += MarkdownBlock.BlockQuote(parse(quoted.joinToString("\n")).blocks)
+                            continue
+                        }
+
+                        isTable -> {
+                            flushParagraph()
+                            val header = splitTableRow(line).map(::inline)
+                            index += 2
+                            val rows = mutableListOf<List<List<MarkdownInline>>>()
+                            while (index < lines.size && lines[index].contains('|') && lines[index].isNotBlank()) {
+                                rows += splitTableRow(lines[index]).map(::inline)
+                                index++
+                            }
+                            blocks += MarkdownBlock.Table(header, rows)
+                            continue
+                        }
+
+                        isListItem -> {
+                            flushParagraph()
+                            val (list, next) = parseList(lines, index)
+                            blocks += list
+                            index = next
+                            continue
+                        }
+
+                        else -> paragraph += line
+                    }
                 }
             }
+            index++
         }
         flushParagraph()
-        flushList()
         flushCode()
         return MarkdownDocument(blocks)
+    }
+
+    /** Accumulates raw item text while a list is being parsed, before inline parsing. */
+    private class RawListItem(val task: Boolean?, val text: StringBuilder) {
+        var child: MarkdownBlock.ListBlock? = null
+    }
+
+    /**
+     * Parses a consecutive run of list lines starting at [start] and returns the block together
+     * with the index of the first unconsumed line. Items indented two or more spaces beyond the
+     * list base become the nested child of the previous item.
+     */
+    private fun parseList(lines: List<String>, start: Int): Pair<MarkdownBlock.ListBlock, Int> {
+        val baseIndent = leadingSpaces(lines[start])
+        val isOrdered = ordered.matches(lines[start])
+        val items = mutableListOf<RawListItem>()
+        var index = start
+        while (index < lines.size) {
+            val line = lines[index]
+            if (line.isBlank()) {
+                val nextNonBlank = lines.withIndex().drop(index + 1).firstOrNull { it.value.isNotBlank() }
+                val staysOpen = nextNonBlank != null &&
+                    isListItemLine(nextNonBlank.value) &&
+                    leadingSpaces(nextNonBlank.value) >= baseIndent
+                if (!staysOpen) break
+                index = nextNonBlank.index
+                continue
+            }
+            val marker = unordered.find(line) ?: ordered.find(line)
+            val indent = leadingSpaces(line)
+            when {
+                marker != null && indent >= baseIndent + 2 && items.isNotEmpty() -> {
+                    val (child, next) = parseList(lines, index)
+                    items.last().child = child
+                    index = next
+                }
+
+                marker != null && indent < baseIndent -> break
+
+                marker != null && ordered.matches(line) == isOrdered -> {
+                    val content = marker.groupValues[2]
+                    val taskMatch = taskMarker.matchEntire(content.trim())
+                    val task = taskMatch?.let { it.groupValues[1].lowercase() == "x" }
+                    items += RawListItem(task, StringBuilder(taskMatch?.groupValues[2] ?: content))
+                    index++
+                }
+
+                marker != null -> break // ordering mode changed; the caller starts a new list
+
+                indent >= baseIndent + 2 && items.isNotEmpty() -> {
+                    items.last().text.append(' ').append(line.trim())
+                    index++
+                }
+
+                else -> break
+            }
+        }
+        val parsed = items.map { ListItem(inline(it.text.toString()), it.task, it.child) }
+        return MarkdownBlock.ListBlock(isOrdered, parsed) to index
+    }
+
+    /** Reports whether the line begins with an unordered or ordered list marker. */
+    private fun isListItemLine(line: String): Boolean = unordered.matches(line) || ordered.matches(line)
+
+    /** Counts the leading spaces of a line. */
+    private fun leadingSpaces(line: String): Int = line.indexOfFirst { it != ' ' }.let { if (it < 0) line.length else it }
+
+    /** Splits one GFM table row into trimmed cell texts, dropping optional edge pipes. */
+    private fun splitTableRow(line: String): List<String> {
+        var trimmed = line.trim()
+        if (trimmed.startsWith("|")) trimmed = trimmed.substring(1)
+        if (trimmed.endsWith("|")) trimmed = trimmed.dropLast(1)
+        return trimmed.split("|").map { it.trim() }
     }
 
     /** Maps supported fenced-code labels and aliases to their language model. */
@@ -121,6 +233,7 @@ object MarkdownDocumentParser {
                     InlineStyle.Plain -> MarkdownInline.Text(value)
                     InlineStyle.Bold -> MarkdownInline.Bold(value)
                     InlineStyle.Italic -> MarkdownInline.Italic(value)
+                    InlineStyle.Del -> MarkdownInline.Strikethrough(value)
                 }
                 text.clear()
             }
@@ -133,10 +246,12 @@ object MarkdownDocumentParser {
                         flushText()
                         result.last() += MarkdownInline.Code(code)
                     }
+
                     encoded.text[index] == '\n' -> {
                         flushText()
                         result.add(mutableListOf())
                     }
+
                     else -> text.append(encoded.text[index])
                 }
                 index++
@@ -144,15 +259,51 @@ object MarkdownDocumentParser {
             flushText()
         }
 
-        emphasis.findAll(encoded.text).forEach { match ->
+        inlineToken.findAll(encoded.text).forEach { match ->
             appendRange(cursor, match.range.first, InlineStyle.Plain)
-            val group = if (match.groupValues[1].isNotEmpty()) match.groups[1]!! else match.groups[2]!!
-            val style = if (match.groupValues[1].isNotEmpty()) InlineStyle.Bold else InlineStyle.Italic
-            appendRange(group.range.first, group.range.last + 1, style)
+            when {
+                match.groups[2] != null -> result.last() += MarkdownInline.Image(
+                    decodeEncoded(encoded, match.groups[1]!!.range.first, match.groups[1]!!.range.last + 1),
+                    decodeEncoded(encoded, match.groups[2]!!.range.first, match.groups[2]!!.range.last + 1),
+                )
+
+                match.groups[4] != null -> result.last() += MarkdownInline.Link(
+                    decodeEncoded(encoded, match.groups[3]!!.range.first, match.groups[3]!!.range.last + 1),
+                    decodeEncoded(encoded, match.groups[4]!!.range.first, match.groups[4]!!.range.last + 1),
+                )
+
+                match.groups[5] != null -> appendRange(
+                    match.groups[5]!!.range.first,
+                    match.groups[5]!!.range.last + 1,
+                    InlineStyle.Del,
+                )
+
+                match.groups[6] != null -> appendRange(
+                    match.groups[6]!!.range.first,
+                    match.groups[6]!!.range.last + 1,
+                    InlineStyle.Bold,
+                )
+
+                match.groups[7] != null -> appendRange(
+                    match.groups[7]!!.range.first,
+                    match.groups[7]!!.range.last + 1,
+                    InlineStyle.Italic,
+                )
+            }
             cursor = match.range.last + 1
         }
         appendRange(cursor, encoded.text.length, InlineStyle.Plain)
         return result
+    }
+
+    /** Restores code-span placeholders inside one encoded range to their raw content. */
+    private fun decodeEncoded(encoded: EncodedInline, start: Int, endExclusive: Int): String {
+        val decoded = StringBuilder()
+        for (index in start until endExclusive) {
+            val code = encoded.codeByOffset[index]
+            if (code != null) decoded.append(code) else decoded.append(encoded.text[index])
+        }
+        return decoded.toString()
     }
 
     /** Replaces valid CommonMark code spans with position-tracked placeholders. */
@@ -166,6 +317,7 @@ object MarkdownDocumentParser {
                     encoded.append('`')
                     index += 2
                 }
+
                 text[index] == '`' -> {
                     val delimiterLength = backtickRunLength(text, index)
                     val contentStart = index + delimiterLength
@@ -179,6 +331,7 @@ object MarkdownDocumentParser {
                         index = closingStart + delimiterLength
                     }
                 }
+
                 else -> {
                     encoded.append(text[index])
                     index++
@@ -225,7 +378,7 @@ object MarkdownDocumentParser {
         }
     }
 
-    private enum class InlineStyle { Plain, Bold, Italic }
+    private enum class InlineStyle { Plain, Bold, Italic, Del }
 
     private data class EncodedInline(
         val text: String,

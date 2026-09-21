@@ -7,10 +7,10 @@ import kotlin.test.assertEquals
 
 class ParagraphTest {
     @Test
-    /** Verifies paragraphs preserve authored lines with HTML breaks. */
+    /** Verifies paragraphs preserve authored lines and capitalize the first letter. */
     fun `renders paragraph lines with breaks`() {
         assertEquals(
-            "<p style=\"font-size: 16px; line-height: 1.75; margin: 0 0 16px;\">First<br/>Second</p>",
+            "<p style=\"font-size: 16px; line-height: 1.75; margin: 22px 0; color: rgba(46, 36, 36, 0.87); word-break: break-word;\">First<br/>Second</p>",
             renderParagraph(
                 MarkdownBlock.Paragraph(
                     listOf(
@@ -18,6 +18,18 @@ class ParagraphTest {
                         listOf(MarkdownInline.Text("Second")),
                     ),
                 ),
+            ),
+        )
+    }
+
+    @Test
+    /** Verifies quote-context paragraphs use the tighter blockquote margins. */
+    fun `renders quote paragraphs with tighter margins`() {
+        assertEquals(
+            "<p style=\"font-size: 16px; line-height: 1.75; margin: 10px 0; color: #666666; word-break: break-word;\">Quoted</p>",
+            renderParagraph(
+                MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted")))),
+                inQuote = true,
             ),
         )
     }
