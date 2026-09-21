@@ -73,6 +73,11 @@ class WechatArticleViewModel(
         }
     }
 
+    /** Clears the transient copy feedback once it has been shown. */
+    fun dismissCopyStatus() {
+        _uiState.update { it.copy(copySucceeded = null) }
+    }
+
     /** Applies a layout mode immediately and persists the latest selection in the background. */
     fun onLayoutModeSelected(mode: ArticleLayoutMode) {
         if (!_layoutState.value.isLoaded || _layoutState.value.mode == mode) return

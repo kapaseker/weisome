@@ -97,7 +97,7 @@ internal fun WeiSomeSecondaryButton(
             .heightIn(min = 40.dp)
             .clip(shape)
             .background(WeiSomeColors.surfaceContainerLowest)
-            .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, shape)
+            .border(WeiSomeBorders.thin, WeiSomeColors.outline, shape)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 12.dp),
     ) {

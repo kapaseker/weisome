@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeShapes
 
 /** Renders a consistently sized icon-only action button with a hover highlight. */
 @Composable
@@ -38,7 +38,7 @@ internal fun MediumIconButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(52.dp)
-            .clip(CircleShape)
+            .clip(WeiSomeShapes.default)
             .background(if (hovered) WeiSomeColors.surfaceContainerHigh else WeiSomeColors.surface.copy(alpha = 0f))
             .hoverable(interactionSource)
             .clickable(interactionSource = interactionSource, enabled = enabled, onClick = onClick),

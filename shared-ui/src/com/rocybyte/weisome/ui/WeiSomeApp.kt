@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -24,6 +26,9 @@ import com.rocybyte.weisome.page.settings.biz.SettingsViewModel
 import com.rocybyte.weisome.page.settings.biz.selectedTextScale
 import com.rocybyte.weisome.page.settings.biz.selectedUiScale
 import com.rocybyte.weisome.widget.WeiSomeCircularProgressIndicator
+import com.rocybyte.weisome.widget.WeiSomeSnackbarHost
+import com.rocybyte.weisome.widget.WeiSomeSnackbarState
+import com.rocybyte.weisome.widget.LocalWeiSomeSnackbar
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,41 +65,48 @@ fun WeiSomeApp() {
     val uiScale = selectedUiScale(uiScaleState.userScale)
 
     WeiSomeTheme(textScale = textScale, uiScale = uiScale) {
-        Box(modifier = Modifier.fillMaxSize().background(WeiSomeColors.background)) {
-            NavDisplay(
-                backStack = backStack,
-                onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
-                entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
-                ),
-                entryProvider = entryProvider {
-                    entry<WechatArticleRoute> {
-                        WechatArticlePage(
-                            onOpenSettings = {
-                                if (backStack.lastOrNull() != SettingsRoute) {
-                                    backStack.add(SettingsRoute)
-                                }
-                            },
-                        )
-                    }
-                    entry<SettingsRoute> {
-                        SettingsPage(
-                            textState = textScaleState,
-                            uiState = uiScaleState,
-                            selectedTextScale = textScale,
-                            systemDensity = systemDensity,
-                            onTextScaleChanged = settingsViewModel::previewTextScale,
-                            onTextScaleChangeFinished = settingsViewModel::savePreviewedTextScale,
-                            onResetTextScale = settingsViewModel::resetTextScale,
-                            onUiScaleChanged = settingsViewModel::previewUiScale,
-                            onUiScaleChangeFinished = settingsViewModel::applyPreviewedUiScale,
-                            onResetUiScale = settingsViewModel::resetUiScale,
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-                },
-            )
+        val snackbarState = remember { WeiSomeSnackbarState() }
+        CompositionLocalProvider(LocalWeiSomeSnackbar provides snackbarState) {
+            Box(modifier = Modifier.fillMaxSize().background(WeiSomeColors.background)) {
+                NavDisplay(
+                    backStack = backStack,
+                    onBack = { if (backStack.size > 1) backStack.removeLastOrNull() },
+                    entryDecorators = listOf(
+                        rememberSaveableStateHolderNavEntryDecorator(),
+                        rememberViewModelStoreNavEntryDecorator(),
+                    ),
+                    entryProvider = entryProvider {
+                        entry<WechatArticleRoute> {
+                            WechatArticlePage(
+                                onOpenSettings = {
+                                    if (backStack.lastOrNull() != SettingsRoute) {
+                                        backStack.add(SettingsRoute)
+                                    }
+                                },
+                            )
+                        }
+                        entry<SettingsRoute> {
+                            SettingsPage(
+                                textState = textScaleState,
+                                uiState = uiScaleState,
+                                selectedTextScale = textScale,
+                                systemDensity = systemDensity,
+                                onTextScaleChanged = settingsViewModel::previewTextScale,
+                                onTextScaleChangeFinished = settingsViewModel::savePreviewedTextScale,
+                                onResetTextScale = settingsViewModel::resetTextScale,
+                                onUiScaleChanged = settingsViewModel::previewUiScale,
+                                onUiScaleChangeFinished = settingsViewModel::applyPreviewedUiScale,
+                                onResetUiScale = settingsViewModel::resetUiScale,
+                                onBack = { backStack.removeLastOrNull() },
+                            )
+                        }
+                    },
+                )
+                WeiSomeSnackbarHost(
+                    state = snackbarState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+            }
         }
     }
 }

@@ -24,6 +24,7 @@ internal fun WechatArticlePage(onOpenSettings: () -> Unit) {
         layoutState = layoutState,
         onMarkdownChanged = viewModel::onMarkdownChanged,
         onCopyAsHtml = viewModel::copyAsHtml,
+        onDismissCopyStatus = viewModel::dismissCopyStatus,
         onLayoutModeSelected = viewModel::onLayoutModeSelected,
         onOpenSettings = onOpenSettings,
     )

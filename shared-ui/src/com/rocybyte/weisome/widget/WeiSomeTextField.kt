@@ -24,14 +24,13 @@ import com.rocybyte.weisome.ui.WeiSomeTypography
 
 /**
  * Text field per the DESIGN.md input spec: light gray resting surface that turns white
- * on focus with a 2px primary border. [label] renders as a static caption above the field.
+ * on focus with a 2px primary border.
  */
 @Composable
 internal fun WeiSomeTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: String? = null,
     placeholder: String? = null,
     minLines: Int = 1,
 ) {
@@ -39,13 +38,6 @@ internal fun WeiSomeTextField(
     val shape = WeiSomeShapes.default
 
     Column(modifier = modifier) {
-        if (label != null) {
-            WeiSomeText(
-                text = label,
-                style = WeiSomeTypography.labelSm,
-                modifier = Modifier.padding(bottom = 6.dp),
-            )
-        }
         BasicTextField(
             value = value,
             onValueChange = onValueChange,

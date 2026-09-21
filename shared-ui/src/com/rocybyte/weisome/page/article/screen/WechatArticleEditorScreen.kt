@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,13 +33,13 @@ import com.rocybyte.weisome.generated.resources.ic_left_expand
 import com.rocybyte.weisome.generated.resources.ic_right_expand
 import com.rocybyte.weisome.generated.resources.ic_settings
 import com.rocybyte.weisome.generated.resources.markdown_hint
-import com.rocybyte.weisome.generated.resources.markdown_label
 import com.rocybyte.weisome.generated.resources.settings
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
+import com.rocybyte.weisome.widget.LocalWeiSomeSnackbar
 import com.rocybyte.weisome.widget.MediumIconButton
 import com.rocybyte.weisome.widget.WeiSomeSecondaryButton
 import com.rocybyte.weisome.widget.WeiSomeSegmentedControl
@@ -58,61 +59,86 @@ internal fun WechatArticleEditorScreen(
     layoutState: ArticleLayoutUiState,
     onMarkdownChanged: (String) -> Unit,
     onCopyAsHtml: () -> Unit,
+    onDismissCopyStatus: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
-    ) {
-        Box(Modifier.fillMaxWidth()) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                WeiSomeText(stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
-                WeiSomeSecondaryButton(
-                    text = stringResource(Res.string.copy_button),
-                    onClick = onCopyAsHtml,
-                    enabled = state.markdown.isNotBlank(),
-                    icon = painterResource(Res.drawable.ic_copy),
-                )
-            }
-            if (layoutState.isLoaded) {
-                Row(
-                    modifier = Modifier.align(Alignment.Center),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(Modifier.size(52.dp))
-                    Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
-                    ArticleLayoutSelector(
-                        selectedMode = layoutState.mode,
-                        onModeSelected = onLayoutModeSelected,
-                    )
-                    Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
-                    MediumIconButton(
-                        onClick = onOpenSettings,
-                        painter = painterResource(Res.drawable.ic_settings),
-                        contentDescription = stringResource(Res.string.settings),
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+        ) {
+            Box(Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    WeiSomeText(stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
+                    WeiSomeSecondaryButton(
+                        text = stringResource(Res.string.copy_button),
+                        onClick = onCopyAsHtml,
+                        enabled = state.markdown.isNotBlank(),
+                        icon = painterResource(Res.drawable.ic_copy),
                     )
                 }
+                if (layoutState.isLoaded) {
+                    Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Spacer(Modifier.size(52.dp))
+                        Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
+                        ArticleLayoutSelector(
+                            selectedMode = layoutState.mode,
+                            onModeSelected = onLayoutModeSelected,
+                        )
+                        Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
+                        MediumIconButton(
+                            onClick = onOpenSettings,
+                            painter = painterResource(Res.drawable.ic_settings),
+                            contentDescription = stringResource(Res.string.settings),
+                        )
+                    }
+                }
+            }
+            val hint = stringResource(Res.string.markdown_hint)
+            if (layoutState.isLoaded) {
+                ArticleWorkspace(
+                    state = state,
+                    mode = layoutState.mode,
+                    hint = hint,
+                    onMarkdownChanged = onMarkdownChanged,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                )
+            } else {
+                Spacer(Modifier.weight(1f))
             }
         }
-        state.copySucceeded?.let { succeeded ->
-            val message =
-                if (succeeded) stringResource(Res.string.copy_success)
-                else stringResource(Res.string.copy_failure)
-            WeiSomeText(message, style = WeiSomeTypography.bodyMd)
-        }
-        val hint = stringResource(Res.string.markdown_hint)
-        if (layoutState.isLoaded) {
-            ArticleWorkspace(
-                state = state,
-                mode = layoutState.mode,
-                hint = hint,
-                onMarkdownChanged = onMarkdownChanged,
-                modifier = Modifier.fillMaxWidth().weight(1f),
+        CopyStatusSnackbar(
+            status = state.copySucceeded,
+            onDismiss = onDismissCopyStatus,
+        )
+    }
+}
+
+/**
+ * Bridges the one-shot copy result into the global snackbar: shows the feedback once the
+ * state emits a result, then clears the source state so the same result cannot re-show.
+ */
+@Composable
+private fun CopyStatusSnackbar(
+    status: Boolean?,
+    onDismiss: () -> Unit,
+) {
+    val snackbar = LocalWeiSomeSnackbar.current
+    val successMessage = stringResource(Res.string.copy_success)
+    val failureMessage = stringResource(Res.string.copy_failure)
+
+    LaunchedEffect(status) {
+        if (status != null) {
+            snackbar.show(
+                message = if (status) successMessage else failureMessage,
+                isError = !status,
             )
-        } else {
-            Spacer(Modifier.weight(1f))
+            onDismiss()
         }
     }
 }
@@ -205,7 +231,6 @@ private fun ArticleEditor(
         value = state.markdown,
         onValueChange = onMarkdownChanged,
         modifier = modifier,
-        label = stringResource(Res.string.markdown_label),
         placeholder = hint,
         minLines = EDITOR_MIN_LINES,
     )
