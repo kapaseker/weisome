@@ -29,6 +29,7 @@
 - Name repository interfaces `XxxRepo` and their concrete implementations `XxxRepository`; bind the implementation to the interface at the Koin or application composition boundary.
 - Name local data-store interfaces `XxxStore` and their concrete implementations `XxxStorage`; repositories depend on the store interface, and the concrete storage implementation is bound only at the Koin or application composition boundary.
 - Keep UI state focused and cohesive. Do not put unrelated state into one large `UiState` class. When fields change for different reasons, split state by responsibility, feature area, or update flow to avoid unnecessary full-state copies and broad recomposition.
+- Any UI/visual change (colors, typography, spacing, shapes, components) must first read `DESIGN.md` at the repo root and follow its tokens and component specs.
 
 ## Verification
 

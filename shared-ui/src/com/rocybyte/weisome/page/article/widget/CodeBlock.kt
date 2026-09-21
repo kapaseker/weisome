@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.WeiSomeLightCodeTheme
+import com.rocybyte.weisome.widget.WeiSomeText
 
 /** Renders authored code lines without soft wrapping and exposes overflow through a local scrollbar. */
 @Composable
@@ -43,7 +43,7 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
                     .horizontalScroll(horizontalScrollState)
                     .padding(horizontal = 16.dp),
             ) {
-                Text(
+                WeiSomeText(
                     text = highlightedCodeText(block),
                     color = WeiSomeLightCodeTheme.codeRgb.toComposeColor(),
                     fontFamily = FontFamily.Monospace,

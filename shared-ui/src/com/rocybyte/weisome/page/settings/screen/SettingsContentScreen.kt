@@ -1,24 +1,22 @@
 package com.rocybyte.weisome.page.settings.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -51,7 +49,15 @@ import com.rocybyte.weisome.settings.DisplayScaleSliderSteps
 import com.rocybyte.weisome.settings.DefaultUiScale
 import com.rocybyte.weisome.settings.MaximumDisplayScale
 import com.rocybyte.weisome.settings.MinimumDisplayScale
+import com.rocybyte.weisome.ui.WeiSomeBorders
+import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.MediumIconButton
+import com.rocybyte.weisome.widget.WeiSomePrimaryButton
+import com.rocybyte.weisome.widget.WeiSomeSecondaryButton
+import com.rocybyte.weisome.widget.WeiSomeSlider
+import com.rocybyte.weisome.widget.WeiSomeText
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -71,10 +77,10 @@ internal fun SettingsContentScreen(
     onBack: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
+        modifier = Modifier.fillMaxSize().background(WeiSomeColors.surface),
     ) {
         SettingsHeader(onBack)
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        SettingsDivider()
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp, vertical = 20.dp),
@@ -87,7 +93,7 @@ internal fun SettingsContentScreen(
                 onScaleChangeFinished = onTextScaleChangeFinished,
                 onReset = onResetTextScale,
             )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            SettingsDivider()
             UiScaleSettings(
                 state = uiState,
                 selectedTextScale = selectedTextScale,
@@ -100,6 +106,17 @@ internal fun SettingsContentScreen(
     }
 }
 
+/** Renders a thin high-contrast separator between settings sections. */
+@Composable
+private fun SettingsDivider() {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(WeiSomeBorders.thin)
+            .background(WeiSomeColors.outlineVariant),
+    )
+}
+
 /** Renders the text-scale slider, reset action, status, and typography preview. */
 @Composable
 private fun TextScaleSettings(
@@ -109,17 +126,17 @@ private fun TextScaleSettings(
     onScaleChangeFinished: () -> Unit,
     onReset: () -> Unit,
 ) {
-    Text(stringResource(Res.string.text_scale), style = MaterialTheme.typography.titleLarge)
-    Text(
+    WeiSomeText(stringResource(Res.string.text_scale), style = WeiSomeTypography.h3)
+    WeiSomeText(
         text = if (state.userScale == null) {
             stringResource(Res.string.device_default_scale, displayScaleLabel(selectedScale))
         } else {
             stringResource(Res.string.custom_scale, displayScaleLabel(selectedScale))
         },
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = WeiSomeTypography.bodyMd,
+        color = WeiSomeColors.onSurfaceVariant,
     )
-    Slider(
+    WeiSomeSlider(
         value = selectedScale,
         onValueChange = onScaleChanged,
         modifier = Modifier.fillMaxWidth(),
@@ -127,18 +144,20 @@ private fun TextScaleSettings(
         steps = DisplayScaleSliderSteps,
         onValueChangeFinished = onScaleChangeFinished,
     )
-    Button(onClick = onReset, enabled = state.userScale != null) {
-        Text(stringResource(Res.string.reset_text_scale))
-    }
+    WeiSomeSecondaryButton(
+        text = stringResource(Res.string.reset_text_scale),
+        onClick = onReset,
+        enabled = state.userScale != null,
+    )
     if (state.loadFailed) ErrorText(stringResource(Res.string.text_scale_load_failed))
     if (state.saveFailed) ErrorText(stringResource(Res.string.text_scale_save_failed))
-    Text(stringResource(Res.string.preview), style = MaterialTheme.typography.titleMedium)
-    Text(stringResource(Res.string.preview_title), style = MaterialTheme.typography.titleLarge)
-    Text(stringResource(Res.string.preview_body), style = MaterialTheme.typography.bodyLarge)
-    Text(
+    WeiSomeText(stringResource(Res.string.preview), style = WeiSomeTypography.h3)
+    WeiSomeText(stringResource(Res.string.preview_title), style = WeiSomeTypography.h3)
+    WeiSomeText(stringResource(Res.string.preview_body), style = WeiSomeTypography.bodyLg)
+    WeiSomeText(
         stringResource(Res.string.preview_label),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = WeiSomeTypography.labelSm,
+        color = WeiSomeColors.onSurfaceVariant,
     )
 }
 
@@ -152,17 +171,17 @@ private fun UiScaleSettings(
     onScaleChangeFinished: () -> Unit,
     onReset: () -> Unit,
 ) {
-    Text(stringResource(Res.string.ui_scale), style = MaterialTheme.typography.titleLarge)
-    Text(
+    WeiSomeText(stringResource(Res.string.ui_scale), style = WeiSomeTypography.h3)
+    WeiSomeText(
         text = if (state.userScale == null && state.previewScale == DefaultUiScale) {
             stringResource(Res.string.default_ui_scale, displayScaleLabel(state.previewScale))
         } else {
             stringResource(Res.string.custom_scale, displayScaleLabel(state.previewScale))
         },
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = WeiSomeTypography.bodyMd,
+        color = WeiSomeColors.onSurfaceVariant,
     )
-    Slider(
+    WeiSomeSlider(
         value = state.previewScale,
         onValueChange = onScaleChanged,
         modifier = Modifier.fillMaxWidth(),
@@ -170,12 +189,14 @@ private fun UiScaleSettings(
         steps = DisplayScaleSliderSteps,
         onValueChangeFinished = onScaleChangeFinished,
     )
-    Button(onClick = onReset, enabled = state.userScale != null) {
-        Text(stringResource(Res.string.reset_ui_scale))
-    }
+    WeiSomeSecondaryButton(
+        text = stringResource(Res.string.reset_ui_scale),
+        onClick = onReset,
+        enabled = state.userScale != null,
+    )
     if (state.loadFailed) ErrorText(stringResource(Res.string.ui_scale_load_failed))
     if (state.saveFailed) ErrorText(stringResource(Res.string.ui_scale_save_failed))
-    Text(stringResource(Res.string.preview), style = MaterialTheme.typography.titleMedium)
+    WeiSomeText(stringResource(Res.string.preview), style = WeiSomeTypography.h3)
     UiScaleButtonPreview(
         textScale = selectedTextScale,
         uiScale = state.previewScale,
@@ -190,14 +211,20 @@ private fun UiScaleButtonPreview(
     uiScale: Float,
     systemDensity: Density,
 ) {
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(WeiSomeShapes.lg)
+            .background(WeiSomeColors.surfaceContainerLowest)
+            .border(WeiSomeBorders.thin, WeiSomeColors.cardBorder, WeiSomeShapes.lg),
+    ) {
         CompositionLocalProvider(LocalDensity provides scaledDensity(systemDensity, textScale, uiScale)) {
             Row(
                 modifier = Modifier.padding(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Button(onClick = {}) { Text(stringResource(Res.string.preview_button)) }
+                WeiSomePrimaryButton(text = stringResource(Res.string.preview_button), onClick = {})
                 MediumIconButton(
                     onClick = {},
                     painter = painterResource(Res.drawable.ic_settings),
@@ -221,12 +248,12 @@ private fun SettingsHeader(onBack: () -> Unit) {
             painter = painterResource(Res.drawable.ic_left),
             contentDescription = stringResource(Res.string.back),
         )
-        Text(stringResource(Res.string.settings), style = MaterialTheme.typography.headlineSmall)
+        WeiSomeText(stringResource(Res.string.settings), style = WeiSomeTypography.h2)
     }
 }
 
-/** Displays a settings error using the Material error role. */
+/** Displays a settings error using the error color role. */
 @Composable
 private fun ErrorText(text: String) {
-    Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+    WeiSomeText(text, style = WeiSomeTypography.bodyMd, color = WeiSomeColors.error)
 }

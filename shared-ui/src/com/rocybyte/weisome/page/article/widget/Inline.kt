@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +25,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.article.WeiSomeLightCodeTheme
+import com.rocybyte.weisome.ui.LocalWeiSomeTextStyle
+import com.rocybyte.weisome.widget.WeiSomeText
 
 /** Renders inline Markdown with rounded code labels that participate in text wrapping. */
 @Composable
@@ -42,7 +42,7 @@ internal fun InlineMarkdownText(
         val density = LocalDensity.current
         val horizontalPadding = 4.dp
         val verticalPadding = 2.dp
-        val codeStyle = LocalTextStyle.current.merge(
+        val codeStyle = LocalWeiSomeTextStyle.current.merge(
             TextStyle(
                 color = WeiSomeLightCodeTheme.codeRgb.toComposeColor(),
                 fontSize = fontSize,
@@ -96,7 +96,7 @@ internal fun InlineMarkdownText(
                                             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
                                         contentAlignment = Alignment.CenterStart,
                                     ) {
-                                        Text(
+                                        WeiSomeText(
                                             text = chunk,
                                             style = codeStyle,
                                             maxLines = 1,
@@ -110,7 +110,7 @@ internal fun InlineMarkdownText(
                 }
             }
         }
-        Text(
+        WeiSomeText(
             text = text,
             inlineContent = inlineContent,
             fontSize = fontSize,

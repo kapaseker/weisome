@@ -12,19 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.app_name
@@ -47,11 +39,20 @@ import com.rocybyte.weisome.page.article.biz.ArticleCopyTarget
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
-import com.rocybyte.weisome.ui.WeiSomeDimensions
+import com.rocybyte.weisome.ui.WeiSomeSpacing
+import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.MediumIconButton
+import com.rocybyte.weisome.widget.WeiSomePrimaryButton
+import com.rocybyte.weisome.widget.WeiSomeSecondaryButton
+import com.rocybyte.weisome.widget.WeiSomeSegmentedControl
+import com.rocybyte.weisome.widget.WeiSomeSegmentedOption
+import com.rocybyte.weisome.widget.WeiSomeText
+import com.rocybyte.weisome.widget.WeiSomeTextField
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.unit.dp
+
+/** Minimum editor height in text lines before the field starts scrolling. */
+private const val EDITOR_MIN_LINES = 12
 
 /** Renders the editor, preview, and copy controls for the article workflow. */
 @Composable
@@ -65,20 +66,24 @@ internal fun WechatArticleEditorScreen(
     onOpenSettings: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(WeiSomeDimensions.PagePadding),
+        modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(WeiSomeDimensions.ContentSpacing),
+        verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
     ) {
         Box(Modifier.fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeDimensions.ContentSpacing)) {
-                    Button(enabled = state.markdown.isNotBlank(), onClick = onCopyForJuejin) {
-                        Text(stringResource(Res.string.copy_juejin_button))
-                    }
-                    Button(enabled = state.markdown.isNotBlank(), onClick = onCopyAsHtml) {
-                        Text(stringResource(Res.string.copy_button))
-                    }
+                WeiSomeText(stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
+                Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm)) {
+                    WeiSomeSecondaryButton(
+                        text = stringResource(Res.string.copy_juejin_button),
+                        onClick = onCopyForJuejin,
+                        enabled = state.markdown.isNotBlank(),
+                    )
+                    WeiSomePrimaryButton(
+                        text = stringResource(Res.string.copy_button),
+                        onClick = onCopyAsHtml,
+                        enabled = state.markdown.isNotBlank(),
+                    )
                 }
             }
             if (layoutState.isLoaded) {
@@ -87,12 +92,12 @@ internal fun WechatArticleEditorScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Spacer(Modifier.size(52.dp))
-                    Spacer(Modifier.size(width = WeiSomeDimensions.ContentSpacing, height = 1.dp))
+                    Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
                     ArticleLayoutSelector(
                         selectedMode = layoutState.mode,
                         onModeSelected = onLayoutModeSelected,
                     )
-                    Spacer(Modifier.size(width = WeiSomeDimensions.ContentSpacing, height = 1.dp))
+                    Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
                     MediumIconButton(
                         onClick = onOpenSettings,
                         painter = painterResource(Res.drawable.ic_settings),
@@ -107,7 +112,7 @@ internal fun WechatArticleEditorScreen(
                 state.copyTarget == ArticleCopyTarget.Juejin -> stringResource(Res.string.copy_juejin_success)
                 else -> stringResource(Res.string.copy_success)
             }
-            Text(message, style = MaterialTheme.typography.bodyMedium)
+            WeiSomeText(message, style = WeiSomeTypography.bodyMd)
         }
         val hint = stringResource(Res.string.markdown_hint)
         if (layoutState.isLoaded) {
@@ -125,7 +130,6 @@ internal fun WechatArticleEditorScreen(
 }
 
 /** Renders the centered icon-only single-choice control for article layout modes. */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ArticleLayoutSelector(
     selectedMode: ArticleLayoutMode,
@@ -140,32 +144,26 @@ private fun ArticleLayoutSelector(
     val editorOnlyDescription = stringResource(Res.string.article_layout_editor_only)
     val splitDescription = stringResource(Res.string.article_layout_split)
     val previewOnlyDescription = stringResource(Res.string.article_layout_preview_only)
-
-    SingleChoiceSegmentedButtonRow(modifier) {
-        modes.forEachIndexed { index, mode ->
-            val description = when (mode) {
-                ArticleLayoutMode.EDITOR_ONLY -> editorOnlyDescription
-                ArticleLayoutMode.SPLIT -> splitDescription
-                ArticleLayoutMode.PREVIEW_ONLY -> previewOnlyDescription
-            }
-            val icon = when (mode) {
-                ArticleLayoutMode.EDITOR_ONLY -> Res.drawable.ic_left_expand
-                ArticleLayoutMode.SPLIT -> Res.drawable.ic_all_expand
-                ArticleLayoutMode.PREVIEW_ONLY -> Res.drawable.ic_right_expand
-            }
-            SegmentedButton(
-                selected = selectedMode == mode,
-                onClick = { onModeSelected(mode) },
-                shape = SegmentedButtonDefaults.itemShape(index, modes.size),
-                icon = {},
-            ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = description,
-                )
-            }
+    val options = modes.map { mode ->
+        val description = when (mode) {
+            ArticleLayoutMode.EDITOR_ONLY -> editorOnlyDescription
+            ArticleLayoutMode.SPLIT -> splitDescription
+            ArticleLayoutMode.PREVIEW_ONLY -> previewOnlyDescription
         }
+        val icon = when (mode) {
+            ArticleLayoutMode.EDITOR_ONLY -> Res.drawable.ic_left_expand
+            ArticleLayoutMode.SPLIT -> Res.drawable.ic_all_expand
+            ArticleLayoutMode.PREVIEW_ONLY -> Res.drawable.ic_right_expand
+        }
+        WeiSomeSegmentedOption(painter = painterResource(icon), contentDescription = description)
     }
+
+    WeiSomeSegmentedControl(
+        options = options,
+        selectedIndex = modes.indexOf(selectedMode),
+        onSelected = { index -> onModeSelected(modes[index]) },
+        modifier = modifier,
+    )
 }
 
 /** Displays the editor, preview, or equal split according to the selected layout mode. */
@@ -215,13 +213,13 @@ private fun ArticleEditor(
     onMarkdownChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
+    WeiSomeTextField(
         value = state.markdown,
         onValueChange = onMarkdownChanged,
         modifier = modifier,
-        label = { Text(stringResource(Res.string.markdown_label)) },
-        placeholder = { Text(hint) },
-        minLines = WeiSomeDimensions.EditorMinLines,
+        label = stringResource(Res.string.markdown_label),
+        placeholder = hint,
+        minLines = EDITOR_MIN_LINES,
     )
 }
 
@@ -233,7 +231,7 @@ private fun ArticlePreviewPane(
 ) {
     Box(
         modifier.verticalScroll(rememberScrollState())
-            .padding(start = WeiSomeDimensions.ContentSpacing)
+            .padding(start = WeiSomeSpacing.stackSm)
             .alpha(if (state.markdown.isBlank()) 0.42f else 1f),
     ) {
         WechatArticlePreview(
