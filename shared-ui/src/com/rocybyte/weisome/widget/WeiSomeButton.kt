@@ -24,6 +24,7 @@ import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
 import com.rocybyte.weisome.ui.WeiSomeTypography
+import com.rocybyte.weisome.ui.weiSomeRipple
 
 /**
  * Primary action button: Electric gradient fill with white label text per DESIGN.md.
@@ -55,7 +56,13 @@ internal fun WeiSomePrimaryButton(
             .clip(shape)
             .background(Brush.linearGradient(listOf(WeiSomeColors.primary, WeiSomeColors.primaryContainer)))
             .hoverable(interactionSource)
-            .clickable(interactionSource = interactionSource, enabled = enabled, onClick = onClick)
+            .clickable(
+                interactionSource = interactionSource,
+                enabled = enabled,
+                // 深色渐变底：ripple 用内容色（白）而非全局 onSurface。
+                indication = weiSomeRipple(WeiSomeColors.onPrimary),
+                onClick = onClick,
+            )
             .padding(horizontal = 24.dp, vertical = 12.dp),
     ) {
         WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = Color.White)

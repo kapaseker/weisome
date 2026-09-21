@@ -26,7 +26,6 @@ import com.rocybyte.weisome.page.settings.biz.selectedUiScale
 import com.rocybyte.weisome.widget.WeiSomeCircularProgressIndicator
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 import org.koin.compose.viewmodel.koinViewModel
 
 private val navigationStateConfiguration = SavedStateConfiguration {

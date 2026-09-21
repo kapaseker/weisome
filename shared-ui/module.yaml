@@ -5,6 +5,7 @@ product:
 dependencies:
   - ../contracts
   - $compose.foundation: exported
+  - org.jetbrains.compose.material:material-ripple:1.12.0
   - $compose.components.resources
   - org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0
   - org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3:2.11.0
