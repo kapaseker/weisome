@@ -36,7 +36,8 @@
     <string name="dialog_cancel">取消</string>
     <string name="dialog_confirm">确认</string>
     <string name="article_delete">删除文章</string>
-    <string name="article_delete_hint">确定删除“%1$s”吗？此操作无法恢复。</string>
+    <string name="article_delete_hint">你确定删除“%1$s”文章吗？</string>
+    <string name="article_delete_irreversible">此操作无法恢复。</string>
     <string name="article_created_at">创建于 %1$s</string>
     <string name="article_updated_at">修改于 %1$s</string>
 </resources>

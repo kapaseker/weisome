@@ -45,9 +45,7 @@ import com.rocybyte.weisome.generated.resources.ic_copy
 import com.rocybyte.weisome.generated.resources.ic_left
 import com.rocybyte.weisome.generated.resources.ic_left_expand
 import com.rocybyte.weisome.generated.resources.ic_right_expand
-import com.rocybyte.weisome.generated.resources.ic_settings
 import com.rocybyte.weisome.generated.resources.markdown_hint
-import com.rocybyte.weisome.generated.resources.settings
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
@@ -79,7 +77,6 @@ internal fun WechatArticleEditorScreen(
     onCopyAsHtml: () -> Unit,
     onDismissCopyStatus: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
-    onOpenSettings: () -> Unit,
 ) {
     var showRenameDialog by remember { mutableStateOf(false) }
 
@@ -130,12 +127,6 @@ internal fun WechatArticleEditorScreen(
                         ArticleLayoutSelector(
                             selectedMode = layoutState.mode,
                             onModeSelected = onLayoutModeSelected,
-                        )
-                        Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
-                        MediumIconButton(
-                            onClick = onOpenSettings,
-                            painter = painterResource(Res.drawable.ic_settings),
-                            contentDescription = stringResource(Res.string.settings),
                         )
                     }
                 }

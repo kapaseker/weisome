@@ -19,6 +19,8 @@ import kotlinx.coroutines.sync.withLock
 data class TextScaleUiState(
     val isLoaded: Boolean = false,
     val userScale: Float? = null,
+    /** Scale being dragged; null means follow the applied value. */
+    val previewScale: Float? = null,
     val loadFailed: Boolean = false,
     val saveFailed: Boolean = false,
 )
@@ -65,22 +67,25 @@ class SettingsViewModel(
         }
     }
 
-    /** Updates the in-memory text scale so the full application previews it immediately. */
+    /** Updates only the slider preview until the text-scale slider interaction finishes. */
     fun previewTextScale(scale: Float) {
         _textScaleState.update { state ->
-            state.copy(userScale = normalizeDisplayScale(scale), saveFailed = false)
+            state.copy(previewScale = normalizeDisplayScale(scale), saveFailed = false)
         }
     }
 
-    /** Persists the currently previewed text scale without blocking the UI. */
+    /** Applies and persists the currently previewed text scale. */
     fun savePreviewedTextScale() {
-        val scale = _textScaleState.value.userScale ?: return
+        val scale = _textScaleState.value.previewScale ?: return
+        _textScaleState.update { state -> state.copy(userScale = scale, saveFailed = false) }
         persistTextScale(scale)
     }
 
     /** Restores the device-default text scale and removes its persisted override. */
     fun resetTextScale() {
-        _textScaleState.update { state -> state.copy(userScale = null, saveFailed = false) }
+        _textScaleState.update { state ->
+            state.copy(userScale = null, previewScale = null, saveFailed = false)
+        }
         persistTextScale(null)
     }
 

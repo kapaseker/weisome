@@ -4,7 +4,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -104,51 +103,49 @@ internal fun WeiSomeTextField(
         scrollSurvivingSupersession { scroll.scrollTo(target) }
     }
 
-    Column(modifier = modifier) {
-        BasicTextField(
-            value = fieldValue,
-            onValueChange = {
-                fieldValue = it
-                onValueChange(it.text)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .onFocusChanged { focused = it.isFocused }
-                .then(
-                    if (focused) {
-                        Modifier.border(2.dp, WeiSomeColors.primary, shape)
-                    } else {
-                        Modifier.border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, shape)
-                    },
-                )
-                .background(
-                    if (focused) WeiSomeColors.surfaceContainerLowest else WeiSomeColors.surfaceContainerLow,
-                    shape,
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .then(
-                    if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier,
-                ),
-            textStyle = WeiSomeTypography.bodyMd.copy(color = WeiSomeColors.onSurface),
-            cursorBrush = SolidColor(WeiSomeColors.primary),
-            minLines = minLines,
-            onTextLayout = {
-                textLayout = it
-                onTextLayout?.invoke(it)
-            },
-            decorationBox = { innerTextField ->
-                Box(Modifier.fillMaxSize()) {
-                    if (value.isEmpty() && placeholder != null) {
-                        WeiSomeText(
-                            text = placeholder,
-                            style = WeiSomeTypography.bodyMd,
-                            color = WeiSomeColors.onSurfaceVariant.copy(alpha = 0.6f),
-                        )
-                    }
-                    Box(Modifier.fillMaxSize()) { innerTextField() }
+    // 高度由调用方决定（wrap-content 或 fillMax），不在内部 weight 撑满。
+    BasicTextField(
+        value = fieldValue,
+        onValueChange = {
+            fieldValue = it
+            onValueChange(it.text)
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { focused = it.isFocused }
+            .then(
+                if (focused) {
+                    Modifier.border(2.dp, WeiSomeColors.primary, shape)
+                } else {
+                    Modifier.border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, shape)
+                },
+            )
+            .background(
+                if (focused) WeiSomeColors.surfaceContainerLowest else WeiSomeColors.surfaceContainerLow,
+                shape,
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .then(
+                if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier,
+            ),
+        textStyle = WeiSomeTypography.bodyMd.copy(color = WeiSomeColors.onSurface),
+        cursorBrush = SolidColor(WeiSomeColors.primary),
+        minLines = minLines,
+        onTextLayout = {
+            textLayout = it
+            onTextLayout?.invoke(it)
+        },
+        decorationBox = { innerTextField ->
+            Box(Modifier.fillMaxSize()) {
+                if (value.isEmpty() && placeholder != null) {
+                    WeiSomeText(
+                        text = placeholder,
+                        style = WeiSomeTypography.bodyMd,
+                        color = WeiSomeColors.onSurfaceVariant.copy(alpha = 0.6f),
+                    )
                 }
-            },
-        )
-    }
+                Box(Modifier.fillMaxSize()) { innerTextField() }
+            }
+        },
+    )
 }

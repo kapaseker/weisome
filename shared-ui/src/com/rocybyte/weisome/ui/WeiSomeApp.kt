@@ -82,16 +82,16 @@ fun WeiSomeApp() {
                         entry<ArticleHomeRoute> {
                             ArticleHomePage(
                                 onOpenArticle = { id -> backStack.add(WechatArticleRoute(id)) },
-                            )
-                        }
-                        entry<WechatArticleRoute> { route ->
-                            WechatArticlePage(
-                                articleId = route.articleId,
                                 onOpenSettings = {
                                     if (backStack.lastOrNull() != SettingsRoute) {
                                         backStack.add(SettingsRoute)
                                     }
                                 },
+                            )
+                        }
+                        entry<WechatArticleRoute> { route ->
+                            WechatArticlePage(
+                                articleId = route.articleId,
                                 onBack = { backStack.removeLastOrNull() },
                             )
                         }

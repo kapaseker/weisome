@@ -127,17 +127,18 @@ private fun TextScaleSettings(
     onReset: () -> Unit,
 ) {
     WeiSomeText(stringResource(Res.string.text_scale), style = WeiSomeTypography.h3)
+    val displayScale = state.previewScale ?: selectedScale
     WeiSomeText(
-        text = if (state.userScale == null) {
-            stringResource(Res.string.device_default_scale, displayScaleLabel(selectedScale))
+        text = if (state.userScale == null && state.previewScale == null) {
+            stringResource(Res.string.device_default_scale, displayScaleLabel(displayScale))
         } else {
-            stringResource(Res.string.custom_scale, displayScaleLabel(selectedScale))
+            stringResource(Res.string.custom_scale, displayScaleLabel(displayScale))
         },
         style = WeiSomeTypography.bodyMd,
         color = WeiSomeColors.onSurfaceVariant,
     )
     WeiSomeSlider(
-        value = selectedScale,
+        value = displayScale,
         onValueChange = onScaleChanged,
         modifier = Modifier.fillMaxWidth(),
         valueRange = MinimumDisplayScale..MaximumDisplayScale,

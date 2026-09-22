@@ -47,7 +47,7 @@ class SettingsViewModelTest {
     }
 
     @Test
-    /** Verifies text preview is immediate and both reset actions remain independent. */
+    /** Verifies text preview applies only after finishing and both resets stay independent. */
     fun `text and ui scales reset independently`() = runBlocking {
         val repository = FakeDisplaySettingsRepo(
             DisplaySettings(userTextScale = 1.5f, userUiScale = 1.8f),
@@ -56,11 +56,17 @@ class SettingsViewModelTest {
         withTimeout(1_000) { viewModel.uiScaleState.first { state -> state.isLoaded } }
 
         viewModel.previewTextScale(2.2f)
-        assertEquals(2.2f, viewModel.textScaleState.value.userScale)
+        assertEquals(1.5f, viewModel.textScaleState.value.userScale)
+        assertEquals(2.2f, viewModel.textScaleState.value.previewScale)
         assertEquals(1.8f, viewModel.uiScaleState.value.userScale)
+
+        viewModel.savePreviewedTextScale()
+        assertEquals(2.2f, viewModel.textScaleState.value.userScale)
+        assertEquals(2.2f, withTimeout(1_000) { repository.textSaves.receive() })
 
         viewModel.resetTextScale()
         assertNull(viewModel.textScaleState.value.userScale)
+        assertNull(viewModel.textScaleState.value.previewScale)
         assertEquals(1.8f, viewModel.uiScaleState.value.userScale)
         assertNull(withTimeout(1_000) { repository.textSaves.receive() })
 

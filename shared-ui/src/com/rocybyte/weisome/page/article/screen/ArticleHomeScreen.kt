@@ -43,6 +43,8 @@ import com.rocybyte.weisome.generated.resources.article_title_placeholder
 import com.rocybyte.weisome.generated.resources.article_updated_at
 import com.rocybyte.weisome.generated.resources.ic_add
 import com.rocybyte.weisome.generated.resources.ic_delete
+import com.rocybyte.weisome.generated.resources.ic_settings
+import com.rocybyte.weisome.generated.resources.settings
 import com.rocybyte.weisome.page.article.biz.ArticleHomeUiState
 import com.rocybyte.weisome.page.article.widget.ArticleDeleteDialog
 import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
@@ -68,36 +70,51 @@ internal fun ArticleHomeScreen(
     onCreateConfirm: (String) -> Unit,
     onDeleteArticle: (String) -> Unit,
     onOpenArticle: (String) -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
     var pendingDelete by remember { mutableStateOf<Article?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            !state.isLoaded -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                WeiSomeCircularProgressIndicator()
-            }
-
-            state.articles.isEmpty() -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
+        Column(
+            modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 WeiSomeText(
-                    text = stringResource(Res.string.article_empty_hint),
-                    style = WeiSomeTypography.bodyLg,
-                    color = WeiSomeColors.onSurfaceVariant,
+                    text = stringResource(Res.string.app_name),
+                    style = WeiSomeTypography.h2,
+                    modifier = Modifier.weight(1f),
+                )
+                MediumIconButton(
+                    onClick = onOpenSettings,
+                    painter = painterResource(Res.drawable.ic_settings),
+                    contentDescription = stringResource(Res.string.settings),
                 )
             }
+            when {
+                !state.isLoaded -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WeiSomeCircularProgressIndicator()
+                }
 
-            else -> Column(
-                modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
-                verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
-            ) {
-                WeiSomeText(text = stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
-                LazyColumn(
+                state.articles.isEmpty() -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    WeiSomeText(
+                        text = stringResource(Res.string.article_empty_hint),
+                        style = WeiSomeTypography.bodyLg,
+                        color = WeiSomeColors.onSurfaceVariant,
+                    )
+                }
+
+                else -> LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
                 ) {

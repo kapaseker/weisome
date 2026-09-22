@@ -2,6 +2,7 @@ package com.rocybyte.weisome.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -28,8 +29,8 @@ import kotlin.math.round
 
 /**
  * Slider with a primary track fill, thumb, and optional discrete snapping.
- * Dragging anywhere on the track moves the thumb; press position jumps immediately.
- * [onValueChangeFinished] fires when the drag ends.
+ * Pressing anywhere on the track jumps the thumb immediately; dragging continues from there.
+ * [onValueChangeFinished] fires when a tap is released or a drag ends.
  * ponytail: pointer input only — no keyboard semantics yet; add focus/keys if slider needs a11y.
  */
 @Composable
@@ -58,6 +59,17 @@ internal fun WeiSomeSlider(
             .fillMaxWidth()
             .height(32.dp)
             .hoverable(interactionSource)
+            .pointerInput(valueRange, steps) {
+                // 点击立即跳到按压位置；被拖拽接管时 tryAwaitRelease 返回 false，避免重复触发 finished。
+                detectTapGestures(
+                    onPress = { offset ->
+                        onValueChange(
+                            valueRange.start + snappedFraction(offset.x / size.width) * range,
+                        )
+                        if (tryAwaitRelease()) onValueChangeFinished?.invoke()
+                    },
+                )
+            }
             .pointerInput(valueRange, steps) {
                 detectDragGestures(
                     onDragStart = { offset ->

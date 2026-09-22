@@ -11,7 +11,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** Navigation 3 destination for the article home (list) screen. */
 @Composable
-internal fun ArticleHomePage(onOpenArticle: (String) -> Unit) {
+internal fun ArticleHomePage(
+    onOpenArticle: (String) -> Unit,
+    onOpenSettings: () -> Unit,
+) {
     val viewModel = koinViewModel<ArticleHomeViewModel>()
     val state by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -26,5 +29,6 @@ internal fun ArticleHomePage(onOpenArticle: (String) -> Unit) {
         },
         onDeleteArticle = viewModel::delete,
         onOpenArticle = onOpenArticle,
+        onOpenSettings = onOpenSettings,
     )
 }

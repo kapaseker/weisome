@@ -15,7 +15,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun WechatArticlePage(
     articleId: String,
-    onOpenSettings: () -> Unit,
     onBack: () -> Unit,
 ) {
     val hint = stringResource(Res.string.markdown_hint)
@@ -31,7 +30,6 @@ internal fun WechatArticlePage(
         onCopyAsHtml = viewModel::copyAsHtml,
         onDismissCopyStatus = viewModel::dismissCopyStatus,
         onLayoutModeSelected = viewModel::onLayoutModeSelected,
-        onOpenSettings = onOpenSettings,
         onBack = onBack,
     )
 }
