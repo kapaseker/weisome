@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.page.article.screen
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,9 +15,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.generated.resources.Res
@@ -189,6 +194,8 @@ private fun ArticleWorkspace(
     onMarkdownChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val editorScroll = rememberScrollState()
+    val previewScroll = rememberScrollState()
     Row(modifier) {
         when (mode) {
             ArticleLayoutMode.EDITOR_ONLY -> ArticleEditor(
@@ -196,23 +203,39 @@ private fun ArticleWorkspace(
                 hint = hint,
                 onMarkdownChanged = onMarkdownChanged,
                 modifier = Modifier.fillMaxSize(),
+                scrollState = editorScroll,
             )
 
             ArticleLayoutMode.SPLIT -> {
+                val textLayout = remember { mutableStateOf<TextLayoutResult?>(null) }
+                // Re-created whenever the document changes so stale block positions never survive a re-parse.
+                val blockTops = remember(state.preview) { mutableStateMapOf<Int, Float>() }
+                SplitScrollSync(
+                    editorScroll = editorScroll,
+                    previewScroll = previewScroll,
+                    textLayout = textLayout,
+                    blockRanges = state.preview.blockRanges,
+                    blockTops = blockTops,
+                )
                 ArticleEditor(
                     state = state,
                     hint = hint,
                     onMarkdownChanged = onMarkdownChanged,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
+                    scrollState = editorScroll,
+                    onTextLayout = { textLayout.value = it },
                 )
                 ArticlePreviewPane(
                     state = state,
+                    scrollState = previewScroll,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
+                    onBlockPositioned = { index, top -> blockTops[index] = top },
                 )
             }
 
             ArticleLayoutMode.PREVIEW_ONLY -> ArticlePreviewPane(
                 state = state,
+                scrollState = previewScroll,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -226,6 +249,8 @@ private fun ArticleEditor(
     hint: String,
     onMarkdownChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
+    scrollState: ScrollState? = null,
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
 ) {
     WeiSomeTextField(
         value = state.markdown,
@@ -233,6 +258,8 @@ private fun ArticleEditor(
         modifier = modifier,
         placeholder = hint,
         minLines = EDITOR_MIN_LINES,
+        scrollState = scrollState,
+        onTextLayout = onTextLayout,
     )
 }
 
@@ -240,16 +267,19 @@ private fun ArticleEditor(
 @Composable
 private fun ArticlePreviewPane(
     state: WechatArticleUiState,
+    scrollState: ScrollState,
     modifier: Modifier = Modifier,
+    onBlockPositioned: ((blockIndex: Int, topPx: Float) -> Unit)? = null,
 ) {
     Box(
-        modifier.verticalScroll(rememberScrollState())
+        modifier.verticalScroll(scrollState)
             .padding(start = WeiSomeSpacing.stackSm)
             .alpha(if (state.markdown.isBlank()) 0.42f else 1f),
     ) {
         WechatArticlePreview(
             document = state.preview,
             modifier = Modifier.fillMaxWidth(),
+            onBlockPositioned = onBlockPositioned,
         )
     }
 }

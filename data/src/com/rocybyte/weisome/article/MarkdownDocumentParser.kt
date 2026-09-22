@@ -22,16 +22,37 @@ object MarkdownDocumentParser {
     /** Parses supported Markdown blocks and inline markup into a structured document. */
     fun parse(markdown: String): MarkdownDocument {
         if (markdown.isBlank()) return MarkdownDocument(emptyList())
-        val lines = markdown.replace("\r\n", "\n").lines()
+        val normalized = markdown.replace("\r\n", "\n")
+        val lines = normalized.lines()
         val blocks = mutableListOf<MarkdownBlock>()
+        val ranges = mutableListOf<IntRange>()
         val paragraph = mutableListOf<String>()
+        var paragraphStartLine = 0
         var codeLanguage: CodeLanguage? = null
         var codeLines: MutableList<String>? = null
+        var codeStartLine = 0
+        // Inclusive character offset of each line start in the normalized source text.
+        val lineOffsets = IntArray(lines.size + 1)
+        for (lineIndex in lines.indices) {
+            lineOffsets[lineIndex + 1] = lineOffsets[lineIndex] + lines[lineIndex].length + 1
+        }
+
+        /** Converts an inclusive line span into an inclusive character-offset range. */
+        fun offsetRange(startLine: Int, endLineInclusive: Int): IntRange {
+            val lastLine = lines.lastIndex
+            val end = if (endLineInclusive >= lastLine) {
+                normalized.length - 1
+            } else {
+                lineOffsets[endLineInclusive + 1] - 2
+            }
+            return lineOffsets[startLine]..end
+        }
 
         /** Emits the accumulated paragraph lines and clears their buffer. */
         fun flushParagraph() {
             if (paragraph.isNotEmpty()) {
                 blocks += MarkdownBlock.Paragraph(inlineLines(paragraph))
+                ranges += offsetRange(paragraphStartLine, paragraphStartLine + paragraph.size - 1)
                 paragraph.clear()
             }
         }
@@ -40,6 +61,7 @@ object MarkdownDocumentParser {
         fun flushCode() {
             val linesInCode = codeLines ?: return
             blocks += MarkdownBlock.CodeBlock(codeLanguage, linesInCode.joinToString("\n"))
+            ranges += offsetRange(codeStartLine, codeStartLine + linesInCode.size + 1)
             codeLanguage = null
             codeLines = null
         }
@@ -64,6 +86,7 @@ object MarkdownDocumentParser {
                     flushParagraph()
                     codeLanguage = codeLanguage(codeFenceMatch.groupValues[1])
                     codeLines = mutableListOf()
+                    codeStartLine = index
                 }
 
                 line.isBlank() -> flushParagraph()
@@ -71,6 +94,7 @@ object MarkdownDocumentParser {
                 thematicBreak.matches(line) -> {
                     flushParagraph()
                     blocks += MarkdownBlock.HorizontalRule
+                    ranges += offsetRange(index, index)
                 }
 
                 else -> {
@@ -86,21 +110,25 @@ object MarkdownDocumentParser {
                                 headingMatch.groupValues[1].length,
                                 inline(headingMatch.groupValues[2]),
                             )
+                            ranges += offsetRange(index, index)
                         }
 
                         startsQuote -> {
                             flushParagraph()
+                            val quoteStart = index
                             val quoted = mutableListOf<String>()
                             while (index < lines.size && quoteLine.containsMatchIn(lines[index])) {
                                 quoted += quotePrefix.replaceFirst(lines[index], "")
                                 index++
                             }
                             blocks += MarkdownBlock.BlockQuote(parse(quoted.joinToString("\n")).blocks)
+                            ranges += offsetRange(quoteStart, index - 1)
                             continue
                         }
 
                         isTable -> {
                             flushParagraph()
+                            val tableStart = index
                             val header = splitTableRow(line).map(::inline)
                             index += 2
                             val rows = mutableListOf<List<List<MarkdownInline>>>()
@@ -109,6 +137,7 @@ object MarkdownDocumentParser {
                                 index++
                             }
                             blocks += MarkdownBlock.Table(header, rows)
+                            ranges += offsetRange(tableStart, index - 1)
                             continue
                         }
 
@@ -116,11 +145,15 @@ object MarkdownDocumentParser {
                             flushParagraph()
                             val (list, next) = parseList(lines, index)
                             blocks += list
+                            ranges += offsetRange(index, next - 1)
                             index = next
                             continue
                         }
 
-                        else -> paragraph += line
+                        else -> {
+                            if (paragraph.isEmpty()) paragraphStartLine = index
+                            paragraph += line
+                        }
                     }
                 }
             }
@@ -128,7 +161,7 @@ object MarkdownDocumentParser {
         }
         flushParagraph()
         flushCode()
-        return MarkdownDocument(blocks)
+        return MarkdownDocument(blocks, ranges)
     }
 
     /** Accumulates raw item text while a list is being parsed, before inline parsing. */

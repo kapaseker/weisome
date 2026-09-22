@@ -2,8 +2,40 @@ package com.rocybyte.weisome.article
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class MarkdownDocumentParserTest {
+    @Test
+    /** Verifies block ranges are ordered, non-overlapping, and span the full source text. */
+    fun `records source offset ranges for mixed top-level blocks`() {
+        val markdown = "# Title\n\nIntro paragraph\n\n- item\n\n> quote\n\n---\n\n```kotlin\nval a = 1\n```"
+        val document = MarkdownDocumentParser.parse(markdown)
+
+        assertEquals(document.blocks.size, document.blockRanges.size)
+        // Ranges are ordered, non-overlapping, and jointly span the whole document
+        // (blank separator lines belong to no block).
+        var previousEnd = -1
+        document.blockRanges.forEach { range ->
+            assertTrue(range.last >= range.first, "range $range is empty")
+            assertTrue(range.first > previousEnd, "range $range overlaps the previous one")
+            previousEnd = range.last
+        }
+        assertEquals(0, document.blockRanges.first().first)
+        assertEquals(markdown.length - 1, document.blockRanges.last().last)
+    }
+
+    @Test
+    /** Verifies a block range's text matches the block's exact source lines. */
+    fun `block range text matches block source`() {
+        val markdown = "Para one\nstill para.\n\n```kotlin\nval a = 1\n```"
+        val document = MarkdownDocumentParser.parse(markdown)
+
+        val paragraphRange = document.blockRanges[0]
+        assertEquals("Para one\nstill para.", markdown.substring(paragraphRange.first, paragraphRange.last + 1))
+        val codeRange = document.blockRanges[1]
+        assertEquals("```kotlin\nval a = 1\n```", markdown.substring(codeRange.first, codeRange.last + 1))
+    }
+
     @Test
     /** Verifies CommonMark code spans remain literal and support surrounding emphasis. */
     fun `parses literal inline code inside emphasized text`() {

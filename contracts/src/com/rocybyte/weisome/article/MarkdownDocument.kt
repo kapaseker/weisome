@@ -1,7 +1,15 @@
 package com.rocybyte.weisome.article
 
-/** A presentation-neutral Markdown document used by the article preview and renderer. */
-data class MarkdownDocument(val blocks: List<MarkdownBlock>)
+/**
+ * A presentation-neutral Markdown document used by the article preview and renderer.
+ *
+ * @property blockRanges inclusive character-offset ranges into the newline-normalized source
+ * text, one per top-level block in [blocks], used for split-view scroll synchronization.
+ */
+data class MarkdownDocument(
+    val blocks: List<MarkdownBlock>,
+    val blockRanges: List<IntRange> = emptyList(),
+)
 
 sealed interface MarkdownBlock {
     data class Heading(val level: Int, val content: List<MarkdownInline>) : MarkdownBlock
