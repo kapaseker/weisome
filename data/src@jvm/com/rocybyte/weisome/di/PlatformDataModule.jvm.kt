@@ -2,8 +2,12 @@ package com.rocybyte.weisome.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.room3.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepository
+import com.rocybyte.weisome.repository.article.ArticleRepo
+import com.rocybyte.weisome.repository.article.ArticleRepository
 import com.rocybyte.weisome.repository.article.DesktopWechatArticleRepository
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
 import com.rocybyte.weisome.repository.code.CodeHighlightRepo
@@ -12,13 +16,16 @@ import com.rocybyte.weisome.repository.settings.DisplaySettingsRepo
 import com.rocybyte.weisome.repository.settings.DisplaySettingsRepository
 import com.rocybyte.weisome.repository.window.WindowStateRepo
 import com.rocybyte.weisome.repository.window.WindowStateRepository
+import com.rocybyte.weisome.storage.article.ArticleDao
 import com.rocybyte.weisome.storage.article.ArticleLayoutStorage
 import com.rocybyte.weisome.storage.article.ArticleLayoutStore
+import com.rocybyte.weisome.storage.article.WeisomeDatabase
 import com.rocybyte.weisome.storage.settings.DisplaySettingsStorage
 import com.rocybyte.weisome.storage.settings.DisplaySettingsStore
 import com.rocybyte.weisome.storage.window.WindowStateStorage
 import com.rocybyte.weisome.storage.window.WindowStateStore
 import com.rocybyte.weisome.storage.window.settingsDataStore
+import java.io.File
 import org.koin.dsl.module
 
 actual val platformDataModule = module {
@@ -31,4 +38,11 @@ actual val platformDataModule = module {
     single<WindowStateRepo> { WindowStateRepository(get()) }
     single<CodeHighlightRepo> { CodeHighlightRepository() }
     single<WechatArticleRepository> { DesktopWechatArticleRepository(get()) }
+    single<WeisomeDatabase> {
+        Room.databaseBuilder<WeisomeDatabase>(
+            File(System.getProperty("user.home"), ".weisome/articles.db").absolutePath,
+        ).setDriver(BundledSQLiteDriver()).build()
+    }
+    single<ArticleDao> { get<WeisomeDatabase>().articleDao() }
+    single<ArticleRepo> { ArticleRepository(get()) }
 }

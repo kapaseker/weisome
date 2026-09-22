@@ -18,8 +18,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.rocybyte.weisome.navigation.ArticleHomeRoute
 import com.rocybyte.weisome.navigation.SettingsRoute
 import com.rocybyte.weisome.navigation.WechatArticleRoute
+import com.rocybyte.weisome.page.article.ArticleHomePage
 import com.rocybyte.weisome.page.article.WechatArticlePage
 import com.rocybyte.weisome.page.settings.SettingsPage
 import com.rocybyte.weisome.page.settings.biz.SettingsViewModel
@@ -36,6 +38,7 @@ import org.koin.compose.viewmodel.koinViewModel
 private val navigationStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(ArticleHomeRoute::class, ArticleHomeRoute.serializer())
             subclass(WechatArticleRoute::class, WechatArticleRoute.serializer())
             subclass(SettingsRoute::class, SettingsRoute.serializer())
         }
@@ -49,7 +52,7 @@ fun WeiSomeApp() {
     val textScaleState by settingsViewModel.textScaleState.collectAsState()
     val uiScaleState by settingsViewModel.uiScaleState.collectAsState()
     val systemDensity = LocalDensity.current
-    val backStack = rememberNavBackStack(navigationStateConfiguration, WechatArticleRoute)
+    val backStack = rememberNavBackStack(navigationStateConfiguration, ArticleHomeRoute)
 
     if (!textScaleState.isLoaded || !uiScaleState.isLoaded) {
         Box(
@@ -76,13 +79,20 @@ fun WeiSomeApp() {
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
                     entryProvider = entryProvider {
-                        entry<WechatArticleRoute> {
+                        entry<ArticleHomeRoute> {
+                            ArticleHomePage(
+                                onOpenArticle = { id -> backStack.add(WechatArticleRoute(id)) },
+                            )
+                        }
+                        entry<WechatArticleRoute> { route ->
                             WechatArticlePage(
+                                articleId = route.articleId,
                                 onOpenSettings = {
                                     if (backStack.lastOrNull() != SettingsRoute) {
                                         backStack.add(SettingsRoute)
                                     }
                                 },
+                                onBack = { backStack.removeLastOrNull() },
                             )
                         }
                         entry<SettingsRoute> {

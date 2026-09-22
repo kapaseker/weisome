@@ -29,4 +29,14 @@
     <string name="text_scale_save_failed">字体缩放保存失败。</string>
     <string name="ui_scale_load_failed">界面缩放读取失败，已使用 1.0x。</string>
     <string name="ui_scale_save_failed">界面缩放保存失败。</string>
+    <string name="article_empty_hint">还没有文章，点击右下角按钮开始创作。</string>
+    <string name="article_create">新建文章</string>
+    <string name="article_title_label">文章标题</string>
+    <string name="article_title_placeholder">请输入标题</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_confirm">确认</string>
+    <string name="article_delete">删除文章</string>
+    <string name="article_delete_hint">确定删除“%1$s”吗？此操作无法恢复。</string>
+    <string name="article_created_at">创建于 %1$s</string>
+    <string name="article_updated_at">修改于 %1$s</string>
 </resources>

@@ -9,9 +9,9 @@ class WeiSomeRouteTest {
     @Test
     /** Verifies that the article destination remains serializable for Navigation 3 state. */
     fun `article route survives serialization round trip`() {
-        val encoded = Json.encodeToString<WeiSomeRoute>(WechatArticleRoute)
+        val encoded = Json.encodeToString<WeiSomeRoute>(WechatArticleRoute(articleId = "a1"))
 
-        assertEquals(WechatArticleRoute, Json.decodeFromString<WeiSomeRoute>(encoded))
+        assertEquals(WechatArticleRoute(articleId = "a1"), Json.decodeFromString<WeiSomeRoute>(encoded))
     }
 
     @Test

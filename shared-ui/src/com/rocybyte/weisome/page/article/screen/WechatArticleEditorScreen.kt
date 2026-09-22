@@ -1,6 +1,10 @@
 package com.rocybyte.weisome.page.article.screen
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +19,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,15 +31,18 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.generated.resources.Res
-import com.rocybyte.weisome.generated.resources.app_name
 import com.rocybyte.weisome.generated.resources.article_layout_editor_only
 import com.rocybyte.weisome.generated.resources.article_layout_preview_only
 import com.rocybyte.weisome.generated.resources.article_layout_split
+import com.rocybyte.weisome.generated.resources.article_title_label
+import com.rocybyte.weisome.generated.resources.article_title_placeholder
+import com.rocybyte.weisome.generated.resources.back
 import com.rocybyte.weisome.generated.resources.copy_button
 import com.rocybyte.weisome.generated.resources.copy_failure
 import com.rocybyte.weisome.generated.resources.copy_success
 import com.rocybyte.weisome.generated.resources.ic_all_expand
 import com.rocybyte.weisome.generated.resources.ic_copy
+import com.rocybyte.weisome.generated.resources.ic_left
 import com.rocybyte.weisome.generated.resources.ic_left_expand
 import com.rocybyte.weisome.generated.resources.ic_right_expand
 import com.rocybyte.weisome.generated.resources.ic_settings
@@ -41,7 +50,9 @@ import com.rocybyte.weisome.generated.resources.markdown_hint
 import com.rocybyte.weisome.generated.resources.settings
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
+import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
+import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.LocalWeiSomeSnackbar
@@ -62,12 +73,16 @@ private const val EDITOR_MIN_LINES = 12
 internal fun WechatArticleEditorScreen(
     state: WechatArticleUiState,
     layoutState: ArticleLayoutUiState,
+    onBack: () -> Unit,
     onMarkdownChanged: (String) -> Unit,
+    onTitleChanged: (String) -> Unit,
     onCopyAsHtml: () -> Unit,
     onDismissCopyStatus: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
     onOpenSettings: () -> Unit,
 ) {
+    var showRenameDialog by remember { mutableStateOf(false) }
+
     Box(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
@@ -75,8 +90,29 @@ internal fun WechatArticleEditorScreen(
             verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
         ) {
             Box(Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    WeiSomeText(stringResource(Res.string.app_name), style = WeiSomeTypography.h2)
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    MediumIconButton(
+                        onClick = onBack,
+                        painter = painterResource(Res.drawable.ic_left),
+                        contentDescription = stringResource(Res.string.back),
+                    )
+                    val titleInteractionSource = remember { MutableInteractionSource() }
+                    val titleHovered by titleInteractionSource.collectIsHoveredAsState()
+                    // 标题占据返回按钮与右侧操作区之间的剩余宽度,hover 变 primary 色提示可点击改名。
+                    WeiSomeText(
+                        text = state.title,
+                        style = WeiSomeTypography.h2,
+                        color = if (titleHovered) WeiSomeColors.primary else WeiSomeColors.onSurface,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .weight(1f)
+                            .hoverable(titleInteractionSource)
+                            .clickable(
+                                interactionSource = titleInteractionSource,
+                                indication = null,
+                                onClick = { showRenameDialog = true },
+                            ),
+                    )
                     WeiSomeSecondaryButton(
                         text = stringResource(Res.string.copy_button),
                         onClick = onCopyAsHtml,
@@ -105,7 +141,7 @@ internal fun WechatArticleEditorScreen(
                 }
             }
             val hint = stringResource(Res.string.markdown_hint)
-            if (layoutState.isLoaded) {
+            if (layoutState.isLoaded && state.isArticleLoaded) {
                 ArticleWorkspace(
                     state = state,
                     mode = layoutState.mode,
@@ -120,6 +156,18 @@ internal fun WechatArticleEditorScreen(
         CopyStatusSnackbar(
             status = state.copySucceeded,
             onDismiss = onDismissCopyStatus,
+        )
+    }
+    if (showRenameDialog) {
+        ArticleTitleDialog(
+            title = stringResource(Res.string.article_title_label),
+            initialValue = state.title,
+            placeholder = stringResource(Res.string.article_title_placeholder),
+            onConfirm = { title ->
+                onTitleChanged(title)
+                showRenameDialog = false
+            },
+            onDismiss = { showRenameDialog = false },
         )
     }
 }

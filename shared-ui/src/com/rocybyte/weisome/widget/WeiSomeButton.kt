@@ -35,7 +35,8 @@ import com.rocybyte.weisome.ui.weiSomeRipple
 
 /**
  * Primary action button: Electric gradient fill with white label text per DESIGN.md.
- * Shows a faint tint-matched glow while hovered.
+ * Shows a faint tint-matched glow while hovered. An optional [icon] is rendered before
+ * the label, tinted white to match the label color.
  */
 @Composable
 internal fun WeiSomePrimaryButton(
@@ -43,6 +44,7 @@ internal fun WeiSomePrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    icon: Painter? = null,
 ) {
     val shape = WeiSomeShapes.default
     val interactionSource = remember { MutableInteractionSource() }
@@ -72,7 +74,18 @@ internal fun WeiSomePrimaryButton(
             )
             .padding(horizontal = 24.dp, vertical = 12.dp),
     ) {
-        WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = Color.White)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (icon != null) {
+                Image(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                    colorFilter = ColorFilter.tint(Color.White),
+                )
+                Spacer(Modifier.width(6.dp))
+            }
+            WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = Color.White)
+        }
     }
 }
 

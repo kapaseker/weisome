@@ -7,7 +7,10 @@ import kotlinx.serialization.Serializable
 internal sealed interface WeiSomeRoute : NavKey
 
 @Serializable
-internal data object WechatArticleRoute : WeiSomeRoute
+internal data object ArticleHomeRoute : WeiSomeRoute
+
+@Serializable
+internal data class WechatArticleRoute(val articleId: String) : WeiSomeRoute
 
 @Serializable
 internal data object SettingsRoute : WeiSomeRoute

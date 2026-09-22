@@ -1,8 +1,11 @@
 package com.rocybyte.weisome.page.article.biz
 
+import androidx.lifecycle.ViewModel
+import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
+import com.rocybyte.weisome.repository.article.ArticleRepo
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.delay
@@ -21,7 +24,7 @@ class WechatArticleViewModelTest {
     /** Verifies source edits refresh preview state and clear the previous copy result. */
     fun `updates the preview and clears copy status when markdown changes`() {
         val repository = FakeWechatArticleRepository()
-        val viewModel = WechatArticleViewModel(repository, FakeArticleLayoutRepo(), "Welcome")
+        val viewModel = editorViewModel(repository)
 
         viewModel.copyAsHtml()
         viewModel.onMarkdownChanged("# Updated")
@@ -35,7 +38,7 @@ class WechatArticleViewModelTest {
     /** Verifies blank content is ignored and non-blank content reaches the repository. */
     fun `copies only non-blank markdown through the repository`() {
         val repository = FakeWechatArticleRepository(copyResult = false)
-        val viewModel = WechatArticleViewModel(repository, FakeArticleLayoutRepo(), "Welcome")
+        val viewModel = editorViewModel(repository)
 
         viewModel.copyAsHtml()
         assertFalse(repository.copyCalled)
@@ -116,9 +119,88 @@ class WechatArticleViewModelTest {
         assertEquals(listOf(ArticleLayoutMode.PREVIEW_ONLY), layoutRepository.savedModes)
     }
 
+    @Test
+    /** Verifies the periodic saver persists markdown edits with the current article id. */
+    fun `auto save persists markdown changes`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo()
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 10,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        viewModel.onMarkdownChanged("# hi")
+        withTimeout(1_000) {
+            while (articleRepo.saved.isEmpty()) yield()
+        }
+
+        assertEquals("# hi", articleRepo.saved.first().markdown)
+        assertEquals("a1", articleRepo.saved.first().id)
+    }
+
+    @Test
+    /** Verifies title edits ride along with the periodic draft save. */
+    fun `auto save persists title changes`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo()
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 10,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        viewModel.onTitleChanged("新标题")
+        withTimeout(1_000) {
+            while (articleRepo.saved.none { it.title == "新标题" }) yield()
+        }
+    }
+
+    @Test
+    /** Verifies untouched drafts never trigger a repository write. */
+    fun `auto save skips writes when nothing changed`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo(
+            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0),
+        )
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 10,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        delay(50)
+
+        assertTrue(articleRepo.saved.isEmpty())
+    }
+
+    @Test
+    /** Verifies onCleared performs one final fire-and-forget save for unsaved edits. */
+    fun `onCleared flushes unsaved changes`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo()
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 60_000,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        viewModel.onMarkdownChanged("# before exit")
+        // onCleared 是 protected,测试通过反射触发,避免为测试放宽生产代码可见性。
+        ViewModel::class.java.getDeclaredMethod("onCleared").apply { isAccessible = true }
+            .invoke(viewModel)
+        withTimeout(1_000) {
+            while (articleRepo.saved.isEmpty()) yield()
+        }
+
+        assertEquals("# before exit", articleRepo.saved.first().markdown)
+    }
+
+    /** Creates an editor ViewModel with the default save interval for copy-related tests. */
+    private fun editorViewModel(repository: WechatArticleRepository): WechatArticleViewModel =
+        WechatArticleViewModel(repository, FakeArticleLayoutRepo(), FakeEditorArticleRepo(), "Welcome", "a1")
+
     /** Creates an article ViewModel and waits for its persisted layout read to finish. */
     private suspend fun loadedViewModel(layoutRepository: ArticleLayoutRepo): WechatArticleViewModel {
-        val viewModel = WechatArticleViewModel(FakeWechatArticleRepository(), layoutRepository, "Welcome")
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), layoutRepository, FakeEditorArticleRepo(), "Welcome", "a1",
+        )
         withTimeout(1_000) {
             viewModel.layoutState.first { state -> state.isLoaded }
         }
@@ -167,4 +249,29 @@ private class FakeWechatArticleRepository(
         copyCalled = true
         return copyResult
     }
+}
+
+private class FakeEditorArticleRepo(
+    stored: Article? = null,
+) : ArticleRepo {
+    val saved = CopyOnWriteArrayList<Article>()
+    private val storedMap = stored?.let { mapOf(it.id to it) } ?: emptyMap()
+
+    /** Returns the stored articles; unused by the editor ViewModel. */
+    override suspend fun list(): List<Article> = storedMap.values.toList()
+
+    /** Returns the preconfigured article or null when none was stored. */
+    override suspend fun load(id: String): Article? = storedMap[id]
+
+    /** Creates a throwaway article; unused by the editor ViewModel. */
+    override suspend fun create(title: String): Article =
+        Article(id = "generated", title = title, markdown = "", createdAt = 0, updatedAt = 0)
+
+    /** Records every saved draft. */
+    override suspend fun save(article: Article) {
+        saved += article
+    }
+
+    /** Records the deletion; unused by the editor ViewModel. */
+    override suspend fun delete(id: String) = Unit
 }

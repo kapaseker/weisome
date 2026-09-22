@@ -13,9 +13,13 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Navigation 3 destination for the WeChat article editor. */
 @Composable
-internal fun WechatArticlePage(onOpenSettings: () -> Unit) {
+internal fun WechatArticlePage(
+    articleId: String,
+    onOpenSettings: () -> Unit,
+    onBack: () -> Unit,
+) {
     val hint = stringResource(Res.string.markdown_hint)
-    val viewModel = koinViewModel<WechatArticleViewModel> { parametersOf(hint) }
+    val viewModel = koinViewModel<WechatArticleViewModel> { parametersOf(hint, articleId) }
     val state by viewModel.uiState.collectAsState()
     val layoutState by viewModel.layoutState.collectAsState()
 
@@ -23,9 +27,11 @@ internal fun WechatArticlePage(onOpenSettings: () -> Unit) {
         state = state,
         layoutState = layoutState,
         onMarkdownChanged = viewModel::onMarkdownChanged,
+        onTitleChanged = viewModel::onTitleChanged,
         onCopyAsHtml = viewModel::copyAsHtml,
         onDismissCopyStatus = viewModel::dismissCopyStatus,
         onLayoutModeSelected = viewModel::onLayoutModeSelected,
         onOpenSettings = onOpenSettings,
+        onBack = onBack,
     )
 }
