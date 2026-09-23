@@ -1,7 +1,9 @@
 package com.rocybyte.weisome.article.html
 
-import com.rocybyte.weisome.article.WechatArticleStyles
+import com.rocybyte.weisome.article.MarkdownExportStyles
 
-/** Renders a thematic break with the gradient line and centered juejin logo. */
-internal fun renderHorizontalRule(): String =
-    "<div style=\"${WechatArticleStyles.hrCss}\"><div style=\"${WechatArticleStyles.hrLogoCss}\"></div></div>"
+/** Renders a thematic break; themes with a logo decoration add the centered logo element. */
+internal fun renderHorizontalRule(styles: MarkdownExportStyles): String {
+    val logo = if (styles.hrHasLogo) "<div style=\"${styles.hrLogoCss}\"></div>" else ""
+    return "<div style=\"${styles.hrCss}\">$logo</div>"
+}

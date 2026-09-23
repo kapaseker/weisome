@@ -1,13 +1,16 @@
 package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.MarkdownBlock
-import com.rocybyte.weisome.article.WechatArticleStyles
+import com.rocybyte.weisome.article.MarkdownExportStyles
 
-/** Renders a blockquote with hydrogen's decorative quote marks replacing the pseudo-elements. */
-internal fun renderBlockQuote(block: MarkdownBlock.BlockQuote, inQuote: Boolean = false): String {
-    val css = if (inQuote) WechatArticleStyles.nestedBlockquoteCss else WechatArticleStyles.blockquoteCss
-    val inner = block.blocks.joinToString("\n") { renderBlock(it, inQuote = true) }
-    val open = "<span style=\"${WechatArticleStyles.quoteOpenCss}\">\u201C</span>"
-    val close = "<span style=\"${WechatArticleStyles.quoteCloseCss}\">\u201D</span>"
-    return "<blockquote style=\"$css\">$open$inner$close</blockquote>"
+/** Renders a blockquote, adding the theme's decorative quote marks when enabled. */
+internal fun renderBlockQuote(block: MarkdownBlock.BlockQuote, inQuote: Boolean, styles: MarkdownExportStyles): String {
+    val css = if (inQuote) styles.nestedBlockquoteCss else styles.blockquoteCss
+    val inner = block.blocks.joinToString("\n") { renderBlock(it, inQuote = true, styles) }
+    val marks = if (styles.quoteHasMarks) {
+        "<span style=\"${styles.quoteOpenCss}\">\u201C</span>$inner<span style=\"${styles.quoteCloseCss}\">\u201D</span>"
+    } else {
+        inner
+    }
+    return "<blockquote style=\"$css\">$marks</blockquote>"
 }

@@ -48,4 +48,7 @@
     <string name="code_theme_matrix">Matrix</string>
     <string name="code_theme_pastel">Pastel</string>
     <string name="code_theme_atom_one">Atom One</string>
+    <string name="markdown_theme_selector">Markdown 主题</string>
+    <string name="markdown_theme_github">GitHub</string>
+    <string name="markdown_theme_hydrogen">Hydrogen</string>
 </resources>

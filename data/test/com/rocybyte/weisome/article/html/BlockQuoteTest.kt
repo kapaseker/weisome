@@ -1,8 +1,11 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.GitHubExportStyles
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class BlockQuoteTest {
@@ -13,6 +16,8 @@ class BlockQuoteTest {
             MarkdownBlock.BlockQuote(
                 listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted"))))),
             ),
+            inQuote = false,
+            styles = HydrogenExportStyles,
         )
 
         assertTrue(html.startsWith("<blockquote style=\"position: relative; color: #666666; padding: 5px 23px 1px; margin: 22px 0; border-left: 4px solid #cbcbcb; background-color: rgba(200, 200, 200, 0.12);\">"))
@@ -33,8 +38,28 @@ class BlockQuoteTest {
                 ),
             ),
             inQuote = true,
+            styles = HydrogenExportStyles,
         )
 
         assertTrue(html.startsWith("<blockquote style=\"position: relative; color: #666666; padding: 5px 23px 1px; margin: 10px 0;"))
+    }
+
+    @Test
+    /** Verifies the GitHub theme renders a plain left-border quote without decorative marks. */
+    fun `renders github blockquote without marks`() {
+        val html = renderBlockQuote(
+            MarkdownBlock.BlockQuote(
+                listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted"))))),
+            ),
+            inQuote = false,
+            styles = GitHubExportStyles,
+        )
+
+        assertEquals(
+            "<blockquote style=\"color: #59636e; padding: 0 1em; margin: 0 0 16px; border-left: 0.25em solid #d1d9e0;\">" +
+                "<p style=\"font-size: 16px; line-height: 1.5; margin: 0 0 16px; color: #59636e; word-break: break-word;\">Quoted</p>" +
+                "</blockquote>",
+            html,
+        )
     }
 }

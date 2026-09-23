@@ -2,6 +2,7 @@ package com.rocybyte.weisome.repository.article
 
 import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.CodeThemeId
+import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.storage.article.ArticleDao
 import com.rocybyte.weisome.storage.article.ArticleEntity
 import java.util.UUID
@@ -31,6 +32,7 @@ internal class ArticleRepository(
             createdAt = now,
             updatedAt = now,
             codeTheme = CodeThemeId.GITHUB_LIGHT,
+            markdownTheme = MarkdownThemeId.GITHUB,
         )
         dao.save(article.toEntity())
         return article
@@ -44,11 +46,17 @@ internal class ArticleRepository(
 }
 
 /** Room 实体转领域模型;未知主题值回退默认主题。 */
-private fun ArticleEntity.toArticle() = Article(id, title, markdown, createdAt, updatedAt, codeTheme.toCodeThemeId())
+private fun ArticleEntity.toArticle() =
+    Article(id, title, markdown, createdAt, updatedAt, codeTheme.toCodeThemeId(), markdownTheme.toMarkdownThemeId())
 
 /** 领域模型转 Room 实体。 */
-private fun Article.toEntity() = ArticleEntity(id, title, markdown, createdAt, updatedAt, codeTheme.name)
+private fun Article.toEntity() =
+    ArticleEntity(id, title, markdown, createdAt, updatedAt, codeTheme.name, markdownTheme.name)
 
 /** 解析存储的主题名,无法识别时回退 GITHUB_LIGHT。 */
 private fun String.toCodeThemeId(): CodeThemeId =
     runCatching { CodeThemeId.valueOf(this) }.getOrDefault(CodeThemeId.GITHUB_LIGHT)
+
+/** 解析存储的 Markdown 主题名,无法识别时回退 GITHUB。 */
+private fun String.toMarkdownThemeId(): MarkdownThemeId =
+    runCatching { MarkdownThemeId.valueOf(this) }.getOrDefault(MarkdownThemeId.GITHUB)

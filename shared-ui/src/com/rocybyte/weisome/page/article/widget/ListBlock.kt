@@ -13,10 +13,17 @@ import com.rocybyte.weisome.article.ListItem
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.widget.WeiSomeText
 
-/** Renders an ordered, unordered, nested, or task list block with hydrogen spacing. */
+/** Renders an ordered, unordered, nested, or task list block with the active theme's spacing. */
 @Composable
 internal fun ListBlock(block: MarkdownBlock.ListBlock) {
-    Column(Modifier.padding(start = 28.dp, top = 16.dp, bottom = 16.dp)) {
+    val styles = LocalMarkdownPreviewStyles.current
+    Column(
+        Modifier.padding(
+            start = styles.listPaddingStart.dp,
+            top = styles.listTopMargin.dp,
+            bottom = styles.listBottomMargin.dp,
+        ),
+    ) {
         ListItems(block)
     }
 }
@@ -32,7 +39,8 @@ private fun ListItems(block: MarkdownBlock.ListBlock) {
 /** Renders one list item row: its marker, content, and optional nested child list. */
 @Composable
 private fun ListItemRow(block: MarkdownBlock.ListBlock, item: ListItem, index: Int) {
-    Column(Modifier.fillMaxWidth()) {
+    val styles = LocalMarkdownPreviewStyles.current
+    Column(Modifier.fillMaxWidth().padding(top = if (index > 0) styles.listItemTopMargin.dp else 0.dp)) {
         Row {
             val marker = when {
                 item.task == true -> "\u2611"
@@ -40,20 +48,25 @@ private fun ListItemRow(block: MarkdownBlock.ListBlock, item: ListItem, index: I
                 block.ordered -> "${index + 1}."
                 else -> "\u2022"
             }
-            WeiSomeText(marker, color = WechatArticlePreviewStyles.bodyColor)
+            WeiSomeText(marker, color = styles.bodyColor)
             Spacer(Modifier.width(8.dp))
             InlineMarkdownText(
                 lines = listOf(item.content),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = if (block.ordered) 6.dp else 0.dp),
-                fontSize = WechatArticlePreviewStyles.bodyFontSize,
-                lineHeight = WechatArticlePreviewStyles.bodyLineHeight,
-                color = WechatArticlePreviewStyles.bodyColor,
+                    .padding(start = if (block.ordered) styles.orderedItemExtraPaddingStart.dp else 0.dp),
+                fontSize = styles.bodyFontSize,
+                lineHeight = styles.bodyLineHeight,
+                color = styles.bodyColor,
             )
         }
         item.child?.let { child ->
-            Column(Modifier.padding(start = 28.dp, top = 3.dp)) {
+            Column(
+                Modifier.padding(
+                    start = styles.nestedListPaddingStart.dp,
+                    top = styles.nestedListTopMargin.dp,
+                ),
+            ) {
                 ListItems(child)
             }
         }

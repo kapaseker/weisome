@@ -12,7 +12,7 @@ class MarkdownToWechatHtmlTest {
             "<h1 style=\"font-size: 30px; font-weight: 500; line-height: 1.5; margin: 35px 0 5px; padding-bottom: 5px;\">" +
                 "<span style=\"color: #1976d2; margin-right: 10px;\">#</span>Title</h1>\n" +
                 "<p style=\"font-size: 16px; line-height: 1.75; margin: 22px 0; color: rgba(46, 36, 36, 0.87); word-break: break-word;\">Body</p>",
-            MarkdownToWechatHtml.render("# Title\n\nBody"),
+            MarkdownToWechatHtml.render("# Title\n\nBody", MarkdownThemeId.HYDROGEN),
         )
     }
 
@@ -21,6 +21,7 @@ class MarkdownToWechatHtmlTest {
     fun `dispatches every block type through the public entry point`() {
         val html = MarkdownToWechatHtml.render(
             "# Title\n\nBody\n\n- Item\n\n```kotlin\nval tag = \"<code>\"\n```",
+            MarkdownThemeId.HYDROGEN,
         )
         val headingIndex = html.indexOf("<h1 ")
         val paragraphIndex = html.indexOf("<p ")
@@ -37,6 +38,17 @@ class MarkdownToWechatHtmlTest {
     @Test
     /** Verifies the public Markdown entry point leaves empty input empty. */
     fun `renders empty markdown as empty html`() {
-        assertEquals("", MarkdownToWechatHtml.render("   \n\n"))
+        assertEquals("", MarkdownToWechatHtml.render("   \n\n", MarkdownThemeId.GITHUB))
+    }
+
+    @Test
+    /** Verifies the GITHUB theme renders the primer body style without the hydrogen decorations. */
+    fun `renders github theme through the public entry point`() {
+        assertEquals(
+            "<h1 style=\"font-size: 2em; font-weight: 600; line-height: 1.25; margin: 24px 0 16px; " +
+                "padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;\">Title</h1>\n" +
+                "<p style=\"font-size: 16px; line-height: 1.5; margin: 0 0 16px; color: #1f2328; word-break: break-word;\">Body</p>",
+            MarkdownToWechatHtml.render("# Title\n\nBody", MarkdownThemeId.GITHUB),
+        )
     }
 }

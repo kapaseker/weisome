@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import kotlin.test.Test
@@ -10,7 +11,7 @@ class TableTest {
     @Test
     /** Verifies the table renders the outer border and styled header cells. */
     fun `renders header cells with hydrogen styles`() {
-        val html = renderTable(table("a", "b", "1", "2"))
+        val html = renderTable(table("a", "b", "1", "2"), HydrogenExportStyles)
 
         assertTrue(html.startsWith("<table style=\"margin: 0 auto 10px; font-size: 12px; width: auto; max-width: 100%; overflow: auto; border: 2px solid #c6c6c6;\">"))
         assertTrue(
@@ -23,7 +24,7 @@ class TableTest {
     @Test
     /** Verifies only even body rows carry the striped background across all their cells. */
     fun `stripes only even body rows`() {
-        val html = renderTable(table("a", "b", "1", "2", "3"))
+        val html = renderTable(table("a", "b", "1", "2", "3"), HydrogenExportStyles)
 
         val stripedCount = Regex("background: #fcfcfc;").findAll(html).count()
         val plainCount = Regex("padding: 12px 7px; line-height: 24px; font-size: 12px; min-width: 120px;\">").findAll(html).count()

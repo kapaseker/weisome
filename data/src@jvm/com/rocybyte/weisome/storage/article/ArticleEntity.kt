@@ -12,4 +12,5 @@ data class ArticleEntity(
     val createdAt: Long,
     val updatedAt: Long,
     val codeTheme: String,
+    val markdownTheme: String,
 )

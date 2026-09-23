@@ -5,6 +5,7 @@ import com.rocybyte.weisome.article.MarkdownDocumentParser
 import com.rocybyte.weisome.article.MarkdownToWechatHtml
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownDocument
+import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.repository.code.CodeHighlightRepo
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
@@ -19,10 +20,11 @@ internal class DesktopWechatArticleRepository(
         MarkdownDocumentParser.parse(markdown).withCodeHighlights(codeTheme)
 
     /** Places rendered HTML on the desktop clipboard and reports whether it succeeded. */
-    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId): Boolean = runCatching {
-        val html = MarkdownToWechatHtml.render(preview(markdown, codeTheme))
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
-    }.isSuccess
+    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId, markdownTheme: MarkdownThemeId): Boolean =
+        runCatching {
+            val html = MarkdownToWechatHtml.render(preview(markdown, codeTheme), markdownTheme)
+            Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
+        }.isSuccess
 
     /** Enriches supported code blocks with the shared renderer-neutral highlight spans. */
     private fun MarkdownDocument.withCodeHighlights(codeTheme: CodeThemeId): MarkdownDocument = copy(

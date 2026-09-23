@@ -22,46 +22,53 @@ import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.widget.WeiSomeText
 
-/** Renders a blockquote with hydrogen's border, background, and decorative quote marks. */
+/** Renders a blockquote with the active theme's border, background, and quote marks. */
 @Composable
 internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false) {
-    val styles = WechatArticlePreviewStyles
+    val styles = LocalMarkdownPreviewStyles.current
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val borderColor by animateColorAsState(
-        targetValue = if (hovered) styles.themeColor else styles.quoteBorder,
+        targetValue = if (styles.quoteHasHover && hovered) styles.themeColor else styles.quoteBorder,
         animationSpec = tween(durationMillis = 200),
         label = "quoteBorderColor",
     )
-    val verticalMargin = if (nested) 10.dp else 22.dp
-    Box(Modifier.padding(top = verticalMargin, bottom = verticalMargin)) {
+    val verticalMargin = if (nested) styles.quoteNestedVerticalMargin else styles.quoteVerticalMargin
+    Box(Modifier.padding(top = verticalMargin.dp, bottom = verticalMargin.dp)) {
         // Background and left border are painted with drawBehind because the text inside is
         // a BoxWithConstraints, which does not support the intrinsic measurements that an
         // IntrinsicSize-based border Box would require.
         Box(
             Modifier
-                .hoverable(interactionSource)
+                .then(if (styles.quoteHasHover) Modifier.hoverable(interactionSource) else Modifier)
                 .drawBehind {
-                    drawRect(styles.quoteBackground)
+                    if (styles.quoteHasBackground) drawRect(styles.quoteBackground)
                     drawRect(borderColor, size = Size(4.dp.toPx(), size.height))
                 }
-                .padding(start = 27.dp, end = 23.dp, top = 5.dp, bottom = 1.dp),
+                .padding(
+                    start = styles.quotePaddingStart.dp,
+                    end = styles.quotePaddingEnd.dp,
+                    top = styles.quotePaddingTop.dp,
+                    bottom = styles.quotePaddingBottom.dp,
+                ),
         ) {
             Column {
                 RenderBlocks(block.blocks, inQuote = true)
             }
         }
-        QuoteMark("\u201C", Modifier.align(Alignment.TopStart).offset(x = 6.dp, y = 4.dp))
-        QuoteMark("\u201D", Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp))
+        if (styles.quoteHasMarks) {
+            QuoteMark("\u201C", Modifier.align(Alignment.TopStart).offset(x = 6.dp, y = 4.dp), styles)
+            QuoteMark("\u201D", Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp), styles)
+        }
     }
 }
 
-/** Renders one decorative quote mark replacing hydrogen's ::before/::after pseudo-elements. */
+/** Renders one decorative quote mark replacing the theme's ::before/::after pseudo-elements. */
 @Composable
-private fun QuoteMark(mark: String, modifier: Modifier = Modifier) {
+private fun QuoteMark(mark: String, modifier: Modifier = Modifier, styles: MarkdownPreviewStyles) {
     WeiSomeText(
         text = mark,
-        color = WechatArticlePreviewStyles.quoteBorder.copy(alpha = 0.6f),
+        color = styles.quoteBorder.copy(alpha = 0.6f),
         fontSize = 24.sp,
         fontWeight = FontWeight.ExtraBold,
         lineHeight = 24.sp,

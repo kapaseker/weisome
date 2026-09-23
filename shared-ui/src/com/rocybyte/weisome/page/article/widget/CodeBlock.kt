@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -20,34 +19,42 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.widget.WeiSomeText
 
 /** Renders authored code lines without soft wrapping and exposes overflow through a local scrollbar. */
 @Composable
 internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
+    val styles = LocalMarkdownPreviewStyles.current
     val horizontalScrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 22.dp, bottom = 22.dp)
-            .background(WechatArticlePreviewStyles.codeBlockBackground, RoundedCornerShape(0.dp, 4.dp, 0.dp, 4.dp)),
+            .padding(top = styles.codeBlockTopMargin.dp, bottom = styles.codeBlockBottomMargin.dp)
+            .background(styles.codeBlockBackground, styles.codeBlockCornerShape),
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val minimumTextWidth = (maxWidth - 24.dp).coerceAtLeast(0.dp)
+            val minimumTextWidth = (
+                maxWidth -
+                    (styles.codeBlockPaddingHorizontal * 2).dp
+                ).coerceAtLeast(0.dp)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(horizontalScrollState)
-                    .padding(top = 15.dp, bottom = 15.dp, start = 12.dp, end = 12.dp),
+                    .padding(
+                        top = styles.codeBlockPaddingVertical.dp,
+                        bottom = styles.codeBlockPaddingVertical.dp,
+                        start = styles.codeBlockPaddingHorizontal.dp,
+                        end = styles.codeBlockPaddingHorizontal.dp,
+                    ),
             ) {
                 WeiSomeText(
                     text = highlightedCodeText(block),
-                    color = WechatArticlePreviewStyles.codeBlockColor,
+                    color = styles.codeBlockColor,
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 12.sp,
-                    lineHeight = 21.sp,
+                    fontSize = styles.codeBlockFontSize,
+                    lineHeight = styles.codeBlockLineHeight,
                     softWrap = false,
                     modifier = Modifier.widthIn(min = minimumTextWidth),
                 )

@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import kotlin.test.Test
@@ -18,6 +19,8 @@ class ParagraphTest {
                         listOf(MarkdownInline.Text("Second")),
                     ),
                 ),
+                inQuote = false,
+                styles = HydrogenExportStyles,
             ),
         )
     }
@@ -28,9 +31,10 @@ class ParagraphTest {
         assertEquals(
             "<p style=\"font-size: 16px; line-height: 1.75; margin: 10px 0; color: #666666; word-break: break-word;\">Quoted</p>",
             renderParagraph(
-                MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted")))),
-                inQuote = true,
-            ),
+                    MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted")))),
+                    inQuote = true,
+                    styles = HydrogenExportStyles,
+                ),
         )
     }
 }

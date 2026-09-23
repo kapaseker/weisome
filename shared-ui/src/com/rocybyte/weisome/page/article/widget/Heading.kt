@@ -2,11 +2,15 @@ package com.rocybyte.weisome.page.article.widget
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -17,73 +21,85 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.widget.WeiSomeText
 
-/** Renders a heading block with the hydrogen typography, prefix, and border for its level. */
+/** Renders a heading block with the active theme's typography, prefix, and borders. */
 @Composable
 internal fun Heading(block: MarkdownBlock.Heading) {
-    if (WechatArticlePreviewStyles.headingHasBorder(block.level)) {
-        BorderedHeading(block)
+    val styles = LocalMarkdownPreviewStyles.current
+    val spec = styles.headingSpec(block.level)
+    val content =
+        if (styles.firstLetterCapitalized && block.level in 2..3) capitalizeFirstLetter(block.content) else block.content
+    if (spec.borderLeft) {
+        BorderedHeading(block.level, content, styles)
     } else {
-        PlainHeading(block)
+        PlainHeading(block.level, content, styles)
     }
 }
 
-/** Renders a heading without a border, prefixing level-one headings with the blue "#". */
+/** Renders a heading without a left border, with the theme's "#" prefix and bottom border when enabled. */
 @Composable
-private fun PlainHeading(block: MarkdownBlock.Heading) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(
-            top = WechatArticlePreviewStyles.headingTopMargin(block.level),
-            bottom = WechatArticlePreviewStyles.headingBottomMargin(block.level),
-        ),
+private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
+    val spec = styles.headingSpec(level)
+    Box(
+        Modifier
+            .padding(top = spec.top.dp, bottom = spec.bottom.dp)
+            .padding(bottom = if (spec.borderBottom) (spec.size * 0.3f).dp else 0.dp),
     ) {
-        if (block.level == 1) {
-            WeiSomeText(
-                text = "#",
-                color = WechatArticlePreviewStyles.themeColor,
-                fontSize = WechatArticlePreviewStyles.headingFontSize(block.level),
-                fontWeight = WechatArticlePreviewStyles.headingFontWeight(block.level),
-                lineHeight = WechatArticlePreviewStyles.headingFontSize(block.level) * 1.5f,
+        Row(verticalAlignment = Alignment.Top) {
+            if (level == 1 && styles.h1HasPrefix) {
+                WeiSomeText(
+                    text = "#",
+                    color = styles.themeColor,
+                    fontSize = spec.size.sp,
+                    fontWeight = spec.weight,
+                    lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+                )
+                Spacer(Modifier.width(10.dp))
+            }
+            InlineMarkdownText(
+                lines = listOf(content),
+                fontSize = spec.size.sp,
+                fontWeight = spec.weight,
+                lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+                color = if (spec.muted) styles.mutedColor else styles.bodyColor,
+                modifier = Modifier.weight(1f),
             )
-            Spacer(Modifier.width(10.dp))
         }
-        InlineMarkdownText(
-            lines = listOf(capitalized(block)),
-            fontSize = WechatArticlePreviewStyles.headingFontSize(block.level),
-            fontWeight = WechatArticlePreviewStyles.headingFontWeight(block.level),
-            lineHeight = WechatArticlePreviewStyles.headingFontSize(block.level) * 1.5f,
-            color = WechatArticlePreviewStyles.bodyColor,
-            modifier = Modifier.weight(1f),
-        )
+        if (spec.borderBottom) {
+            Box(
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(styles.headingBottomBorderColor),
+            )
+        }
     }
 }
 
-/** Renders a level-two heading with the grey left border that turns blue on hover. */
+/** Renders a heading with the grey left border that turns blue on hover. */
 @Composable
-private fun BorderedHeading(block: MarkdownBlock.Heading) {
+private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
+    val spec = styles.headingSpec(level)
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
     val borderColor by animateColorAsState(
-        targetValue = if (hovered) {
-            WechatArticlePreviewStyles.themeColor
-        } else {
-            WechatArticlePreviewStyles.headingBorderColor
-        },
+        targetValue = if (hovered) styles.themeColor else styles.headingBorderColor,
         animationSpec = tween(durationMillis = 300),
         label = "h2BorderColor",
     )
     // The border is painted with drawBehind because BoxWithConstraints-based text does not
     // support the intrinsic measurements an IntrinsicSize-based border Box would require.
     InlineMarkdownText(
-        lines = listOf(capitalized(block)),
-        fontSize = WechatArticlePreviewStyles.headingFontSize(block.level),
-        fontWeight = WechatArticlePreviewStyles.headingFontWeight(block.level),
-        lineHeight = WechatArticlePreviewStyles.headingFontSize(block.level) * 1.5f,
-        color = WechatArticlePreviewStyles.bodyColor,
+        lines = listOf(content),
+        fontSize = spec.size.sp,
+        fontWeight = spec.weight,
+        lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+        color = styles.bodyColor,
         modifier = Modifier
             .hoverable(interactionSource)
             .drawBehind {
@@ -91,12 +107,8 @@ private fun BorderedHeading(block: MarkdownBlock.Heading) {
             }
             .padding(start = 15.dp)
             .padding(
-                top = WechatArticlePreviewStyles.headingTopMargin(block.level),
-                bottom = WechatArticlePreviewStyles.headingBottomMargin(block.level) + 5.dp,
+                top = spec.top.dp,
+                bottom = spec.bottom.dp + 5.dp,
             ),
     )
 }
-
-/** Applies hydrogen's first-letter rule to heading levels two and three. */
-private fun capitalized(block: MarkdownBlock.Heading): List<MarkdownInline> =
-    if (block.level in 2..3) capitalizeFirstLetter(block.content) else block.content

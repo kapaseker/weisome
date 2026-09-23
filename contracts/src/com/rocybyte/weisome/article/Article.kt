@@ -8,4 +8,5 @@ data class Article(
     val createdAt: Long,
     val updatedAt: Long,
     val codeTheme: CodeThemeId,
+    val markdownTheme: MarkdownThemeId,
 )

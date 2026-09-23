@@ -2,6 +2,7 @@ package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.CodeHighlightSpan
 import com.rocybyte.weisome.article.CodeLanguage
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,7 +13,7 @@ class CodeBlockTest {
     @Test
     /** Verifies fenced code is escaped inside the scrollable pre and code hierarchy. */
     fun `renders escaped fenced code in the scrollable structure`() {
-        val html = renderCodeBlock(codeBlock("val tag = \"<code>\""))
+        val html = renderCodeBlock(codeBlock("val tag = \"<code>\""), HydrogenExportStyles)
 
         assertTrue(html.startsWith("<pre style=\"font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; line-height: 1.75;"))
         assertTrue(
@@ -28,7 +29,7 @@ class CodeBlockTest {
     @Test
     /** Verifies exported fenced code preserves authored lines and scrolls instead of wrapping. */
     fun `exports fenced code without automatic wrapping`() {
-        val html = renderCodeBlock(codeBlock("val longValue = someVeryLongExpression()"))
+        val html = renderCodeBlock(codeBlock("val longValue = someVeryLongExpression()"), HydrogenExportStyles)
         val codeStyle = html.substringAfter("<code style=\"").substringBefore("\"")
         val preStyle = html.substringAfter("<pre style=\"").substringBefore("\"")
 
@@ -50,6 +51,7 @@ class CodeBlockTest {
                 code = "fun main()",
                 highlights = listOf(CodeHighlightSpan(0, 3, 0xCF222E)),
             ),
+            HydrogenExportStyles,
         )
 
         assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span> main()"))

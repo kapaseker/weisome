@@ -3,31 +3,37 @@ package com.rocybyte.weisome.page.article.widget
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownDocument
+import com.rocybyte.weisome.article.MarkdownThemeId
 
 /**
- * Renders a structured Markdown document using the WeChat preview styles.
+ * Renders a structured Markdown document using the theme's preview styles.
  *
+ * @param markdownTheme style set applied to every block widget via LocalMarkdownPreviewStyles.
  * @param onBlockPositioned when non-null, invoked for every top-level block with its
  * index and top offset in the scroll content, used for split-view scroll synchronization.
  */
 @Composable
 internal fun WechatArticlePreview(
     document: MarkdownDocument,
+    markdownTheme: MarkdownThemeId,
     modifier: Modifier = Modifier,
     onBlockPositioned: ((blockIndex: Int, topPx: Float) -> Unit)? = null,
 ) {
-    Column(modifier) {
-        RenderBlocks(document.blocks, onBlockPositioned = onBlockPositioned)
+    CompositionLocalProvider(LocalMarkdownPreviewStyles provides previewStylesFor(markdownTheme)) {
+        Column(modifier) {
+            RenderBlocks(document.blocks, onBlockPositioned = onBlockPositioned)
+        }
     }
 }
 
 /**
- * Dispatches each block type to its hydrogen-styled preview widget.
+ * Dispatches each block type to its theme-styled preview widget.
  *
  * @param onBlockPositioned when non-null, each top-level block is wrapped in a layout-neutral
  * Box that reports its top offset; nested invocations never pass it, so only top-level

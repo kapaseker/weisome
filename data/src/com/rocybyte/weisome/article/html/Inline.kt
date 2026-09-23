@@ -1,24 +1,25 @@
 package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.MarkdownInline
-import com.rocybyte.weisome.article.WechatArticleStyles
+import com.rocybyte.weisome.article.MarkdownExportStyles
 
 /** Renders inline spans while preserving their emphasis semantics. */
 internal fun renderInline(
     inlines: List<MarkdownInline>,
+    styles: MarkdownExportStyles,
     imageShadow: Boolean = true,
 ): String = inlines.joinToString("") { inline ->
     when (inline) {
         is MarkdownInline.Text -> escapeHtml(inline.value)
         is MarkdownInline.Bold -> "<strong>${escapeHtml(inline.value)}</strong>"
-        is MarkdownInline.Italic -> "<em style=\"${WechatArticleStyles.emCss}\">${escapeHtml(inline.value)}</em>"
-        is MarkdownInline.Code -> "<code style=\"${WechatArticleStyles.inlineCodeCss}\">${escapeHtml(inline.value)}</code>"
+        is MarkdownInline.Italic -> "<em style=\"${styles.emCss}\">${escapeHtml(inline.value)}</em>"
+        is MarkdownInline.Code -> "<code style=\"${styles.inlineCodeCss}\">${escapeHtml(inline.value)}</code>"
         is MarkdownInline.Link ->
-            "<a href=\"${escapeHtml(inline.url)}\" style=\"${WechatArticleStyles.linkCss}\">${escapeHtml(inline.text)}</a>${WechatArticleStyles.linkIconSpan}"
+            "<a href=\"${escapeHtml(inline.url)}\" style=\"${styles.linkCss}\">${escapeHtml(inline.text)}</a>${if (styles.linkHasIcon) styles.linkIconSpan else ""}"
 
-        is MarkdownInline.Strikethrough -> "<del style=\"${WechatArticleStyles.strikethroughCss}\">${escapeHtml(inline.value)}</del>"
+        is MarkdownInline.Strikethrough -> "<del style=\"${styles.strikethroughCss}\">${escapeHtml(inline.value)}</del>"
         is MarkdownInline.Image ->
-            "<img src=\"${escapeHtml(inline.url)}\" alt=\"${escapeHtml(inline.alt)}\" style=\"${if (imageShadow) WechatArticleStyles.imgCss else WechatArticleStyles.tableImgCss}\">"
+            "<img src=\"${escapeHtml(inline.url)}\" alt=\"${escapeHtml(inline.alt)}\" style=\"${if (imageShadow) styles.imgCss else styles.tableImgCss}\">"
     }
 }
 

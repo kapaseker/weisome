@@ -5,6 +5,7 @@ import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownDocument
+import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
 import com.rocybyte.weisome.repository.article.ArticleRepo
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
@@ -159,7 +160,7 @@ class WechatArticleViewModelTest {
     /** Verifies untouched drafts never trigger a repository write. */
     fun `auto save skips writes when nothing changed`() = runBlocking {
         val articleRepo = FakeEditorArticleRepo(
-            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT),
+            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT, markdownTheme = MarkdownThemeId.GITHUB),
         )
         val viewModel = WechatArticleViewModel(
             FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
@@ -198,7 +199,7 @@ class WechatArticleViewModelTest {
     fun `restores the persisted code theme with the preview`() = runBlocking {
         val repository = FakeWechatArticleRepository()
         val articleRepo = FakeEditorArticleRepo(
-            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.DARCULA),
+            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.DARCULA, markdownTheme = MarkdownThemeId.HYDROGEN),
         )
         val viewModel = WechatArticleViewModel(
             repository, FakeArticleLayoutRepo(), articleRepo,
@@ -207,6 +208,7 @@ class WechatArticleViewModelTest {
         withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
 
         assertEquals(CodeThemeId.DARCULA, viewModel.uiState.value.codeTheme)
+        assertEquals(MarkdownThemeId.HYDROGEN, viewModel.uiState.value.markdownTheme)
         assertEquals(CodeThemeId.DARCULA, repository.lastPreviewTheme)
     }
 
@@ -228,6 +230,25 @@ class WechatArticleViewModelTest {
 
         assertEquals(CodeThemeId.MONOKAI, viewModel.uiState.value.codeTheme)
         assertEquals(CodeThemeId.MONOKAI, articleRepo.saved.last().codeTheme)
+    }
+
+    @Test
+    /** Verifies Markdown theme selection updates state and rides along with the periodic save. */
+    fun `markdown theme selection updates state and persists`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo()
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 10,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        viewModel.onMarkdownThemeSelected(MarkdownThemeId.HYDROGEN)
+        withTimeout(1_000) {
+            while (articleRepo.saved.none { it.markdownTheme == MarkdownThemeId.HYDROGEN }) yield()
+        }
+
+        assertEquals(MarkdownThemeId.HYDROGEN, viewModel.uiState.value.markdownTheme)
+        assertEquals(MarkdownThemeId.HYDROGEN, articleRepo.saved.last().markdownTheme)
     }
 
     /** Creates an editor ViewModel with the default save interval for copy-related tests. */
@@ -285,7 +306,7 @@ private class FakeWechatArticleRepository(
     }
 
     /** Records copied Markdown and returns the configured result. */
-    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId): Boolean {
+    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId, markdownTheme: MarkdownThemeId): Boolean {
         copyCalled = true
         return copyResult
     }
@@ -305,7 +326,7 @@ private class FakeEditorArticleRepo(
 
     /** Creates a throwaway article; unused by the editor ViewModel. */
     override suspend fun create(title: String): Article =
-        Article(id = "generated", title = title, markdown = "", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT)
+        Article(id = "generated", title = title, markdown = "", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT, markdownTheme = MarkdownThemeId.GITHUB)
 
     /** Records every saved draft. */
     override suspend fun save(article: Article) {

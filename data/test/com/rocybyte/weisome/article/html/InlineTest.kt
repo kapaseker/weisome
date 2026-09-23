@@ -1,5 +1,7 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.GitHubExportStyles
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownInline
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,6 +22,7 @@ class InlineTest {
                     MarkdownInline.Code("launch(<tag>)"),
                     MarkdownInline.Text(" now"),
                 ),
+                HydrogenExportStyles,
             ),
         )
     }
@@ -38,6 +41,7 @@ class InlineTest {
                     MarkdownInline.Italic("italic"),
                     MarkdownInline.Text("\"x\" 'y' &"),
                 ),
+                HydrogenExportStyles,
             ),
         )
     }
@@ -45,7 +49,7 @@ class InlineTest {
     @Test
     /** Verifies links export with the hydrogen color, border, and trailing icon span. */
     fun `renders links with the trailing icon`() {
-        val html = renderInline(listOf(MarkdownInline.Link("docs", "https://example.com/a?b=1")))
+        val html = renderInline(listOf(MarkdownInline.Link("docs", "https://example.com/a?b=1")), HydrogenExportStyles)
 
         assertTrue(html.startsWith("<a href=\"https://example.com/a?b=1\" style=\"color: #027fff; text-decoration: none; margin: 0 4px; padding-bottom: 4px; border-bottom: 2px solid transparent;\">docs</a><span"))
         assertTrue(html.contains("width: 18px; height: 18px;"))
@@ -57,7 +61,7 @@ class InlineTest {
     fun `renders strikethrough with faded color`() {
         assertEquals(
             "<del style=\"color: rgba(0, 0, 0, 0.6);\">gone</del>",
-            renderInline(listOf(MarkdownInline.Strikethrough("gone"))),
+            renderInline(listOf(MarkdownInline.Strikethrough("gone")), HydrogenExportStyles),
         )
     }
 
@@ -66,10 +70,34 @@ class InlineTest {
     fun `renders images with elevation shadow outside tables only`() {
         val image = MarkdownInline.Image("logo", "https://example.com/i.png")
 
-        assertTrue(renderInline(listOf(image)).contains("box-shadow:"))
+        assertTrue(renderInline(listOf(image), HydrogenExportStyles).contains("box-shadow:"))
         assertEquals(
             "<img src=\"https://example.com/i.png\" alt=\"logo\" style=\"display: block; margin: 0 auto; max-width: 100%; border-radius: 2px;\">",
-            renderInline(listOf(image), imageShadow = false),
+            renderInline(listOf(image), HydrogenExportStyles, imageShadow = false),
+        )
+    }
+
+    @Test
+    /** Verifies the GitHub theme renders inline code with the neutral grey-on-lavender pill. */
+    fun `renders github inline code and links`() {
+        assertEquals(
+            "Call <code style=\"color: #1f2328; background-color: rgba(175, 184, 193, 0.2); padding: 0.2em 0.4em; " +
+                "border-radius: 6px; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; " +
+                "font-size: 0.85em; font-style: normal; white-space: break-spaces; word-break: break-word; " +
+                "box-decoration-break: clone; -webkit-box-decoration-break: clone; " +
+                "overflow-wrap: anywhere;\">launch(&lt;tag&gt;)</code> now",
+            renderInline(
+                listOf(
+                    MarkdownInline.Text("Call "),
+                    MarkdownInline.Code("launch(<tag>)"),
+                    MarkdownInline.Text(" now"),
+                ),
+                GitHubExportStyles,
+            ),
+        )
+        assertEquals(
+            "<a href=\"https://example.com/a?b=1\" style=\"color: #0969da; text-decoration: underline;\">docs</a>",
+            renderInline(listOf(MarkdownInline.Link("docs", "https://example.com/a?b=1")), GitHubExportStyles),
         )
     }
 

@@ -20,7 +20,14 @@ class WeisomeDatabaseTest {
     /** Verifies an inserted article is returned unchanged by a subsequent load. */
     fun `save then load returns the same article`() = runBlocking {
         val dao = createDao()
-        val article = article(id = "a1", title = "标题", markdown = "# hello", updatedAt = 100)
+        val article = article(
+            id = "a1",
+            title = "标题",
+            markdown = "# hello",
+            updatedAt = 100,
+            codeTheme = "DARCULA",
+            markdownTheme = "HYDROGEN",
+        )
 
         dao.save(article)
         assertEquals(article, dao.load("a1"))
@@ -72,6 +79,7 @@ class WeisomeDatabaseTest {
         createdAt: Long = 0,
         updatedAt: Long = 0,
         codeTheme: String = "GITHUB_LIGHT",
+        markdownTheme: String = "GITHUB",
     ) = ArticleEntity(
         id = id,
         title = title,
@@ -79,5 +87,6 @@ class WeisomeDatabaseTest {
         createdAt = createdAt,
         updatedAt = updatedAt,
         codeTheme = codeTheme,
+        markdownTheme = markdownTheme,
     )
 }

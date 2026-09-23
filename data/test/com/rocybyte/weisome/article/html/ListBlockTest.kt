@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.ListItem
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
@@ -14,7 +15,7 @@ class ListBlockTest {
         assertEquals(
             "<ul style=\"padding-left: 28px; margin: 16px 0;\">" +
                 "<li style=\"font-size: 16px; line-height: 1.75; margin-bottom: 0; color: rgba(46, 36, 36, 0.87);\">One</li></ul>",
-            renderListBlock(listBlock(ordered = false, "One")),
+            renderListBlock(listBlock(ordered = false, "One"), HydrogenExportStyles),
         )
     }
 
@@ -25,7 +26,7 @@ class ListBlockTest {
             "<ol style=\"padding-left: 28px; margin: 16px 0;\">" +
                 "<li style=\"font-size: 16px; line-height: 1.75; margin-bottom: 0; color: rgba(46, 36, 36, 0.87); padding-left: 6px;\">First</li>" +
                 "<li style=\"font-size: 16px; line-height: 1.75; margin-bottom: 0; color: rgba(46, 36, 36, 0.87); padding-left: 6px;\">Second</li></ol>",
-            renderListBlock(listBlock(ordered = true, "First", "Second")),
+            renderListBlock(listBlock(ordered = true, "First", "Second"), HydrogenExportStyles),
         )
     }
 
@@ -40,7 +41,7 @@ class ListBlockTest {
             ),
         )
 
-        val html = renderListBlock(block)
+        val html = renderListBlock(block, HydrogenExportStyles)
 
         assertTrue(html.contains("<li style=\"list-style: none; "))
         assertTrue(html.contains(">\u2610 todo</li>"))
@@ -63,7 +64,7 @@ class ListBlockTest {
             ),
         )
 
-        val html = renderListBlock(block)
+        val html = renderListBlock(block, HydrogenExportStyles)
 
         assertTrue(html.contains("Parent<ul style=\"padding-left: 28px; margin: 3px 0 0;\">"))
         assertTrue(html.contains("<li style=\"font-size: 16px; line-height: 1.75; margin-bottom: 0; color: rgba(46, 36, 36, 0.87);\">Child</li></ul></li>"))

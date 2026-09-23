@@ -35,6 +35,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.article.CodeThemeId
+import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.article_layout_editor_only
 import com.rocybyte.weisome.generated.resources.article_layout_preview_only
@@ -55,6 +56,7 @@ import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
 import com.rocybyte.weisome.page.article.widget.CodeThemeMenuButton
+import com.rocybyte.weisome.page.article.widget.MarkdownThemeMenuButton
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
@@ -94,6 +96,7 @@ internal fun WechatArticleEditorScreen(
     onDismissCopyStatus: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
     onCodeThemeSelected: (CodeThemeId) -> Unit,
+    onMarkdownThemeSelected: (MarkdownThemeId) -> Unit,
 ) {
     var showRenameDialog by remember { mutableStateOf(false) }
 
@@ -156,6 +159,7 @@ internal fun WechatArticleEditorScreen(
                     hint = hint,
                     onMarkdownChanged = onMarkdownChanged,
                     onCodeThemeSelected = onCodeThemeSelected,
+                    onMarkdownThemeSelected = onMarkdownThemeSelected,
                     modifier = Modifier.fillMaxWidth().weight(1f),
                 )
             } else {
@@ -250,6 +254,7 @@ private fun ArticleWorkspace(
     hint: String,
     onMarkdownChanged: (String) -> Unit,
     onCodeThemeSelected: (CodeThemeId) -> Unit,
+    onMarkdownThemeSelected: (MarkdownThemeId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val editorScroll = rememberScrollState()
@@ -275,10 +280,16 @@ private fun ArticleWorkspace(
                         )
                         .codeToolbarContainer(),
                 ) {
-                    CodeThemeMenuButton(
-                        selectedTheme = state.codeTheme,
-                        onThemeSelected = onCodeThemeSelected,
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        CodeThemeMenuButton(
+                            selectedTheme = state.codeTheme,
+                            onThemeSelected = onCodeThemeSelected,
+                        )
+                        MarkdownThemeMenuButton(
+                            selectedTheme = state.markdownTheme,
+                            onThemeSelected = onMarkdownThemeSelected,
+                        )
+                    }
                 }
             }
         }
@@ -365,6 +376,7 @@ private fun ArticlePreviewPane(
     ) {
         WechatArticlePreview(
             document = state.preview,
+            markdownTheme = state.markdownTheme,
             modifier = Modifier.fillMaxWidth(),
             onBlockPositioned = onBlockPositioned,
         )

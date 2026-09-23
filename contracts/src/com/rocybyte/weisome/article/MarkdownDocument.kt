@@ -60,6 +60,12 @@ data class CodeTheme(
     val markRgb: Int,
 )
 
+/** Selectable Markdown document themes affecting preview and export rendering; GITHUB is the default. */
+enum class MarkdownThemeId {
+    GITHUB,
+    HYDROGEN,
+}
+
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */
 enum class CodeThemeId {
     GITHUB_LIGHT,

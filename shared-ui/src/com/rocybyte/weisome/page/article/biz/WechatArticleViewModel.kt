@@ -6,6 +6,7 @@ import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.ArticleLayoutMode
 import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownDocument
+import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
 import com.rocybyte.weisome.repository.article.ArticleRepo
 import com.rocybyte.weisome.repository.article.WechatArticleRepository
@@ -29,6 +30,7 @@ data class WechatArticleUiState(
     val copySucceeded: Boolean? = null,
     val isArticleLoaded: Boolean = false,
     val codeTheme: CodeThemeId = CodeThemeId.GITHUB_LIGHT,
+    val markdownTheme: MarkdownThemeId = MarkdownThemeId.GITHUB,
 )
 
 data class ArticleLayoutUiState(
@@ -59,6 +61,7 @@ class WechatArticleViewModel(
     private var lastSavedTitle: String = ""
     private var lastSavedMarkdown: String = ""
     private var lastSavedCodeTheme: CodeThemeId = CodeThemeId.GITHUB_LIGHT
+    private var lastSavedMarkdownTheme: MarkdownThemeId = MarkdownThemeId.GITHUB
     private var createdAt: Long = 0
 
     init {
@@ -114,12 +117,19 @@ class WechatArticleViewModel(
         }
     }
 
+    /** Applies a Markdown theme immediately; the presentation-only value needs no preview re-render. */
+    fun onMarkdownThemeSelected(theme: MarkdownThemeId) {
+        _uiState.update { state ->
+            if (state.markdownTheme == theme) state else state.copy(markdownTheme = theme, copySucceeded = null)
+        }
+    }
+
     /** Copies the current non-blank article and records whether the operation succeeded. */
     fun copyAsHtml() {
         val state = _uiState.value
         if (state.markdown.isBlank()) return
         _uiState.update {
-            it.copy(copySucceeded = repository.copyAsHtml(state.markdown, state.codeTheme))
+            it.copy(copySucceeded = repository.copyAsHtml(state.markdown, state.codeTheme, state.markdownTheme))
         }
     }
 
@@ -168,21 +178,27 @@ class WechatArticleViewModel(
         lastSavedTitle = article.title
         lastSavedMarkdown = article.markdown
         lastSavedCodeTheme = article.codeTheme
+        lastSavedMarkdownTheme = article.markdownTheme
         _uiState.update {
             it.copy(
                 title = article.title,
                 markdown = article.markdown,
                 codeTheme = article.codeTheme,
+                markdownTheme = article.markdownTheme,
                 preview = if (article.markdown.isNotBlank()) repository.preview(article.markdown, article.codeTheme) else it.preview,
                 isArticleLoaded = true,
             )
         }
     }
 
-    /** 标题、正文或代码主题相对上次保存有变化时写入数据库,并刷新已保存基线;失败仅打印,等待下个周期重试。 */
+    /** 标题、正文或主题相对上次保存有变化时写入数据库,并刷新已保存基线;失败仅打印,等待下个周期重试。 */
     private suspend fun saveIfDirty() {
         val state = _uiState.value
-        if (state.title == lastSavedTitle && state.markdown == lastSavedMarkdown && state.codeTheme == lastSavedCodeTheme) return
+        if (state.title == lastSavedTitle && state.markdown == lastSavedMarkdown &&
+            state.codeTheme == lastSavedCodeTheme && state.markdownTheme == lastSavedMarkdownTheme
+        ) {
+            return
+        }
         try {
             articleRepository.save(
                 Article(
@@ -192,11 +208,13 @@ class WechatArticleViewModel(
                     createdAt = createdAt,
                     updatedAt = System.currentTimeMillis(),
                     codeTheme = state.codeTheme,
+                    markdownTheme = state.markdownTheme,
                 ),
             )
             lastSavedTitle = state.title
             lastSavedMarkdown = state.markdown
             lastSavedCodeTheme = state.codeTheme
+            lastSavedMarkdownTheme = state.markdownTheme
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {

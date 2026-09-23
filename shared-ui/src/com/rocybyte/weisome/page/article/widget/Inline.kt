@@ -63,11 +63,11 @@ internal fun InlineMarkdownText(
         val density = androidx.compose.ui.platform.LocalDensity.current
         val horizontalPadding = 6.dp
         val verticalPadding = 1.dp
-        val styles = WechatArticlePreviewStyles
+        val styles = LocalMarkdownPreviewStyles.current
         val codeStyle = LocalWeiSomeTextStyle.current.merge(
             TextStyle(
                 color = styles.inlineCodeColor,
-                fontSize = fontSize * 0.87f,
+                fontSize = fontSize * styles.inlineCodeFontScale,
                 fontStyle = FontStyle.Normal,
             ),
         )
@@ -140,7 +140,7 @@ internal fun InlineMarkdownText(
                                         modifier = Modifier.fillMaxSize()
                                             .background(
                                                 styles.inlineCodeBackground,
-                                                RoundedCornerShape(2.dp),
+                                                RoundedCornerShape(styles.inlineCodeCornerRadius),
                                             )
                                             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
                                         contentAlignment = Alignment.CenterStart,
@@ -157,21 +157,28 @@ internal fun InlineMarkdownText(
                         }
 
                         is MarkdownInline.Link -> {
-                            withStyle(SpanStyle(color = styles.linkColor)) {
-                                append(inline.text)
-                            }
-                            val id = "link-icon-${codeIndex++}"
-                            inlineContent[id] = InlineTextContent(
-                                placeholder = Placeholder(
-                                    width = 18.sp,
-                                    height = 18.sp,
-                                    placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                            withStyle(
+                                SpanStyle(
+                                    color = styles.linkColor,
+                                    textDecoration = if (styles.linkUnderlined) TextDecoration.Underline else null,
                                 ),
                             ) {
-                                LinkIcon(Modifier.fillMaxSize())
+                                append(inline.text)
                             }
-                            append(' ')
-                            appendInlineContent(id, " ")
+                            if (styles.linkHasIcon) {
+                                val id = "link-icon-${codeIndex++}"
+                                inlineContent[id] = InlineTextContent(
+                                    placeholder = Placeholder(
+                                        width = 18.sp,
+                                        height = 18.sp,
+                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                    ),
+                                ) {
+                                    LinkIcon(Modifier.fillMaxSize(), styles.linkColor)
+                                }
+                                append(' ')
+                                appendInlineContent(id, " ")
+                            }
                         }
 
                         is MarkdownInline.Strikethrough -> withStyle(
@@ -230,7 +237,7 @@ internal fun InlineMarkdownText(
 
 /** Renders the hydrogen link icon by stroking the stylesheet's SVG paths at the given size. */
 @Composable
-private fun LinkIcon(modifier: Modifier = Modifier) {
+private fun LinkIcon(modifier: Modifier = Modifier, color: Color) {
     val paths = remember {
         HydrogenAssets.linkIconPathData.map { PathParser().parsePathString(it).toPath() }
     }
@@ -240,7 +247,7 @@ private fun LinkIcon(modifier: Modifier = Modifier) {
             paths.forEach { path: Path ->
                 drawPath(
                     path = path,
-                    color = WechatArticlePreviewStyles.linkColor,
+                    color = color,
                     style = Stroke(width = 1f, cap = StrokeCap.Round),
                 )
             }

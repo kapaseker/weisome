@@ -1,10 +1,10 @@
 package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.MarkdownBlock
-import com.rocybyte.weisome.article.WechatArticleStyles
+import com.rocybyte.weisome.article.MarkdownExportStyles
 
 /** Renders one code block with escaped text and inline color spans. */
-internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock): String {
+internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExportStyles): String {
     val code = buildString {
         var cursor = 0
         block.highlights.forEach { span ->
@@ -18,7 +18,7 @@ internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock): String {
         }
         append(escapeHtml(block.code.substring(cursor)))
     }
-    return "<pre style=\"${WechatArticleStyles.codeBlockCss}\"><code style=\"${WechatArticleStyles.codeElementCss}\">$code</code></pre>"
+    return "<pre style=\"${styles.codeBlockCss}\"><code style=\"${styles.codeElementCss}\">$code</code></pre>"
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */

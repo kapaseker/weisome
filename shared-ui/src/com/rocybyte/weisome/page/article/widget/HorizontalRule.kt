@@ -16,24 +16,34 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-/** Renders a horizontal rule with hydrogen's gradient line and centered juejin logo. */
+/** Renders a horizontal rule with the active theme's gradient line or solid bar, plus optional logo. */
 @Composable
 internal fun HorizontalRule() {
-    val styles = WechatArticlePreviewStyles
+    val styles = LocalMarkdownPreviewStyles.current
+    if (!styles.ruleIsGradient) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = styles.ruleVerticalMargin.dp, bottom = styles.ruleVerticalMargin.dp)
+                .height(styles.ruleHeight)
+                .background(styles.ruleSolidColor),
+        )
+        return
+    }
     val logo = remember { HydrogenAssets.decodeBase64Image(HydrogenAssets.juejinLogoBase64) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp, bottom = 32.dp),
+            .padding(top = styles.ruleVerticalMargin.dp, bottom = styles.ruleVerticalMargin.dp),
         contentAlignment = Alignment.Center,
     ) {
         Box(
             Modifier
                 .fillMaxWidth(0.98f)
-                .height(1.dp)
+                .height(styles.ruleHeight)
                 .background(Brush.horizontalGradient(styles.ruleGradient)),
         )
-        if (logo != null) {
+        if (styles.ruleHasLogo && logo != null) {
             Box(
                 modifier = Modifier
                     .size(width = 60.dp, height = 20.dp)

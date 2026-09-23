@@ -80,6 +80,7 @@ class ArticleHomeViewModelTest {
         createdAt = createdAt,
         updatedAt = updatedAt,
         codeTheme = com.rocybyte.weisome.article.CodeThemeId.GITHUB_LIGHT,
+        markdownTheme = com.rocybyte.weisome.article.MarkdownThemeId.GITHUB,
     )
 }
 
@@ -109,6 +110,7 @@ private class FakeArticleRepo(
             createdAt = now,
             updatedAt = now,
             codeTheme = com.rocybyte.weisome.article.CodeThemeId.GITHUB_LIGHT,
+            markdownTheme = com.rocybyte.weisome.article.MarkdownThemeId.GITHUB,
         )
         stored[article.id] = article
         return article
