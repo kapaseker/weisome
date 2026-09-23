@@ -3,6 +3,7 @@ package com.rocybyte.weisome.page.article.biz
 import androidx.lifecycle.ViewModel
 import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.ArticleLayoutMode
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
 import com.rocybyte.weisome.repository.article.ArticleRepo
@@ -158,7 +159,7 @@ class WechatArticleViewModelTest {
     /** Verifies untouched drafts never trigger a repository write. */
     fun `auto save skips writes when nothing changed`() = runBlocking {
         val articleRepo = FakeEditorArticleRepo(
-            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0),
+            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT),
         )
         val viewModel = WechatArticleViewModel(
             FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
@@ -190,6 +191,43 @@ class WechatArticleViewModelTest {
         }
 
         assertEquals("# before exit", articleRepo.saved.first().markdown)
+    }
+
+    @Test
+    /** Verifies a stored draft's code theme is restored and used to re-render its preview. */
+    fun `restores the persisted code theme with the preview`() = runBlocking {
+        val repository = FakeWechatArticleRepository()
+        val articleRepo = FakeEditorArticleRepo(
+            stored = Article(id = "a1", title = "t", markdown = "# base", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.DARCULA),
+        )
+        val viewModel = WechatArticleViewModel(
+            repository, FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 60_000,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        assertEquals(CodeThemeId.DARCULA, viewModel.uiState.value.codeTheme)
+        assertEquals(CodeThemeId.DARCULA, repository.lastPreviewTheme)
+    }
+
+    @Test
+    /** Verifies theme selection re-renders the preview and rides along with the periodic save. */
+    fun `code theme selection updates preview and persists`() = runBlocking {
+        val articleRepo = FakeEditorArticleRepo()
+        val viewModel = WechatArticleViewModel(
+            FakeWechatArticleRepository(), FakeArticleLayoutRepo(), articleRepo,
+            "Welcome", "a1", autoSaveIntervalMillis = 10,
+        )
+        withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
+
+        viewModel.onMarkdownChanged("# hi")
+        viewModel.onCodeThemeSelected(CodeThemeId.MONOKAI)
+        withTimeout(1_000) {
+            while (articleRepo.saved.none { it.codeTheme == CodeThemeId.MONOKAI }) yield()
+        }
+
+        assertEquals(CodeThemeId.MONOKAI, viewModel.uiState.value.codeTheme)
+        assertEquals(CodeThemeId.MONOKAI, articleRepo.saved.last().codeTheme)
     }
 
     /** Creates an editor ViewModel with the default save interval for copy-related tests. */
@@ -236,16 +274,18 @@ private class FakeWechatArticleRepository(
     private val copyResult: Boolean = true,
 ) : WechatArticleRepository {
     var lastPreviewMarkdown = ""
+    var lastPreviewTheme: CodeThemeId? = null
     var copyCalled = false
 
     /** Records preview input and returns a minimal document fixture. */
-    override fun preview(markdown: String): MarkdownDocument {
+    override fun preview(markdown: String, codeTheme: CodeThemeId): MarkdownDocument {
         lastPreviewMarkdown = markdown
+        lastPreviewTheme = codeTheme
         return MarkdownDocument(emptyList())
     }
 
     /** Records copied Markdown and returns the configured result. */
-    override fun copyAsHtml(markdown: String): Boolean {
+    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId): Boolean {
         copyCalled = true
         return copyResult
     }
@@ -265,7 +305,7 @@ private class FakeEditorArticleRepo(
 
     /** Creates a throwaway article; unused by the editor ViewModel. */
     override suspend fun create(title: String): Article =
-        Article(id = "generated", title = title, markdown = "", createdAt = 0, updatedAt = 0)
+        Article(id = "generated", title = title, markdown = "", createdAt = 0, updatedAt = 0, codeTheme = CodeThemeId.GITHUB_LIGHT)
 
     /** Records every saved draft. */
     override suspend fun save(article: Article) {

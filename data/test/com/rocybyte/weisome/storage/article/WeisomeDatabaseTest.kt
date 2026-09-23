@@ -71,11 +71,13 @@ class WeisomeDatabaseTest {
         markdown: String = "",
         createdAt: Long = 0,
         updatedAt: Long = 0,
+        codeTheme: String = "GITHUB_LIGHT",
     ) = ArticleEntity(
         id = id,
         title = title,
         markdown = markdown,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        codeTheme = codeTheme,
     )
 }

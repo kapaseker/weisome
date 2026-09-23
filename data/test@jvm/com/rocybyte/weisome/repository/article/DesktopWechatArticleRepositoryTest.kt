@@ -1,6 +1,7 @@
 package com.rocybyte.weisome.repository.article
 
 import com.rocybyte.weisome.article.CodeLanguage
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.repository.code.CodeHighlightRepository
 import kotlin.test.Test
@@ -13,7 +14,7 @@ class DesktopWechatArticleRepositoryTest {
     fun `preview enriches supported code blocks with shared highlights`() {
         val repository = DesktopWechatArticleRepository(CodeHighlightRepository())
 
-        val codeBlock = repository.preview("```kotlin\nfun main() = Unit\n```")
+        val codeBlock = repository.preview("```kotlin\nfun main() = Unit\n```", CodeThemeId.GITHUB_LIGHT)
             .blocks
             .single() as MarkdownBlock.CodeBlock
 
@@ -26,7 +27,7 @@ class DesktopWechatArticleRepositoryTest {
     fun `preview leaves unknown code languages unhighlighted`() {
         val repository = DesktopWechatArticleRepository(CodeHighlightRepository())
 
-        val codeBlock = repository.preview("```python\nprint('hello')\n```")
+        val codeBlock = repository.preview("```python\nprint('hello')\n```", CodeThemeId.DARCULA)
             .blocks
             .single() as MarkdownBlock.CodeBlock
 

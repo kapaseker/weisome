@@ -73,7 +73,14 @@ class ArticleHomeViewModelTest {
         markdown: String = "",
         createdAt: Long = 0,
         updatedAt: Long = 0,
-    ) = Article(id = id, title = title, markdown = markdown, createdAt = createdAt, updatedAt = updatedAt)
+    ) = Article(
+        id = id,
+        title = title,
+        markdown = markdown,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        codeTheme = com.rocybyte.weisome.article.CodeThemeId.GITHUB_LIGHT,
+    )
 }
 
 private class FakeArticleRepo(
@@ -101,6 +108,7 @@ private class FakeArticleRepo(
             markdown = "",
             createdAt = now,
             updatedAt = now,
+            codeTheme = com.rocybyte.weisome.article.CodeThemeId.GITHUB_LIGHT,
         )
         stored[article.id] = article
         return article

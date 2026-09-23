@@ -195,8 +195,11 @@ $icon-juejin: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAgCAYAAABg
       word-break: normal;
       display: block;
       overflow-x: auto;
-      color: #333;
-      background: #f8f8f8;
+      // Code blocks intentionally use GitHub Light base colors (WeiSomeLightCodeTheme)
+      // instead of hydrogen's #333/#f8f8f8, so unhighlighted text matches the
+      // syntax-highlight tokens.
+      color: #24292f;
+      background: #f6f8fa;
     }
   }
 

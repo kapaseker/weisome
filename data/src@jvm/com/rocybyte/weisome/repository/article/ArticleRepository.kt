@@ -1,6 +1,7 @@
 package com.rocybyte.weisome.repository.article
 
 import com.rocybyte.weisome.article.Article
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.storage.article.ArticleDao
 import com.rocybyte.weisome.storage.article.ArticleEntity
 import java.util.UUID
@@ -29,6 +30,7 @@ internal class ArticleRepository(
             markdown = "",
             createdAt = now,
             updatedAt = now,
+            codeTheme = CodeThemeId.GITHUB_LIGHT,
         )
         dao.save(article.toEntity())
         return article
@@ -41,8 +43,12 @@ internal class ArticleRepository(
     override suspend fun delete(id: String) = dao.delete(id)
 }
 
-/** Room 实体转领域模型。 */
-private fun ArticleEntity.toArticle() = Article(id, title, markdown, createdAt, updatedAt)
+/** Room 实体转领域模型;未知主题值回退默认主题。 */
+private fun ArticleEntity.toArticle() = Article(id, title, markdown, createdAt, updatedAt, codeTheme.toCodeThemeId())
 
 /** 领域模型转 Room 实体。 */
-private fun Article.toEntity() = ArticleEntity(id, title, markdown, createdAt, updatedAt)
+private fun Article.toEntity() = ArticleEntity(id, title, markdown, createdAt, updatedAt, codeTheme.name)
+
+/** 解析存储的主题名,无法识别时回退 GITHUB_LIGHT。 */
+private fun String.toCodeThemeId(): CodeThemeId =
+    runCatching { CodeThemeId.valueOf(this) }.getOrDefault(CodeThemeId.GITHUB_LIGHT)

@@ -1,6 +1,8 @@
 package com.rocybyte.weisome.page.article.screen
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -27,9 +30,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.ArticleLayoutMode
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.article_layout_editor_only
 import com.rocybyte.weisome.generated.resources.article_layout_preview_only
@@ -49,8 +54,11 @@ import com.rocybyte.weisome.generated.resources.markdown_hint
 import com.rocybyte.weisome.page.article.biz.ArticleLayoutUiState
 import com.rocybyte.weisome.page.article.biz.WechatArticleUiState
 import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
+import com.rocybyte.weisome.page.article.widget.CodeThemeMenuButton
 import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
+import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeShapes
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.LocalWeiSomeSnackbar
@@ -66,6 +74,14 @@ import org.jetbrains.compose.resources.stringResource
 /** Minimum editor height in text lines before the field starts scrolling. */
 private const val EDITOR_MIN_LINES = 12
 
+/** 工具栏行容器样式:白底、细边框、圆角的轻容器条,符合 DESIGN.md 容器规格。 */
+private fun Modifier.codeToolbarContainer(): Modifier = this
+    .heightIn(min = 48.dp)
+    .clip(WeiSomeShapes.default)
+    .background(WeiSomeColors.surfaceContainerLowest)
+    .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.default)
+    .padding(horizontal = WeiSomeSpacing.stackSm, vertical = WeiSomeSpacing.stackXs)
+
 /** Renders the editor, preview, and copy controls for the article workflow. */
 @Composable
 internal fun WechatArticleEditorScreen(
@@ -77,6 +93,7 @@ internal fun WechatArticleEditorScreen(
     onCopyAsHtml: () -> Unit,
     onDismissCopyStatus: () -> Unit,
     onLayoutModeSelected: (ArticleLayoutMode) -> Unit,
+    onCodeThemeSelected: (CodeThemeId) -> Unit,
 ) {
     var showRenameDialog by remember { mutableStateOf(false) }
 
@@ -138,6 +155,7 @@ internal fun WechatArticleEditorScreen(
                     mode = layoutState.mode,
                     hint = hint,
                     onMarkdownChanged = onMarkdownChanged,
+                    onCodeThemeSelected = onCodeThemeSelected,
                     modifier = Modifier.fillMaxWidth().weight(1f),
                 )
             } else {
@@ -231,52 +249,82 @@ private fun ArticleWorkspace(
     mode: ArticleLayoutMode,
     hint: String,
     onMarkdownChanged: (String) -> Unit,
+    onCodeThemeSelected: (CodeThemeId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val editorScroll = rememberScrollState()
     val previewScroll = rememberScrollState()
-    Row(modifier) {
-        when (mode) {
-            ArticleLayoutMode.EDITOR_ONLY -> ArticleEditor(
-                state = state,
-                hint = hint,
-                onMarkdownChanged = onMarkdownChanged,
-                modifier = Modifier.fillMaxSize(),
-                scrollState = editorScroll,
-            )
-
-            ArticleLayoutMode.SPLIT -> {
-                val textLayout = remember { mutableStateOf<TextLayoutResult?>(null) }
-                // Re-created whenever the document changes so stale block positions never survive a re-parse.
-                val blockTops = remember(state.preview) { mutableStateMapOf<Int, Float>() }
-                SplitScrollSync(
-                    editorScroll = editorScroll,
-                    previewScroll = previewScroll,
-                    textLayout = textLayout,
-                    blockRanges = state.preview.blockRanges,
-                    blockTops = blockTops,
-                )
-                ArticleEditor(
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackXs)) {
+        if (mode != ArticleLayoutMode.EDITOR_ONLY) {
+            Row(Modifier.fillMaxWidth()) {
+                if (mode == ArticleLayoutMode.SPLIT) {
+                    // 编辑列侧预留的空工具栏容器,与预览工具栏等高对齐。
+                    Box(Modifier.weight(1f).codeToolbarContainer())
+                }
+                Box(
+                    contentAlignment = Alignment.CenterEnd,
+                    // SPLIT 下与预览内容左缘对齐(预览列有 start 内边距)。
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(
+                            if (mode == ArticleLayoutMode.SPLIT) {
+                                Modifier.padding(start = WeiSomeSpacing.stackSm)
+                            } else {
+                                Modifier
+                            },
+                        )
+                        .codeToolbarContainer(),
+                ) {
+                    CodeThemeMenuButton(
+                        selectedTheme = state.codeTheme,
+                        onThemeSelected = onCodeThemeSelected,
+                    )
+                }
+            }
+        }
+        Row(Modifier.fillMaxWidth().weight(1f)) {
+            when (mode) {
+                ArticleLayoutMode.EDITOR_ONLY -> ArticleEditor(
                     state = state,
                     hint = hint,
                     onMarkdownChanged = onMarkdownChanged,
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    modifier = Modifier.fillMaxSize(),
                     scrollState = editorScroll,
-                    onTextLayout = { textLayout.value = it },
                 )
-                ArticlePreviewPane(
+
+                ArticleLayoutMode.SPLIT -> {
+                    val textLayout = remember { mutableStateOf<TextLayoutResult?>(null) }
+                    // Re-created whenever the document changes so stale block positions never survive a re-parse.
+                    val blockTops = remember(state.preview) { mutableStateMapOf<Int, Float>() }
+                    SplitScrollSync(
+                        editorScroll = editorScroll,
+                        previewScroll = previewScroll,
+                        textLayout = textLayout,
+                        blockRanges = state.preview.blockRanges,
+                        blockTops = blockTops,
+                    )
+                    ArticleEditor(
+                        state = state,
+                        hint = hint,
+                        onMarkdownChanged = onMarkdownChanged,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        scrollState = editorScroll,
+                        onTextLayout = { textLayout.value = it },
+                    )
+                    ArticlePreviewPane(
+                        state = state,
+                        scrollState = previewScroll,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        onBlockPositioned = { index, top -> blockTops[index] = top },
+                    )
+                }
+
+                ArticleLayoutMode.PREVIEW_ONLY -> ArticlePreviewPane(
                     state = state,
                     scrollState = previewScroll,
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                    onBlockPositioned = { index, top -> blockTops[index] = top },
+                    modifier = Modifier.fillMaxSize(),
                 )
             }
-
-            ArticleLayoutMode.PREVIEW_ONLY -> ArticlePreviewPane(
-                state = state,
-                scrollState = previewScroll,
-                modifier = Modifier.fillMaxSize(),
-            )
         }
     }
 }

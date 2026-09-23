@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rocybyte.weisome.article.Article
 import com.rocybyte.weisome.article.ArticleLayoutMode
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.repository.article.ArticleLayoutRepo
 import com.rocybyte.weisome.repository.article.ArticleRepo
@@ -27,6 +28,7 @@ data class WechatArticleUiState(
     val preview: MarkdownDocument = MarkdownDocument(emptyList()),
     val copySucceeded: Boolean? = null,
     val isArticleLoaded: Boolean = false,
+    val codeTheme: CodeThemeId = CodeThemeId.GITHUB_LIGHT,
 )
 
 data class ArticleLayoutUiState(
@@ -43,7 +45,9 @@ class WechatArticleViewModel(
     private val articleId: String,
     private val autoSaveIntervalMillis: Long = 5_000,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(WechatArticleUiState(preview = repository.preview(previewMarkdown)))
+    private val _uiState = MutableStateFlow(
+        WechatArticleUiState(preview = repository.preview(previewMarkdown, CodeThemeId.GITHUB_LIGHT)),
+    )
     val uiState: StateFlow<WechatArticleUiState> = _uiState.asStateFlow()
     private val _layoutState = MutableStateFlow(ArticleLayoutUiState())
     val layoutState: StateFlow<ArticleLayoutUiState> = _layoutState.asStateFlow()
@@ -54,6 +58,7 @@ class WechatArticleViewModel(
     private val finalSaveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var lastSavedTitle: String = ""
     private var lastSavedMarkdown: String = ""
+    private var lastSavedCodeTheme: CodeThemeId = CodeThemeId.GITHUB_LIGHT
     private var createdAt: Long = 0
 
     init {
@@ -85,7 +90,7 @@ class WechatArticleViewModel(
         _uiState.update {
             it.copy(
                 markdown = markdown,
-                preview = repository.preview(markdown),
+                preview = repository.preview(markdown, it.codeTheme),
                 copySucceeded = null,
             )
         }
@@ -96,12 +101,25 @@ class WechatArticleViewModel(
         _uiState.update { it.copy(title = title) }
     }
 
+    /** Applies a code theme immediately by re-rendering the preview; the periodic save persists it. */
+    fun onCodeThemeSelected(theme: CodeThemeId) {
+        _uiState.update { state ->
+            if (state.codeTheme == theme) state else {
+                state.copy(
+                    codeTheme = theme,
+                    preview = if (state.markdown.isNotBlank()) repository.preview(state.markdown, theme) else state.preview,
+                    copySucceeded = null,
+                )
+            }
+        }
+    }
+
     /** Copies the current non-blank article and records whether the operation succeeded. */
     fun copyAsHtml() {
-        val markdown = _uiState.value.markdown
-        if (markdown.isBlank()) return
+        val state = _uiState.value
+        if (state.markdown.isBlank()) return
         _uiState.update {
-            it.copy(copySucceeded = repository.copyAsHtml(markdown))
+            it.copy(copySucceeded = repository.copyAsHtml(state.markdown, state.codeTheme))
         }
     }
 
@@ -149,20 +167,22 @@ class WechatArticleViewModel(
         createdAt = article.createdAt
         lastSavedTitle = article.title
         lastSavedMarkdown = article.markdown
+        lastSavedCodeTheme = article.codeTheme
         _uiState.update {
             it.copy(
                 title = article.title,
                 markdown = article.markdown,
-                preview = if (article.markdown.isNotBlank()) repository.preview(article.markdown) else it.preview,
+                codeTheme = article.codeTheme,
+                preview = if (article.markdown.isNotBlank()) repository.preview(article.markdown, article.codeTheme) else it.preview,
                 isArticleLoaded = true,
             )
         }
     }
 
-    /** 标题或正文相对上次保存有变化时写入数据库,并刷新已保存基线;失败仅打印,等待下个周期重试。 */
+    /** 标题、正文或代码主题相对上次保存有变化时写入数据库,并刷新已保存基线;失败仅打印,等待下个周期重试。 */
     private suspend fun saveIfDirty() {
         val state = _uiState.value
-        if (state.title == lastSavedTitle && state.markdown == lastSavedMarkdown) return
+        if (state.title == lastSavedTitle && state.markdown == lastSavedMarkdown && state.codeTheme == lastSavedCodeTheme) return
         try {
             articleRepository.save(
                 Article(
@@ -171,10 +191,12 @@ class WechatArticleViewModel(
                     markdown = state.markdown,
                     createdAt = createdAt,
                     updatedAt = System.currentTimeMillis(),
+                    codeTheme = state.codeTheme,
                 ),
             )
             lastSavedTitle = state.title
             lastSavedMarkdown = state.markdown
+            lastSavedCodeTheme = state.codeTheme
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {

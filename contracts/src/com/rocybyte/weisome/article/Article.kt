@@ -7,4 +7,5 @@ data class Article(
     val markdown: String,
     val createdAt: Long,
     val updatedAt: Long,
+    val codeTheme: CodeThemeId,
 )

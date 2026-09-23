@@ -30,6 +30,7 @@ internal fun WechatArticlePage(
         onCopyAsHtml = viewModel::copyAsHtml,
         onDismissCopyStatus = viewModel::dismissCopyStatus,
         onLayoutModeSelected = viewModel::onLayoutModeSelected,
+        onCodeThemeSelected = viewModel::onCodeThemeSelected,
         onBack = onBack,
     )
 }

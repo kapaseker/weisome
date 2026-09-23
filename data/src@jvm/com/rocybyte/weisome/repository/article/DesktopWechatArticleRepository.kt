@@ -1,5 +1,6 @@
 package com.rocybyte.weisome.repository.article
 
+import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.MarkdownDocumentParser
 import com.rocybyte.weisome.article.MarkdownToWechatHtml
 import com.rocybyte.weisome.article.MarkdownBlock
@@ -14,21 +15,21 @@ internal class DesktopWechatArticleRepository(
     private val codeHighlightRepo: CodeHighlightRepo,
 ) : WechatArticleRepository {
     /** Parses Markdown for display by the shared article preview. */
-    override fun preview(markdown: String): MarkdownDocument = MarkdownDocumentParser.parse(markdown)
-        .withCodeHighlights()
+    override fun preview(markdown: String, codeTheme: CodeThemeId): MarkdownDocument =
+        MarkdownDocumentParser.parse(markdown).withCodeHighlights(codeTheme)
 
     /** Places rendered HTML on the desktop clipboard and reports whether it succeeded. */
-    override fun copyAsHtml(markdown: String): Boolean = runCatching {
-        val html = MarkdownToWechatHtml.render(preview(markdown))
+    override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId): Boolean = runCatching {
+        val html = MarkdownToWechatHtml.render(preview(markdown, codeTheme))
         Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
     }.isSuccess
 
     /** Enriches supported code blocks with the shared renderer-neutral highlight spans. */
-    private fun MarkdownDocument.withCodeHighlights(): MarkdownDocument = copy(
+    private fun MarkdownDocument.withCodeHighlights(codeTheme: CodeThemeId): MarkdownDocument = copy(
         blocks = blocks.map { block ->
             val language = (block as? MarkdownBlock.CodeBlock)?.language
             if (block is MarkdownBlock.CodeBlock && language != null) {
-                block.copy(highlights = codeHighlightRepo.highlight(language, block.code))
+                block.copy(highlights = codeHighlightRepo.highlight(language, block.code, codeTheme))
             } else {
                 block
             }

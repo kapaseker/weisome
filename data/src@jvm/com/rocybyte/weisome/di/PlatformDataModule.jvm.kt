@@ -20,6 +20,7 @@ import com.rocybyte.weisome.storage.article.ArticleDao
 import com.rocybyte.weisome.storage.article.ArticleLayoutStorage
 import com.rocybyte.weisome.storage.article.ArticleLayoutStore
 import com.rocybyte.weisome.storage.article.WeisomeDatabase
+import com.rocybyte.weisome.storage.article.WeisomeDatabaseMigrations
 import com.rocybyte.weisome.storage.settings.DisplaySettingsStorage
 import com.rocybyte.weisome.storage.settings.DisplaySettingsStore
 import com.rocybyte.weisome.storage.window.WindowStateStorage
@@ -41,7 +42,8 @@ actual val platformDataModule = module {
     single<WeisomeDatabase> {
         Room.databaseBuilder<WeisomeDatabase>(
             File(System.getProperty("user.home"), ".weisome/articles.db").absolutePath,
-        ).setDriver(BundledSQLiteDriver()).build()
+        ).addMigrations(*WeisomeDatabaseMigrations)
+            .setDriver(BundledSQLiteDriver()).build()
     }
     single<ArticleDao> { get<WeisomeDatabase>().articleDao() }
     single<ArticleRepo> { ArticleRepository(get()) }

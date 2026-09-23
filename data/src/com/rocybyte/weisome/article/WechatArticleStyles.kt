@@ -59,7 +59,7 @@ internal object WechatArticleStyles {
     const val codeElementCss =
         "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: #333333; background: #f8f8f8; border-radius: 0 4px;"
+            "white-space: pre; color: #24292f; background: #f6f8fa; border-radius: 0 4px;"
 
     /** Emphasis rendered as dot text-emphasis per hydrogen; italic kept from the default em semantics. */
     const val emCss = "font-style: italic; text-emphasis: dot; text-emphasis-position: under;"

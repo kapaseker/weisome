@@ -36,9 +36,9 @@ internal object WechatArticlePreviewStyles {
     val inlineCodeColor = Color(0xFFC0341D)
     val inlineCodeBackground = Color(0xFFFBE5E1)
 
-    /** code block: #333 on #f8f8f8. */
-    val codeBlockColor = Color(0xFF333333)
-    val codeBlockBackground = Color(0xFFF8F8F8)
+    /** code block: GitHub Light #24292f on #f6f8fa (matches CodeThemes GITHUB_LIGHT). */
+    val codeBlockColor = Color(0xFF24292F)
+    val codeBlockBackground = Color(0xFFF6F8FA)
 
     /** del: rgba(0, 0, 0, 0.6). */
     val strikethroughColor = Color(0x99000000)

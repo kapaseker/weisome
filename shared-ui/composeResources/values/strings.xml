@@ -40,4 +40,12 @@
     <string name="article_delete_irreversible">此操作无法恢复。</string>
     <string name="article_created_at">创建于 %1$s</string>
     <string name="article_updated_at">修改于 %1$s</string>
+    <string name="code_theme_selector">代码主题</string>
+    <string name="code_theme_github_light">Git Light</string>
+    <string name="code_theme_darcula">Darcula</string>
+    <string name="code_theme_monokai">Monokai</string>
+    <string name="code_theme_notepad">Notepad</string>
+    <string name="code_theme_matrix">Matrix</string>
+    <string name="code_theme_pastel">Pastel</string>
+    <string name="code_theme_atom_one">Atom One</string>
 </resources>
