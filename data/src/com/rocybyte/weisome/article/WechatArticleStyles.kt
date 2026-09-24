@@ -2,8 +2,8 @@ package com.rocybyte.weisome.article
 
 /**
  * Per-theme inline CSS for the WeChat HTML export.
- * Each theme mirrors its canonical SCSS in docs/: HYDROGEN follows docs/hydrogen.scss
- * (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb), GITHUB follows docs/github.scss
+ * Each theme mirrors its canonical SCSS in docs/theme/: HYDROGEN follows docs/theme/hydrogen/hydrogen.scss
+ * (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb), GITHUB follows docs/theme/github/github.scss
  * (primer/css src/markdown, light values resolved). Keep the shared-ui Compose preview
  * (MarkdownPreviewStyles) aligned with these values.
  */
@@ -87,7 +87,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
 
 private const val monospaceFont = "Menlo, Monaco, Consolas, 'Courier New', monospace"
 
-/** Hydrogen export styles; values mirror docs/hydrogen.scss. */
+/** Hydrogen export styles; values mirror docs/theme/hydrogen/hydrogen.scss. */
 internal object HydrogenExportStyles : MarkdownExportStyles() {
     override val fontColor = "rgba(46, 36, 36, 0.87)"
 
@@ -215,7 +215,7 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
     override val firstLetterCapitalized = true
 }
 
-/** GitHub export styles; values mirror docs/github.scss (primer/css markdown, light). */
+/** GitHub export styles; values mirror docs/theme/github/github.scss (primer/css markdown, light). */
 internal object GitHubExportStyles : MarkdownExportStyles() {
     override val fontColor = "#1f2328"
 

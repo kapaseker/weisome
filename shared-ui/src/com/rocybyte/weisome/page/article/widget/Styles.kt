@@ -22,8 +22,8 @@ internal data class HeadingSpec(
 
 /**
  * Compose preview styles for one Markdown document theme.
- * HYDROGEN mirrors docs/hydrogen.scss (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb),
- * GITHUB mirrors docs/github.scss (primer/css src/markdown, light values resolved).
+ * HYDROGEN mirrors docs/theme/hydrogen/hydrogen.scss (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb),
+ * GITHUB mirrors docs/theme/github/github.scss (primer/css src/markdown, light values resolved).
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -121,7 +121,7 @@ internal val LocalMarkdownPreviewStyles = staticCompositionLocalOf<MarkdownPrevi
     error("MarkdownPreviewStyles is not provided")
 }
 
-/** Hydrogen preview styles; values mirror docs/hydrogen.scss. */
+/** Hydrogen preview styles; values mirror docs/theme/hydrogen/hydrogen.scss. */
 internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xDE2E2424),
     mutedColor = Color(0xFF59636E),
@@ -199,7 +199,7 @@ internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     ),
 )
 
-/** GitHub preview styles; values mirror docs/github.scss (primer/css markdown, light). */
+/** GitHub preview styles; values mirror docs/theme/github/github.scss (primer/css markdown, light). */
 internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xFF1F2328),
     mutedColor = Color(0xFF59636E),

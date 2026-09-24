@@ -6,7 +6,7 @@ import org.jetbrains.skia.Image
 import java.util.Base64
 
 /**
- * Binary and vector assets copied from docs/hydrogen.scss.
+ * Binary and vector assets copied from docs/theme/hydrogen/hydrogen.scss.
  * Keep the values in sync with the stylesheet; it is the canonical source.
  */
 internal object HydrogenAssets {
