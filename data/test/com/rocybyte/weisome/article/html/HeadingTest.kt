@@ -4,6 +4,7 @@ import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.RimExportStyles
 import com.rocybyte.weisome.article.SmartBlueExportStyles
 import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
@@ -93,5 +94,18 @@ class HeadingTest {
         assertEquals(1, Regex("background: #f4d758").findAll(h1).count())
         assertEquals(1, Regex("background: #2b7fd8").findAll(h2).count())
         assertEquals(1, Regex("background: #f4d758").findAll(h2).count())
+    }
+
+    @Test
+    /** Verifies Rim headings resolve the upstream rem sizes against its 18px base. */
+    fun `renders rim heading scale and muted level six`() {
+        assertEquals(
+            "<h1 style=\"font-size: 34.2px; font-weight: 700; line-height: 1.3; margin: 18px 0 18px; color: #152e45;\">Hello</h1>",
+            renderHeading(MarkdownBlock.Heading(1, listOf(MarkdownInline.Text("Hello"))), RimExportStyles),
+        )
+        assertEquals(
+            "<h6 style=\"font-size: 18px; font-weight: 600; line-height: 1.3; margin: 28.8px 0 18px; color: #47525d;\">Small</h6>",
+            renderHeading(MarkdownBlock.Heading(6, listOf(MarkdownInline.Text("Small"))), RimExportStyles),
+        )
     }
 }

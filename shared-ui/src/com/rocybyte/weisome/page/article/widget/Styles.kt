@@ -28,6 +28,7 @@ internal data class HeadingSpec(
  * GITHUB mirrors docs/theme/github/github.scss (primer/css src/markdown, light values resolved),
  * SMART_BLUE mirrors docs/theme/smart-blue/smart-blue.css (cumt-robin/juejin-markdown-theme-smart-blue@f740565).
  * TYPORA_PAPER mirrors docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912.
+ * RIM mirrors docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef.
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -141,6 +142,7 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.HYDROGEN -> HydrogenPreviewStyles
     MarkdownThemeId.SMART_BLUE -> SmartBluePreviewStyles
     MarkdownThemeId.TYPORA_PAPER -> TyporaPaperPreviewStyles
+    MarkdownThemeId.RIM -> RimPreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -500,6 +502,86 @@ internal val TyporaPaperPreviewStyles = MarkdownPreviewStyles(
     imageShadowElevation = 12.dp,
     tableCornerRadius = 14.dp,
     tableShadowElevation = 6.dp,
+)
+
+/** Rim preview styles adapted from typora-theme-rim at commit f0d54ef. */
+internal val RimPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF13202C),
+    mutedColor = Color(0xFF47525D),
+    headingColor = Color(0xFF152E45),
+    themeColor = Color(0xFF4E3E8B),
+    linkColor = Color(0xFF3E3282),
+    boldColor = null,
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color.Transparent,
+    headingBottomBorderColor = Color.Transparent,
+    bodyFontSize = 18.sp,
+    bodyLineHeight = 30.6.sp,
+    paragraphTopMargin = 14,
+    paragraphBottomMargin = 14,
+    quoteParagraphTopMargin = 14,
+    quoteParagraphBottomMargin = 14,
+    quoteColor = Color(0xFF13202C),
+    quoteBackground = Color.Transparent,
+    quoteBorder = Color(0xFF4E3E8B),
+    quoteHasBackground = false,
+    quoteHasMarks = false,
+    quoteHasHover = false,
+    quotePaddingStart = 17,
+    quotePaddingEnd = 15,
+    quotePaddingTop = 0,
+    quotePaddingBottom = 0,
+    quoteVerticalMargin = 14,
+    quoteNestedVerticalMargin = 14,
+    inlineCodeColor = Color(0xFF00711E),
+    inlineCodeBackground = Color(0xFFF8F6F6),
+    inlineCodeFontScale = 0.8f,
+    inlineCodeCornerRadius = 3.dp,
+    codeBlockTopMargin = 15,
+    codeBlockBottomMargin = 15,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(3.dp),
+    codeBlockPaddingVertical = 7,
+    codeBlockPaddingHorizontal = 8,
+    codeBlockFontSize = 14.4.sp,
+    codeBlockLineHeight = 20.16.sp,
+    strikethroughColor = Color(0xFF13202C),
+    tableBorderColor = Color(0xFFCCCCCC),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color.Transparent,
+    tableHeaderColor = Color(0xFF13202C),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color.Transparent,
+    tableCellPaddingHorizontal = 0,
+    tableCellPaddingVertical = 6,
+    tableFontSize = 14.4.sp,
+    tableLineHeight = 20.16.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFFDEDEDE),
+    ruleHeight = 2.dp,
+    ruleVerticalMargin = 16,
+    listPaddingStart = 20,
+    listTopMargin = 14,
+    listBottomMargin = 14,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 0,
+    nestedListPaddingStart = 20,
+    nestedListTopMargin = 0,
+    headingSpecs = listOf(
+        HeadingSpec(34.2f, FontWeight.Bold, 18, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.3f),
+        HeadingSpec(28.8f, FontWeight.Bold, 43, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.3f),
+        HeadingSpec(23.4f, FontWeight.SemiBold, 36, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.3f),
+        HeadingSpec(20.7f, FontWeight.SemiBold, 32, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.3f),
+        HeadingSpec(18f, FontWeight.SemiBold, 29, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.3f),
+        HeadingSpec(18f, FontWeight.SemiBold, 29, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = true, lineHeightMultiplier = 1.3f),
+    ),
+    quoteBorderWidth = 3.dp,
+    codeBlockBorderColor = Color(0xFFE7EAED),
+    codeBlockBorderWidth = 1.dp,
 )
 
 /** Converts a packed RGB value to an opaque Compose color. */

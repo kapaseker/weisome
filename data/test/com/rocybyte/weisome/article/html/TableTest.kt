@@ -3,6 +3,7 @@ package com.rocybyte.weisome.article.html
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.RimExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,6 +33,16 @@ class TableTest {
         // Three two-column rows: the middle row stripes both cells, the other four stay plain.
         assertEquals(2, stripedCount)
         assertEquals(4, plainCount)
+    }
+
+    @Test
+    /** Verifies Rim tables keep the compact font and understated outer border. */
+    fun `renders rim table with a compact outer border`() {
+        val html = renderTable(table("a", "b", "1", "2"), RimExportStyles)
+
+        assertTrue(html.contains("font-size: 14.4px;"))
+        assertTrue(html.contains("font-weight: 700;"))
+        assertEquals(1, Regex("border: 1px solid #cccccc;").findAll(html).count())
     }
 
     /** Builds a two-column table from alternating header and row cell texts. */

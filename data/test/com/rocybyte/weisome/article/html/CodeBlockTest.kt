@@ -6,6 +6,7 @@ import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
+import com.rocybyte.weisome.article.RimExportStyles
 import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -110,6 +111,22 @@ class CodeBlockTest {
         assertTrue(html.contains("background: #ff5f57"))
         assertTrue(html.contains("background: #febc2e"))
         assertTrue(html.contains("background: #28c840"))
+        assertTrue(html.contains("color: #008500;"))
+        assertTrue(html.contains("background: #000000;"))
+    }
+
+    @Test
+    /** Verifies Rim supplies its compact frame while preserving the selected code palette. */
+    fun `renders rim code frame with the selected palette`() {
+        val html = renderCodeBlock(
+            codeBlock("val answer = 42"),
+            RimExportStyles,
+            CodeThemes.forId(CodeThemeId.MATRIX),
+        )
+
+        assertTrue(html.contains("border: 1px solid #e7eaed;"))
+        assertTrue(html.contains("border-radius: 3px;"))
+        assertTrue(html.contains("font-size: 14.4px;"))
         assertTrue(html.contains("color: #008500;"))
         assertTrue(html.contains("background: #000000;"))
     }

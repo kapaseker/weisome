@@ -80,6 +80,23 @@ class MarkdownToWechatHtmlTest {
     }
 
     @Test
+    /** Verifies the Rim theme reaches every major article renderer through the public entry point. */
+    fun `renders rim theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\nBody with [link](https://example.com) and `code`.\n\n> Quote\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n```kotlin\nval answer = 42\n```",
+            MarkdownThemeId.RIM,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 34.2px; font-weight: 700; line-height: 1.3;"))
+        assertTrue(html.contains("font-size: 18px; line-height: 1.7;"))
+        assertTrue(html.contains("color: #3e3282;"))
+        assertTrue(html.contains("border-left: 3px solid #4e3e8b;"))
+        assertTrue(html.contains("border: 1px solid #cccccc;"))
+        assertTrue(html.contains("border: 1px solid #e7eaed;"))
+    }
+
+    @Test
     /** Verifies the public entry point forwards the code theme so code text follows it, not the Markdown theme. */
     fun `forwards the code theme to code blocks through the public entry point`() {
         val html = MarkdownToWechatHtml.render(

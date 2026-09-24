@@ -6,7 +6,8 @@ package com.rocybyte.weisome.article
  * (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb), GITHUB follows docs/theme/github/github.scss
  * (primer/css src/markdown, light values resolved), SMART_BLUE follows docs/theme/smart-blue/smart-blue.css
  * (cumt-robin/juejin-markdown-theme-smart-blue@f740565), and TYPORA_PAPER follows
- * docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912. Keep the shared-ui Compose preview
+ * docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912, and RIM follows
+ * docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef. Keep the shared-ui Compose preview
  * (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -103,6 +104,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.HYDROGEN -> HydrogenExportStyles
     MarkdownThemeId.SMART_BLUE -> SmartBlueExportStyles
     MarkdownThemeId.TYPORA_PAPER -> TyporaPaperExportStyles
+    MarkdownThemeId.RIM -> RimExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -542,5 +544,74 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = false
     override val quoteHasMarks = true
+    override val firstLetterCapitalized = false
+}
+
+/** Rim export styles adapted from typora-theme-rim at commit f0d54ef. */
+internal object RimExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#13202c"
+
+    private data class HeadingSpec(
+        val size: String,
+        val weight: Int,
+        val top: String,
+        val color: String,
+    )
+
+    /** Returns Rim's heading metrics resolved against its 18px base size. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        1 -> HeadingSpec("34.2px", 700, "18px", "#152e45")
+        2 -> HeadingSpec("28.8px", 700, "43.2px", "#152e45")
+        3 -> HeadingSpec("23.4px", 600, "36px", "#152e45")
+        4 -> HeadingSpec("20.7px", 600, "32.4px", "#152e45")
+        5 -> HeadingSpec("18px", 600, "28.8px", "#152e45")
+        else -> HeadingSpec("18px", 600, "28.8px", "#47525d")
+    }
+
+    /** Builds one Rim heading style without importing its bundled heading font. */
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        return "font-size: ${spec.size}; font-weight: ${spec.weight}; line-height: 1.3; " +
+            "margin: ${spec.top} 0 18px; color: ${spec.color};"
+    }
+
+    override val paragraphCss =
+        "font-size: 18px; line-height: 1.7; margin: 14.4px 0; color: $fontColor; word-break: break-word;"
+    override val quoteParagraphCss = paragraphCss
+    override val listCss = "padding-left: 20px; margin: 14.4px 0;"
+    override val listItemCss = "font-size: 18px; line-height: 1.7; margin: 0; color: $fontColor;"
+    override val orderedListItemCss = listItemCss
+    override val nestedListCss = "padding-left: 20px; margin: 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+    override val inlineCodeCss =
+        "color: #00711e; background: #f8f6f6; padding: 0.08em 0.28em; border: 1px solid #e7eaed; " +
+            "border-radius: 3px; font-family: $monospaceFont; font-size: 0.8em; line-height: 1.4; " +
+            "white-space: break-spaces; overflow-wrap: anywhere; word-break: break-all; box-decoration-break: clone;"
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.4; margin: 15px 0; border: 1px solid #e7eaed; " +
+            "border-radius: 3px; background: #f8f6f6; white-space: pre; overflow: auto;"
+
+    /** Keeps the active code palette while applying Rim's compact type and spacing. */
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
+            "font-size: 14.4px; line-height: 1.4; padding: 8px; margin: 0; word-break: normal; white-space: pre; " +
+            "color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 3px;"
+
+    override val emCss = "font-style: italic;"
+    override val strikethroughCss = "color: $fontColor;"
+    override val linkCss = "color: #3e3282; text-decoration: underline;"
+    override val imgCss = "display: block; max-width: 100%; margin: 14.4px auto;"
+    override val blockquoteCss = "margin: 14.4px 0; padding: 0 15px 0 17px; border-left: 3px solid #4e3e8b;"
+    override val nestedBlockquoteCss = "margin: 14.4px 0; padding: 0 0 0 17px; border-left: 3px solid #4e3e8b;"
+    override val hrCss = "height: 2px; margin: 16px 0; padding: 0; border: 0; background: #dedede;"
+    override val tableCss =
+        "font-size: 14.4px; margin: 14.4px 0; border: 1px solid #cccccc; border-collapse: collapse; word-break: normal;"
+    override val thCss =
+        "padding: 6px 0; color: #13202c; font-size: 14.4px; line-height: 1.4; font-weight: 700;"
+    override val tdCss = "padding: 6px 0; color: #13202c; font-size: 14.4px; line-height: 1.4;"
+    override val stripedTdCss = tdCss
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = false
     override val firstLetterCapitalized = false
 }

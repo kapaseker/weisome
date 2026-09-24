@@ -242,13 +242,13 @@ class WechatArticleViewModelTest {
         )
         withTimeout(1_000) { viewModel.uiState.first { it.isArticleLoaded } }
 
-        viewModel.onMarkdownThemeSelected(MarkdownThemeId.HYDROGEN)
+        viewModel.onMarkdownThemeSelected(MarkdownThemeId.RIM)
         withTimeout(1_000) {
-            while (articleRepo.saved.none { it.markdownTheme == MarkdownThemeId.HYDROGEN }) yield()
+            while (articleRepo.saved.none { it.markdownTheme == MarkdownThemeId.RIM }) yield()
         }
 
-        assertEquals(MarkdownThemeId.HYDROGEN, viewModel.uiState.value.markdownTheme)
-        assertEquals(MarkdownThemeId.HYDROGEN, articleRepo.saved.last().markdownTheme)
+        assertEquals(MarkdownThemeId.RIM, viewModel.uiState.value.markdownTheme)
+        assertEquals(MarkdownThemeId.RIM, articleRepo.saved.last().markdownTheme)
     }
 
     /** Creates an editor ViewModel with the default save interval for copy-related tests. */

@@ -37,6 +37,7 @@ import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.ic_palette
 import com.rocybyte.weisome.generated.resources.markdown_theme_github
 import com.rocybyte.weisome.generated.resources.markdown_theme_hydrogen
+import com.rocybyte.weisome.generated.resources.markdown_theme_rim
 import com.rocybyte.weisome.generated.resources.markdown_theme_selector
 import com.rocybyte.weisome.generated.resources.markdown_theme_smart_blue
 import com.rocybyte.weisome.generated.resources.markdown_theme_typora_paper
@@ -55,6 +56,7 @@ private val MarkdownThemeEntries = listOf(
     MarkdownThemeId.HYDROGEN,
     MarkdownThemeId.SMART_BLUE,
     MarkdownThemeId.TYPORA_PAPER,
+    MarkdownThemeId.RIM,
 )
 
 /** Returns the localized display name for a Markdown theme id. */
@@ -64,6 +66,7 @@ private fun MarkdownThemeId.displayName(): String = when (this) {
     MarkdownThemeId.HYDROGEN -> stringResource(Res.string.markdown_theme_hydrogen)
     MarkdownThemeId.SMART_BLUE -> stringResource(Res.string.markdown_theme_smart_blue)
     MarkdownThemeId.TYPORA_PAPER -> stringResource(Res.string.markdown_theme_typora_paper)
+    MarkdownThemeId.RIM -> stringResource(Res.string.markdown_theme_rim)
 }
 
 /**

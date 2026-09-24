@@ -66,6 +66,7 @@ enum class MarkdownThemeId {
     HYDROGEN,
     SMART_BLUE,
     TYPORA_PAPER,
+    RIM,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */

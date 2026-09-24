@@ -6,6 +6,7 @@ import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.RimExportStyles
 import com.rocybyte.weisome.article.SmartBlueExportStyles
 import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
@@ -107,5 +108,23 @@ class BlockQuoteTest {
         assertTrue(html.contains("box-shadow: 0 10px 34px rgba(62, 48, 22, 0.10)"))
         assertEquals(1, html.count { it == '\u201c' })
         assertEquals(0, html.count { it == '\u201d' })
+    }
+
+    @Test
+    /** Verifies Rim quotes use the simple purple border without decorative marks or a fill. */
+    fun `renders rim quote with a purple left border`() {
+        assertEquals(
+            "<blockquote style=\"margin: 14.4px 0; padding: 0 15px 0 17px; border-left: 3px solid #4e3e8b;\">" +
+                "<p style=\"font-size: 18px; line-height: 1.7; margin: 14.4px 0; color: #13202c; word-break: break-word;\">Quoted</p>" +
+                "</blockquote>",
+            renderBlockQuote(
+                MarkdownBlock.BlockQuote(
+                    listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted"))))),
+                ),
+                inQuote = false,
+                styles = RimExportStyles,
+                codeTheme = githubLightCode,
+            ),
+        )
     }
 }
