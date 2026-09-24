@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -48,7 +50,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.skia.Image
 import java.net.URI
 
-/** Renders inline Markdown with hydrogen-styled code labels, links, deletions, and images. */
+/** Renders inline Markdown with the active theme's code labels, links, deletions, and images. */
 @Composable
 internal fun InlineMarkdownText(
     lines: List<List<MarkdownInline>>,
@@ -57,8 +59,10 @@ internal fun InlineMarkdownText(
     modifier: Modifier = Modifier,
     fontWeight: FontWeight? = null,
     color: Color = Color.Unspecified,
+    textAlign: TextAlign? = null,
 ) {
-    BoxWithConstraints(modifier) {
+    val alignmentModifier = if (textAlign != null) modifier.fillMaxWidth() else modifier
+    BoxWithConstraints(alignmentModifier) {
         val textMeasurer = rememberTextMeasurer()
         val density = androidx.compose.ui.platform.LocalDensity.current
         val horizontalPadding = 6.dp
@@ -106,7 +110,12 @@ internal fun InlineMarkdownText(
                 inlines.forEach { inline ->
                     when (inline) {
                         is MarkdownInline.Text -> append(inline.value)
-                        is MarkdownInline.Bold -> withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        is MarkdownInline.Bold -> withStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.Bold,
+                                color = styles.boldColor ?: Color.Unspecified,
+                            ),
+                        ) {
                             append(inline.value)
                         }
 
@@ -123,8 +132,12 @@ internal fun InlineMarkdownText(
                             chunks.forEach { chunk ->
                                 val id = "inline-code-${codeIndex++}"
                                 val measuredSize = textMeasurer.measure(chunk, codeStyle, maxLines = 1).size
+                                // The placeholder is sized to the measured text width, leaving the label
+                                // no slack: any sub-pixel difference between measuring and rendering pushes
+                                // the final glyph onto a second line, which maxLines = 1 then drops whole.
+                                // One dp of slack keeps the label on its single line.
                                 val placeholderWidth = with(density) {
-                                    (measuredSize.width + horizontalPadding.roundToPx() * 2).toSp()
+                                    (measuredSize.width + horizontalPadding.roundToPx() * 2 + 1.dp.roundToPx()).toSp()
                                 }
                                 val placeholderHeight = with(density) {
                                     (measuredSize.height + verticalPadding.roundToPx() * 2).toSp()
@@ -148,6 +161,9 @@ internal fun InlineMarkdownText(
                                         WeiSomeText(
                                             text = chunk,
                                             style = codeStyle,
+                                            // Labels are pre-split to fit the line, so a wrap here can only
+                                            // mean overflow; clipping it beats dropping a whole glyph.
+                                            softWrap = false,
                                             maxLines = 1,
                                         )
                                     }
@@ -231,6 +247,10 @@ internal fun InlineMarkdownText(
             lineHeight = lineHeight,
             fontWeight = fontWeight,
             color = color,
+            // The text box must span the container before textAlign can move the glyphs off the
+            // start edge; BoxWithConstraints places a narrow child at TopStart regardless.
+            modifier = if (textAlign != null) Modifier.fillMaxWidth() else Modifier,
+            style = LocalWeiSomeTextStyle.current.merge(TextStyle(textAlign = textAlign ?: TextAlign.Unspecified)),
         )
     }
 }

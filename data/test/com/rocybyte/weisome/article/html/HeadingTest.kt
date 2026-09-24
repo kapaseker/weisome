@@ -4,6 +4,7 @@ import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.SmartBlueExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -48,6 +49,31 @@ class HeadingTest {
             "<h2 style=\"font-size: 1.5em; font-weight: 600; line-height: 1.25; margin: 24px 0 16px; " +
                 "padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;\">title text</h2>",
             renderHeading(MarkdownBlock.Heading(2, listOf(MarkdownInline.Text("title text"))), GitHubExportStyles),
+        )
+    }
+
+    @Test
+    /** Verifies the smart-blue theme centers level-one headings and borders level-two headings in blue. */
+    fun `renders smart blue headings with centered h1 and bordered h2`() {
+        assertEquals(
+            "<h1 style=\"font-size: 22px; font-weight: 700; line-height: 1.5; color: #135ce0; " +
+                "padding: 0; margin: 35px 0 26px; text-align: center;\">Hello</h1>",
+            renderHeading(MarkdownBlock.Heading(1, listOf(MarkdownInline.Text("Hello"))), SmartBlueExportStyles),
+        )
+        assertEquals(
+            "<h2 style=\"font-size: 20px; font-weight: 700; line-height: 1.5; color: #135ce0; " +
+                "padding: 0 0 0 10px; margin: 30px 0; border-left: 4px solid #135ce0;\">title text</h2>",
+            renderHeading(MarkdownBlock.Heading(2, listOf(MarkdownInline.Text("title text"))), SmartBlueExportStyles),
+        )
+    }
+
+    @Test
+    /** Verifies levels three to six share the smart-blue heading rule with no font-size upstream. */
+    fun `renders smart blue h4 to h6 with the shared padding and no margin`() {
+        assertEquals(
+            "<h6 style=\"font-size: 10.05px; font-weight: 700; line-height: 1.5; color: #135ce0; " +
+                "padding: 30px 0; margin: 0;\">Small</h6>",
+            renderHeading(MarkdownBlock.Heading(6, listOf(MarkdownInline.Text("Small"))), SmartBlueExportStyles),
         )
     }
 }

@@ -4,18 +4,18 @@ import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class HorizontalRuleTest {
     @Test
-    /** Verifies the rule renders the gradient line with the centered juejin logo. */
-    fun `renders gradient line with centered logo`() {
+    /** Verifies the hydrogen theme renders only the gradient line, without the upstream logo mark. */
+    fun `renders hydrogen gradient line`() {
         val html = renderHorizontalRule(HydrogenExportStyles)
 
-        assertTrue(html.startsWith("<div style=\"position: relative; width: 98%; height: 1px; border: none; margin: 32px 0;"))
-        assertTrue(html.contains("linear-gradient(to right, #dddddd, #999999, #dddddd)"))
-        assertTrue(html.contains("width: 60px; height: 20px;"))
-        assertTrue(html.contains("data:image/png;base64,"))
+        assertEquals(
+            "<div style=\"position: relative; width: 98%; height: 1px; border: none; margin: 32px 0; " +
+                "background-image: linear-gradient(to right, #dddddd, #999999, #dddddd); overflow: visible;\"></div>",
+            html,
+        )
     }
 
     @Test

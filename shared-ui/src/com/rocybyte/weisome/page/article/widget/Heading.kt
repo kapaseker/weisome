@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
@@ -65,7 +66,8 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                 fontSize = spec.size.sp,
                 fontWeight = spec.weight,
                 lineHeight = spec.size.sp * spec.lineHeightMultiplier,
-                color = if (spec.muted) styles.mutedColor else styles.bodyColor,
+                color = if (spec.muted) styles.mutedColor else styles.headingColor,
+                textAlign = if (level == 1 && styles.h1Centered) TextAlign.Center else null,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -81,7 +83,7 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
     }
 }
 
-/** Renders a heading with the grey left border that turns blue on hover. */
+/** Renders a heading with the theme's left border, which turns blue on hover. */
 @Composable
 private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
     val spec = styles.headingSpec(level)
@@ -99,16 +101,18 @@ private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: M
         fontSize = spec.size.sp,
         fontWeight = spec.weight,
         lineHeight = spec.size.sp * spec.lineHeightMultiplier,
-        color = styles.bodyColor,
+        color = styles.headingColor,
         modifier = Modifier
             .hoverable(interactionSource)
             .drawBehind {
-                drawRect(borderColor, size = Size(5.dp.toPx(), size.height))
+                drawRect(borderColor, size = Size(spec.borderWidth.toPx(), size.height))
             }
-            .padding(start = 15.dp)
+            // Every bordered theme pads 10px after the border; the widget's own padding must also
+            // cover the painted border width, which a CSS border would not consume.
+            .padding(start = spec.borderWidth + 10.dp)
             .padding(
                 top = spec.top.dp,
-                bottom = spec.bottom.dp + 5.dp,
+                bottom = spec.bottom.dp,
             ),
     )
 }

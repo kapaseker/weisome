@@ -54,6 +54,17 @@ class MarkdownToWechatHtmlTest {
     }
 
     @Test
+    /** Verifies the SMART_BLUE theme renders the centered heading and body typography end to end. */
+    fun `renders smart blue theme through the public entry point`() {
+        assertEquals(
+            "<h1 style=\"font-size: 22px; font-weight: 700; line-height: 1.5; color: #135ce0; " +
+                "padding: 0; margin: 35px 0 26px; text-align: center;\">Title</h1>\n" +
+                "<p style=\"font-size: 15px; line-height: 2; margin: 0; color: #595959; word-break: break-word;\">Body</p>",
+            MarkdownToWechatHtml.render("# Title\n\nBody", MarkdownThemeId.SMART_BLUE, CodeThemeId.GITHUB_LIGHT),
+        )
+    }
+
+    @Test
     /** Verifies the public entry point forwards the code theme so code text follows it, not the Markdown theme. */
     fun `forwards the code theme to code blocks through the public entry point`() {
         val html = MarkdownToWechatHtml.render(

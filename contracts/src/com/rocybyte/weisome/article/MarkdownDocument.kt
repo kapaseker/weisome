@@ -64,6 +64,7 @@ data class CodeTheme(
 enum class MarkdownThemeId {
     GITHUB,
     HYDROGEN,
+    SMART_BLUE,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */

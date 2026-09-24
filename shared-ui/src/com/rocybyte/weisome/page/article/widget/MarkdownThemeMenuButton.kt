@@ -38,6 +38,7 @@ import com.rocybyte.weisome.generated.resources.ic_palette
 import com.rocybyte.weisome.generated.resources.markdown_theme_github
 import com.rocybyte.weisome.generated.resources.markdown_theme_hydrogen
 import com.rocybyte.weisome.generated.resources.markdown_theme_selector
+import com.rocybyte.weisome.generated.resources.markdown_theme_smart_blue
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
@@ -51,6 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 private val MarkdownThemeEntries = listOf(
     MarkdownThemeId.GITHUB,
     MarkdownThemeId.HYDROGEN,
+    MarkdownThemeId.SMART_BLUE,
 )
 
 /** Returns the localized display name for a Markdown theme id. */
@@ -58,6 +60,7 @@ private val MarkdownThemeEntries = listOf(
 private fun MarkdownThemeId.displayName(): String = when (this) {
     MarkdownThemeId.GITHUB -> stringResource(Res.string.markdown_theme_github)
     MarkdownThemeId.HYDROGEN -> stringResource(Res.string.markdown_theme_hydrogen)
+    MarkdownThemeId.SMART_BLUE -> stringResource(Res.string.markdown_theme_smart_blue)
 }
 
 /**

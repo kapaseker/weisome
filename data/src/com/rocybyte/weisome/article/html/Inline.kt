@@ -11,7 +11,9 @@ internal fun renderInline(
 ): String = inlines.joinToString("") { inline ->
     when (inline) {
         is MarkdownInline.Text -> escapeHtml(inline.value)
-        is MarkdownInline.Bold -> "<strong>${escapeHtml(inline.value)}</strong>"
+        is MarkdownInline.Bold ->
+            styles.boldColor?.let { "<strong style=\"color: $it;\">${escapeHtml(inline.value)}</strong>" }
+                ?: "<strong>${escapeHtml(inline.value)}</strong>"
         is MarkdownInline.Italic -> "<em style=\"${styles.emCss}\">${escapeHtml(inline.value)}</em>"
         is MarkdownInline.Code -> "<code style=\"${styles.inlineCodeCss}\">${escapeHtml(inline.value)}</code>"
         is MarkdownInline.Link ->

@@ -6,6 +6,7 @@ import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.SmartBlueExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -68,6 +69,24 @@ class BlockQuoteTest {
                 "<p style=\"font-size: 16px; line-height: 1.5; margin: 0 0 16px; color: #59636e; word-break: break-word;\">Quoted</p>" +
                 "</blockquote>",
             html,
+        )
+    }
+
+    @Test
+    /** Verifies the smart-blue theme renders a tinted quote without decorative marks. */
+    fun `renders smart blue blockquote with tinted background`() {
+        assertEquals(
+            "<blockquote style=\"background: #fff9f9; margin: 30px 0; padding: 2px 20px; border-left: 4px solid #b2aec5;\">" +
+                "<p style=\"font-size: 15px; line-height: 2; margin: 0; color: #666666; word-break: break-word;\">Quoted</p>" +
+                "</blockquote>",
+            renderBlockQuote(
+                MarkdownBlock.BlockQuote(
+                    listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted"))))),
+                ),
+                inQuote = false,
+                styles = SmartBlueExportStyles,
+                codeTheme = githubLightCode,
+            ),
         )
     }
 }

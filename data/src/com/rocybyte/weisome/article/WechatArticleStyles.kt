@@ -2,9 +2,10 @@ package com.rocybyte.weisome.article
 
 /**
  * Per-theme inline CSS for the WeChat HTML export.
- * Each theme mirrors its canonical SCSS in docs/theme/: HYDROGEN follows docs/theme/hydrogen/hydrogen.scss
+ * Each theme mirrors its canonical stylesheet in docs/theme/: HYDROGEN follows docs/theme/hydrogen/hydrogen.scss
  * (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb), GITHUB follows docs/theme/github/github.scss
- * (primer/css src/markdown, light values resolved). Keep the shared-ui Compose preview
+ * (primer/css src/markdown, light values resolved), SMART_BLUE follows docs/theme/smart-blue/smart-blue.css
+ * (cumt-robin/juejin-markdown-theme-smart-blue@f740565). Keep the shared-ui Compose preview
  * (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -33,6 +34,10 @@ internal abstract class MarkdownExportStyles {
     /** Inline CSS for the code element, colored with the active code theme's base text color and background. */
     abstract fun codeElementCss(codeTheme: CodeTheme): String
     abstract val emCss: String
+
+    /** Inline CSS color for `<strong>`; null keeps the plain element, which inherits the body color. */
+    open val boldColor: String? get() = null
+
     abstract val strikethroughCss: String
     abstract val linkCss: String
 
@@ -55,9 +60,6 @@ internal abstract class MarkdownExportStyles {
 
     abstract val hrCss: String
 
-    /** Real-element replacement of the theme's centered hr logo (hrHasLogo only). */
-    open val hrLogoCss: String get() = ""
-
     abstract val tableCss: String
     abstract val thCss: String
     abstract val tdCss: String
@@ -74,9 +76,6 @@ internal abstract class MarkdownExportStyles {
     /** Whether blockquotes render decorative opening/closing quote marks. */
     abstract val quoteHasMarks: Boolean
 
-    /** Whether the horizontal rule renders the theme's centered logo element. */
-    abstract val hrHasLogo: Boolean
-
     /** Whether paragraphs and h2/h3 headings capitalize their first letter. */
     abstract val firstLetterCapitalized: Boolean
 }
@@ -85,6 +84,7 @@ internal abstract class MarkdownExportStyles {
 internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = when (theme) {
     MarkdownThemeId.GITHUB -> GitHubExportStyles
     MarkdownThemeId.HYDROGEN -> HydrogenExportStyles
+    MarkdownThemeId.SMART_BLUE -> SmartBlueExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -196,13 +196,6 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
         "position: relative; width: 98%; height: 1px; border: none; margin: 32px 0; " +
             "background-image: linear-gradient(to right, #dddddd, #999999, #dddddd); overflow: visible;"
 
-    /** Real-element replacement of hydrogen's hr::after centered juejin logo. */
-    override val hrLogoCss =
-        "position: absolute; margin: auto; left: 0; right: 0; top: 0; bottom: 0; display: inline-block; " +
-            "width: 60px; height: 20px; background: #ffffff; background-repeat: no-repeat; " +
-            "background-size: auto 100%; background-position-x: center; " +
-            "background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAgCAYAAABgrToAAAADoklEQVRYR82XTYgcRRTHf2933Q1RjAa9eFO8JHoJ8RQVBQ2iBwXBET0YEUTXNVmNQtTpmeqaWV0XNRq/o4KoECSCEPSg4CF+BYUkIIiCoCJCPIhC/Ihh2Z0nVV27VnZnenumW9i6ddV7//frV69fVQurfMgq56NawFTPAU6QyomqXrw6wIZeyhCPebA5buNR+akKyGoAjd6BshthnYdSjqNcRVuOlIUsD2j0SuA94IwuMHdh5ZUykOUBXfSGbmKI54EtAeYIHSZoy5dl4JxvNYBOKdW1KE8BQ8AkVk6WhasWsAiN0TX9gveXQaPP+Aytpc4u+bMI06JNohsYYYYOR2lJWtS3OKDRfcAtQfgDoI6Vo4UCGb0OmAEuDvZvYmVbEd/igC3dzDz7gQu8sPA9kJDK27mBmjqBeLjTg90PDFOjWawFFQd06kZHEfaj3LAIpTRpSXsZ5E06zEYP9sDimnAApYaV2SLZG/wjMeqAkijwW4xQJ5Gf/ZzRC8OW3hiBTGGlURRswW55Bh/Ssxljrwew8l1PQaM14GngvGDzBUKdDsMeTtgU5o8B92PFlUf3YXUrHa7Fys6lBqcCGnX15YQ2A18FyPd7Crd1A3M8C1wdbH4DD3hWeP6IEXbQkG97ajR1HPFnuPP5jFFq1OWX7hl8WM9l1AO648uNfwLk7tytMeogty+xeQ4rO3r6bdcx1nuwOGsHmaXGtPzae4uzGnLH1kQkvpdZGrHjssBZJrL+pqS05KWc8tgITAPXRzYvYOXe/C2OV43eDcRBDtIhoS2f9wzc0Cv8Wls+zoFzUC5zF0U241h5uZtPfptp6OUM8wbK+cH5GEpCS17P3fJei0Z3+npTxryJ8CPzbKMtn/ZyWbkPGl0PuFPkmkjkcb4h4R2ZLwRq1H0ALmvjkf2HwK1Y+T1PY2XABe/sHJ6MxN5lnoSpnC/UGbsTaI5phK2R7x6s3Ffk5YoDOrWm3onwJHBmEP86bPmBrsGaenNoIdnxCH+gPEhLXi0Cl1VBvyPVLSh7gEuC62yAfOIUqabWEaaiucMIk6RyqJ+Q/QM69V26jjW86Gvov/EaoyT8zRCn+Xq7PVrbx0nuYUaO9wM3WAbjCE1NEUw09Um4UV+2OKfYfu5/S19gsAzGKqm6LE5FrShbdS0ku465DjDwKA/oQht19ejqbaEVuRbiLhuHByYLjtUAZpDutzP7cYdHsPJXWbjyNVgFwQoa1WXwf4Jd9YD/Ap80+yE7+u9aAAAAAElFTkSuQmCC');"
-
     override val tableCss =
         "margin: 0 auto 10px; font-size: 12px; width: auto; max-width: 100%; overflow: auto; border: 2px solid #c6c6c6;"
 
@@ -217,7 +210,6 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = true
     override val linkHasIcon = true
     override val quoteHasMarks = true
-    override val hrHasLogo = true
     override val firstLetterCapitalized = true
 }
 
@@ -307,6 +299,111 @@ internal object GitHubExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = false
     override val quoteHasMarks = false
-    override val hrHasLogo = false
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * smart-blue export styles; values mirror docs/theme/smart-blue/smart-blue.css.
+ * The h1 juejin-logo watermark is absent from the reference stylesheet, and the `.markdown-body`
+ * grid background and `kbd` rule are intentionally not rendered: the export is a block fragment
+ * with no body wrapper, and the model has no kbd element.
+ */
+internal object SmartBlueExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#595959"
+
+    private data class HeadingSpec(
+        val size: String,
+        val padding: String,
+        val margin: String,
+        val centered: Boolean,
+        val borderLeft: Boolean,
+    )
+
+    /** Returns the smart-blue typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        // The stylesheet's symmetric 80px (50 margin + 30 padding) becomes hydrogen's asymmetric h1
+        // rhythm, which renders 35px above and 27px below. Hydrogen reaches its 27px only because
+        // its h1 bottom margin collapses under the following paragraph's 22px top margin; smartblue
+        // paragraphs carry no CSS margin, so the heading supplies the whole 26px itself, matching
+        // the preview's 10px heading bottom plus 16px paragraph top.
+        1 -> HeadingSpec("22px", "padding: 0;", "margin: 35px 0 26px;", centered = true, borderLeft = false)
+        // h2 drops the shared 30px vertical padding for its own 10px left inset.
+        2 -> HeadingSpec("20px", "padding: 0 0 0 10px;", "margin: 30px 0;", centered = false, borderLeft = true)
+        3 -> HeadingSpec("16px", "padding: 30px 0;", "margin: 0;", centered = false, borderLeft = false)
+        // h4 to h6 keep the shared rule and fall back to the browser's 1em/0.83em/0.67em at 15px.
+        4 -> HeadingSpec("15px", "padding: 30px 0;", "margin: 0;", centered = false, borderLeft = false)
+        5 -> HeadingSpec("12.45px", "padding: 30px 0;", "margin: 0;", centered = false, borderLeft = false)
+        else -> HeadingSpec("10.05px", "padding: 30px 0;", "margin: 0;", centered = false, borderLeft = false)
+    }
+
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        val center = if (spec.centered) " text-align: center;" else ""
+        val border = if (spec.borderLeft) " border-left: 4px solid #135ce0;" else ""
+        return "font-size: ${spec.size}; font-weight: 700; line-height: 1.5; color: #135ce0; " +
+            "${spec.padding} ${spec.margin}$center$border"
+    }
+
+    override val paragraphCss =
+        "font-size: 15px; line-height: 2; margin: 0; color: $fontColor; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (color: #666). */
+    override val quoteParagraphCss =
+        "font-size: 15px; line-height: 2; margin: 0; color: #666666; word-break: break-word;"
+
+    // The stylesheet indents only `ul` (margin-left: 2em on top of the browser's 40px padding-left);
+    // ordered lists share it because the model carries a single list container style.
+    override val listCss = "padding-left: 40px; margin: 15px 0 15px 30px;"
+    override val listItemCss = "font-size: 15px; line-height: 2; margin-bottom: 0; color: $fontColor;"
+    override val orderedListItemCss = "font-size: 15px; line-height: 2; margin-bottom: 0; color: $fontColor;"
+    override val nestedListCss = "padding-left: 40px; margin: 15px 0 15px 30px;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #ff502c; background-color: #fff5f5; padding: 0.065em 0.4em; border-radius: 2px; " +
+            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+            "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
+
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
+
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic;"
+
+    override val boldColor = "#036aca"
+
+    override val strikethroughCss = "color: $fontColor;"
+
+    /** Anchors keep the stylesheet's 1px translucent bottom border instead of an underline. */
+    override val linkCss = "color: #036aca; text-decoration: none; border-bottom: 1px solid rgba(3, 106, 202, 0.8);"
+
+    override val imgCss = "display: block; margin: 0 auto; max-width: 100%;"
+
+    override val blockquoteCss =
+        "background: #fff9f9; margin: 30px 0; padding: 2px 20px; border-left: 4px solid #b2aec5;"
+
+    /** The stylesheet sets only the top border; 8px is its .5em browser default at the 15px body size. */
+    override val hrCss = "height: 1px; border: none; margin: 8px 0; background-color: #135ce0;"
+
+    override val tableCss =
+        "border-collapse: collapse; margin: 15px 0; width: auto; max-width: 100%; overflow-x: auto;"
+
+    override val thCss =
+        "background: transparent; color: $fontColor; text-align: left; padding: 9px 15px; " +
+            "font-size: 15px; font-weight: 700; border: 1px solid #dfe2e5;"
+
+    override val tdCss =
+        "padding: 9px 15px; font-size: 15px; line-height: 18px; color: $fontColor; border: 1px solid #dfe2e5;"
+
+    override val stripedTdCss = "$tdCss background: #f6f8fa;"
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = false
     override val firstLetterCapitalized = false
 }

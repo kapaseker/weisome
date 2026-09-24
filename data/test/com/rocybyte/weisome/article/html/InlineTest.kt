@@ -3,6 +3,7 @@ package com.rocybyte.weisome.article.html
 import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownInline
+import com.rocybyte.weisome.article.SmartBlueExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -98,6 +99,20 @@ class InlineTest {
         assertEquals(
             "<a href=\"https://example.com/a?b=1\" style=\"color: #0969da; text-decoration: underline;\">docs</a>",
             renderInline(listOf(MarkdownInline.Link("docs", "https://example.com/a?b=1")), GitHubExportStyles),
+        )
+    }
+
+    @Test
+    /** Verifies the smart-blue theme colors strong text blue and keeps links un-underlined with a border. */
+    fun `renders smart blue bold text and links`() {
+        assertEquals(
+            "<strong style=\"color: #036aca;\">bold</strong>",
+            renderInline(listOf(MarkdownInline.Bold("bold")), SmartBlueExportStyles),
+        )
+        assertEquals(
+            "<a href=\"https://example.com/a?b=1\" style=\"color: #036aca; text-decoration: none; " +
+                "border-bottom: 1px solid rgba(3, 106, 202, 0.8);\">docs</a>",
+            renderInline(listOf(MarkdownInline.Link("docs", "https://example.com/a?b=1")), SmartBlueExportStyles),
         )
     }
 

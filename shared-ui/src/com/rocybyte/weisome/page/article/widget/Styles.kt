@@ -16,6 +16,7 @@ internal data class HeadingSpec(
     val top: Int,
     val bottom: Int,
     val borderLeft: Boolean,
+    val borderWidth: Dp,
     val borderBottom: Boolean,
     val muted: Boolean,
     val lineHeightMultiplier: Float,
@@ -24,18 +25,22 @@ internal data class HeadingSpec(
 /**
  * Compose preview styles for one Markdown document theme.
  * HYDROGEN mirrors docs/theme/hydrogen/hydrogen.scss (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb),
- * GITHUB mirrors docs/theme/github/github.scss (primer/css src/markdown, light values resolved).
+ * GITHUB mirrors docs/theme/github/github.scss (primer/css src/markdown, light values resolved),
+ * SMART_BLUE mirrors docs/theme/smart-blue/smart-blue.css (cumt-robin/juejin-markdown-theme-smart-blue@f740565).
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
     val bodyColor: Color,
     val mutedColor: Color,
+    val headingColor: Color,
     val themeColor: Color,
     val linkColor: Color,
+    val boldColor: Color?,
     val linkUnderlined: Boolean,
     val linkHasIcon: Boolean,
     val firstLetterCapitalized: Boolean,
     val h1HasPrefix: Boolean,
+    val h1Centered: Boolean,
     val headingBorderColor: Color,
     val headingBottomBorderColor: Color,
     val bodyFontSize: androidx.compose.ui.unit.TextUnit,
@@ -83,7 +88,6 @@ internal data class MarkdownPreviewStyles(
     val ruleSolidColor: Color,
     val ruleHeight: Dp,
     val ruleVerticalMargin: Int,
-    val ruleHasLogo: Boolean,
     val listPaddingStart: Int,
     val listTopMargin: Int,
     val listBottomMargin: Int,
@@ -113,6 +117,7 @@ internal data class MarkdownPreviewStyles(
 internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = when (theme) {
     MarkdownThemeId.GITHUB -> GitHubPreviewStyles
     MarkdownThemeId.HYDROGEN -> HydrogenPreviewStyles
+    MarkdownThemeId.SMART_BLUE -> SmartBluePreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -129,12 +134,15 @@ internal val LocalCodeTheme = staticCompositionLocalOf<CodeTheme> {
 internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xDE2E2424),
     mutedColor = Color(0xFF59636E),
+    headingColor = Color(0xDE2E2424),
     themeColor = Color(0xFF1976D2),
     linkColor = Color(0xFF027FFF),
+    boldColor = null,
     linkUnderlined = false,
     linkHasIcon = true,
     firstLetterCapitalized = true,
     h1HasPrefix = true,
+    h1Centered = false,
     headingBorderColor = Color(0xFF454545),
     headingBottomBorderColor = Color(0xFFD1D9E0),
     bodyFontSize = 16.sp,
@@ -182,7 +190,6 @@ internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     ruleSolidColor = Color(0xFFD1D9E0),
     ruleHeight = 1.dp,
     ruleVerticalMargin = 32,
-    ruleHasLogo = true,
     listPaddingStart = 28,
     listTopMargin = 16,
     listBottomMargin = 16,
@@ -191,13 +198,14 @@ internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 28,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        HeadingSpec(30f, FontWeight.Medium, 35, 5, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(28f, FontWeight.Normal, 20, 10, borderLeft = true, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(24f, FontWeight.Normal, 15, 10, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(20f, FontWeight.Medium, 35, 10, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(16f, FontWeight.Normal, 35, 10, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(30f, FontWeight.Medium, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        // The 15px bottom is hydrogen's 10px h2 margin plus its 5px shared padding-bottom.
+        HeadingSpec(28f, FontWeight.Normal, 20, 15, borderLeft = true, borderWidth = 5.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(24f, FontWeight.Normal, 15, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(20f, FontWeight.Medium, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Normal, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         // hydrogen defines no h6 font-size; the body base of 16px is used instead.
-        HeadingSpec(16f, FontWeight.Normal, 5, 10, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Normal, 5, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
     ),
 )
 
@@ -205,12 +213,15 @@ internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
 internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xFF1F2328),
     mutedColor = Color(0xFF59636E),
+    headingColor = Color(0xFF1F2328),
     themeColor = Color(0xFF0969DA),
     linkColor = Color(0xFF0969DA),
+    boldColor = null,
     linkUnderlined = true,
     linkHasIcon = false,
     firstLetterCapitalized = false,
     h1HasPrefix = false,
+    h1Centered = false,
     headingBorderColor = Color(0xFF454545),
     headingBottomBorderColor = Color(0xFFD1D9E0),
     bodyFontSize = 16.sp,
@@ -259,7 +270,6 @@ internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     ruleSolidColor = Color(0xFFD1D9E0),
     ruleHeight = 4.dp,
     ruleVerticalMargin = 24,
-    ruleHasLogo = false,
     listPaddingStart = 32,
     listTopMargin = 0,
     listBottomMargin = 16,
@@ -268,12 +278,106 @@ internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 32,
     nestedListTopMargin = 0,
     headingSpecs = listOf(
-        HeadingSpec(32f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(24f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(20f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(16f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(14f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(13.6f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderBottom = false, muted = true, lineHeightMultiplier = 1.25f),
+        HeadingSpec(32f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(24f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(20f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(16f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(14f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(13.6f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = true, lineHeightMultiplier = 1.25f),
+    ),
+)
+
+/**
+ * smart-blue preview styles; values mirror docs/theme/smart-blue/smart-blue.css.
+ * The h1 juejin-logo watermark is absent from the reference stylesheet, and the `.markdown-body`
+ * grid background and `kbd` rule are intentionally not rendered. Paragraph spacing approximates
+ * `p + p { margin-top: 16px }` with a top margin (the model has no sibling selector), and quote
+ * paragraphs keep the stylesheet's tight 2px inset because `blockquote p` defines no margin.
+ */
+internal val SmartBluePreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF595959),
+    // Unused: no smart-blue heading takes the muted color.
+    mutedColor = Color(0xFF666666),
+    headingColor = Color(0xFF135CE0),
+    themeColor = Color(0xFF135CE0),
+    linkColor = Color(0xFF036ACA),
+    boldColor = Color(0xFF036ACA),
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = true,
+    headingBorderColor = Color(0xFF135CE0),
+    // Unused: no smart-blue heading renders a bottom border.
+    headingBottomBorderColor = Color(0xFFDFE2E5),
+    bodyFontSize = 15.sp,
+    bodyLineHeight = 30.sp,
+    paragraphTopMargin = 16,
+    paragraphBottomMargin = 0,
+    quoteParagraphTopMargin = 0,
+    quoteParagraphBottomMargin = 0,
+    quoteColor = Color(0xFF666666),
+    quoteBackground = Color(0xFFFFF9F9),
+    quoteBorder = Color(0xFFB2AEC5),
+    quoteHasBackground = true,
+    quoteHasMarks = false,
+    quoteHasHover = false,
+    // 24 = the stylesheet's 20px padding-left plus the 4px left border the widget paints inside.
+    quotePaddingStart = 24,
+    quotePaddingEnd = 20,
+    quotePaddingTop = 2,
+    quotePaddingBottom = 2,
+    quoteVerticalMargin = 30,
+    quoteNestedVerticalMargin = 30,
+    inlineCodeColor = Color(0xFFFF502C),
+    inlineCodeBackground = Color(0xFFFFF5F5),
+    inlineCodeFontScale = 0.87f,
+    inlineCodeCornerRadius = 2.dp,
+    codeBlockTopMargin = 15,
+    codeBlockBottomMargin = 15,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
+    codeBlockPaddingVertical = 15,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFF595959),
+    tableBorderColor = Color(0xFFDFE2E5),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color.Transparent,
+    tableHeaderColor = Color(0xFF595959),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color(0xFFF6F8FA),
+    tableCellPaddingHorizontal = 15,
+    tableCellPaddingVertical = 9,
+    tableFontSize = 15.sp,
+    // The stylesheet sets no cell line-height, i.e. the browser's normal (about 1.2 x 15px).
+    tableLineHeight = 18.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFF135CE0),
+    ruleHeight = 1.dp,
+    // The stylesheet sets only the top border; 8px is its .5em browser default at the 15px body size.
+    ruleVerticalMargin = 8,
+    // 70 = the stylesheet's 2em ul margin-left plus the browser's 40px padding-left; ordered lists
+    // share it because the model carries a single list indent.
+    listPaddingStart = 70,
+    listTopMargin = 15,
+    listBottomMargin = 15,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 0,
+    nestedListPaddingStart = 70,
+    nestedListTopMargin = 15,
+    headingSpecs = listOf(
+        // The stylesheet's symmetric 80px (50 margin + 30 padding) becomes hydrogen's asymmetric h1
+        // rhythm, which renders 35px above and 27px below. The 10px here plus the paragraph's 16px
+        // top margin render 26px, the same gap the export writes as the heading's own bottom margin.
+        HeadingSpec(22f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(20f, FontWeight.Bold, 30, 30, borderLeft = true, borderWidth = 4.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Bold, 30, 30, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        // h4 to h6 keep the shared rule and fall back to the browser's 1em/0.83em/0.67em at 15px.
+        HeadingSpec(15f, FontWeight.Bold, 30, 30, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(12.45f, FontWeight.Bold, 30, 30, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(10.05f, FontWeight.Bold, 30, 30, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
     ),
 )
 
