@@ -10,8 +10,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -125,8 +127,10 @@ internal fun CodeThemeMenuButton(
                 properties = PopupProperties(focusable = true),
             ) {
                 Column(
-                    horizontalAlignment = Alignment.End,
+                    // IntrinsicSize.Max 让菜单宽度由最宽的菜单项决定,item 再 fillMaxWidth 铺满菜单,
+                    // 避免 Popup 无界约束下 fillMaxWidth 撑到屏幕宽。
                     modifier = Modifier
+                        .width(IntrinsicSize.Max)
                         .shadow(8.dp, WeiSomeShapes.default, spotColor = WeiSomeColors.primary.copy(alpha = 0.08f))
                         .clip(WeiSomeShapes.default)
                         .background(WeiSomeColors.surfaceContainerLowest)
@@ -163,6 +167,7 @@ private fun CodeThemeOption(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .fillMaxWidth()
             .heightIn(min = 40.dp)
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .hoverable(interactionSource)
@@ -179,7 +184,7 @@ private fun CodeThemeOption(
             style = WeiSomeTypography.labelSm,
             color = if (selected) WeiSomeColors.primary else WeiSomeColors.onSurface,
         )
-        Spacer(Modifier.width(WeiSomeSpacing.stackSm))
+        Spacer(Modifier.weight(1f))
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.size(16.dp),

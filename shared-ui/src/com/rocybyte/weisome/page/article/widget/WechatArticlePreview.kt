@@ -7,6 +7,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.rocybyte.weisome.article.CodeThemeId
+import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownDocument
 import com.rocybyte.weisome.article.MarkdownThemeId
@@ -15,6 +17,7 @@ import com.rocybyte.weisome.article.MarkdownThemeId
  * Renders a structured Markdown document using the theme's preview styles.
  *
  * @param markdownTheme style set applied to every block widget via LocalMarkdownPreviewStyles.
+ * @param codeTheme code highlight theme applied to code blocks through LocalCodeTheme.
  * @param onBlockPositioned when non-null, invoked for every top-level block with its
  * index and top offset in the scroll content, used for split-view scroll synchronization.
  */
@@ -22,10 +25,14 @@ import com.rocybyte.weisome.article.MarkdownThemeId
 internal fun WechatArticlePreview(
     document: MarkdownDocument,
     markdownTheme: MarkdownThemeId,
+    codeTheme: CodeThemeId,
     modifier: Modifier = Modifier,
     onBlockPositioned: ((blockIndex: Int, topPx: Float) -> Unit)? = null,
 ) {
-    CompositionLocalProvider(LocalMarkdownPreviewStyles provides previewStylesFor(markdownTheme)) {
+    CompositionLocalProvider(
+        LocalMarkdownPreviewStyles provides previewStylesFor(markdownTheme),
+        LocalCodeTheme provides CodeThemes.forId(codeTheme),
+    ) {
         Column(modifier) {
             RenderBlocks(document.blocks, onBlockPositioned = onBlockPositioned)
         }

@@ -1,5 +1,7 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.CodeThemeId
+import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
@@ -7,6 +9,9 @@ import com.rocybyte.weisome.article.MarkdownInline
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+
+/** GitHub Light palette, the default code theme assumed by these renderer tests. */
+private val githubLightCode = CodeThemes.forId(CodeThemeId.GITHUB_LIGHT)
 
 class BlockQuoteTest {
     @Test
@@ -18,6 +23,7 @@ class BlockQuoteTest {
             ),
             inQuote = false,
             styles = HydrogenExportStyles,
+            codeTheme = githubLightCode,
         )
 
         assertTrue(html.startsWith("<blockquote style=\"position: relative; color: #666666; padding: 5px 23px 1px; margin: 22px 0; border-left: 4px solid #cbcbcb; background-color: rgba(200, 200, 200, 0.12);\">"))
@@ -39,6 +45,7 @@ class BlockQuoteTest {
             ),
             inQuote = true,
             styles = HydrogenExportStyles,
+            codeTheme = githubLightCode,
         )
 
         assertTrue(html.startsWith("<blockquote style=\"position: relative; color: #666666; padding: 5px 23px 1px; margin: 10px 0;"))
@@ -53,6 +60,7 @@ class BlockQuoteTest {
             ),
             inQuote = false,
             styles = GitHubExportStyles,
+            codeTheme = githubLightCode,
         )
 
         assertEquals(

@@ -26,12 +26,13 @@ import com.rocybyte.weisome.widget.WeiSomeText
 @Composable
 internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
     val styles = LocalMarkdownPreviewStyles.current
+    val codeTheme = LocalCodeTheme.current
     val horizontalScrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = styles.codeBlockTopMargin.dp, bottom = styles.codeBlockBottomMargin.dp)
-            .background(styles.codeBlockBackground, styles.codeBlockCornerShape),
+            .background(codeTheme.backgroundRgb.toComposeColor(), styles.codeBlockCornerShape),
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val minimumTextWidth = (
@@ -51,7 +52,7 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
             ) {
                 WeiSomeText(
                     text = highlightedCodeText(block),
-                    color = styles.codeBlockColor,
+                    color = codeTheme.codeRgb.toComposeColor(),
                     fontFamily = FontFamily.Monospace,
                     fontSize = styles.codeBlockFontSize,
                     lineHeight = styles.codeBlockLineHeight,

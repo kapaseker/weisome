@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rocybyte.weisome.article.CodeTheme
 import com.rocybyte.weisome.article.MarkdownThemeId
 
 /** Typography and decoration spec for one heading level. */
@@ -59,8 +60,6 @@ internal data class MarkdownPreviewStyles(
     val inlineCodeBackground: Color,
     val inlineCodeFontScale: Float,
     val inlineCodeCornerRadius: Dp,
-    val codeBlockColor: Color,
-    val codeBlockBackground: Color,
     val codeBlockTopMargin: Int,
     val codeBlockBottomMargin: Int,
     val codeBlockCornerShape: androidx.compose.foundation.shape.RoundedCornerShape,
@@ -121,6 +120,11 @@ internal val LocalMarkdownPreviewStyles = staticCompositionLocalOf<MarkdownPrevi
     error("MarkdownPreviewStyles is not provided")
 }
 
+/** Provides the active code theme palette to the code block widget. */
+internal val LocalCodeTheme = staticCompositionLocalOf<CodeTheme> {
+    error("CodeTheme is not provided")
+}
+
 /** Hydrogen preview styles; values mirror docs/theme/hydrogen/hydrogen.scss. */
 internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xDE2E2424),
@@ -155,8 +159,6 @@ internal val HydrogenPreviewStyles = MarkdownPreviewStyles(
     inlineCodeBackground = Color(0xFFFBE5E1),
     inlineCodeFontScale = 0.87f,
     inlineCodeCornerRadius = 2.dp,
-    codeBlockColor = Color(0xFF24292F),
-    codeBlockBackground = Color(0xFFF6F8FA),
     codeBlockTopMargin = 22,
     codeBlockBottomMargin = 22,
     codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp, 4.dp, 0.dp, 4.dp),
@@ -234,8 +236,6 @@ internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     inlineCodeBackground = Color(0x33AFB9C9),
     inlineCodeFontScale = 0.85f,
     inlineCodeCornerRadius = 6.dp,
-    codeBlockColor = Color(0xFF24292F),
-    codeBlockBackground = Color(0xFFF6F8FA),
     codeBlockTopMargin = 0,
     codeBlockBottomMargin = 16,
     codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),

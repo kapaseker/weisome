@@ -29,7 +29,9 @@ internal abstract class MarkdownExportStyles {
 
     abstract val inlineCodeCss: String
     abstract val codeBlockCss: String
-    abstract val codeElementCss: String
+
+    /** Inline CSS for the code element, colored with the active code theme's base text color and background. */
+    abstract fun codeElementCss(codeTheme: CodeTheme): String
     abstract val emCss: String
     abstract val strikethroughCss: String
     abstract val linkCss: String
@@ -84,6 +86,9 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.GITHUB -> GitHubExportStyles
     MarkdownThemeId.HYDROGEN -> HydrogenExportStyles
 }
+
+/** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
+internal fun Int.toCssColor(): String = "#%06x".format(this and 0xFFFFFF)
 
 private const val monospaceFont = "Menlo, Monaco, Consolas, 'Courier New', monospace"
 
@@ -143,10 +148,11 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
         "font-family: $monospaceFont; line-height: 1.75; border-radius: 0 4px; margin: 22px 0; " +
             "white-space: pre; overflow: auto;"
 
-    override val codeElementCss =
+    override fun codeElementCss(codeTheme: CodeTheme) =
         "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: #24292f; background: #f6f8fa; border-radius: 0 4px;"
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 0 4px;"
 
     /** Emphasis rendered as dot text-emphasis per hydrogen; italic kept from the default em semantics. */
     override val emCss = "font-style: italic; text-emphasis: dot; text-emphasis-position: under;"
@@ -265,10 +271,11 @@ internal object GitHubExportStyles : MarkdownExportStyles() {
         "font-family: $monospaceFont; line-height: 1.45; border-radius: 6px; margin: 0 0 16px; " +
             "white-space: pre; overflow: auto;"
 
-    override val codeElementCss =
+    override fun codeElementCss(codeTheme: CodeTheme) =
         "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 0.85em; padding: 16px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 6px;"
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 6px;"
 
     override val emCss = "font-style: italic;"
 

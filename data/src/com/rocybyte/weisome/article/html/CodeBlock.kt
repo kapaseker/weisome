@@ -1,10 +1,12 @@
 package com.rocybyte.weisome.article.html
 
+import com.rocybyte.weisome.article.CodeTheme
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownExportStyles
+import com.rocybyte.weisome.article.toCssColor
 
-/** Renders one code block with escaped text and inline color spans. */
-internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExportStyles): String {
+/** Renders one code block with escaped text, inline color spans, and the code theme's base colors. */
+internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExportStyles, codeTheme: CodeTheme): String {
     val code = buildString {
         var cursor = 0
         block.highlights.forEach { span ->
@@ -18,8 +20,5 @@ internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExp
         }
         append(escapeHtml(block.code.substring(cursor)))
     }
-    return "<pre style=\"${styles.codeBlockCss}\"><code style=\"${styles.codeElementCss}\">$code</code></pre>"
+    return "<pre style=\"${styles.codeBlockCss}\"><code style=\"${styles.codeElementCss(codeTheme)}\">$code</code></pre>"
 }
-
-/** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
-private fun Int.toCssColor(): String = "#%06x".format(this and 0xFFFFFF)

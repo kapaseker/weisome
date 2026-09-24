@@ -195,9 +195,9 @@ $icon-juejin: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAgCAYAAABg
       word-break: normal;
       display: block;
       overflow-x: auto;
-      // Code blocks intentionally use GitHub Light base colors (WeiSomeLightCodeTheme)
-      // instead of hydrogen's #333/#f8f8f8, so unhighlighted text matches the
-      // syntax-highlight tokens.
+      // Code blocks take their base text color and background from the active code
+      // theme palette (CodeThemes) instead of hydrogen's #333/#f8f8f8, so unhighlighted
+      // text matches the syntax-highlight tokens. The values below are the GitHub Light defaults.
       color: #24292f;
       background: #f6f8fa;
     }

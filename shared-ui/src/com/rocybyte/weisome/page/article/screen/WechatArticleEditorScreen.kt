@@ -281,13 +281,13 @@ private fun ArticleWorkspace(
                         .codeToolbarContainer(),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        CodeThemeMenuButton(
-                            selectedTheme = state.codeTheme,
-                            onThemeSelected = onCodeThemeSelected,
-                        )
                         MarkdownThemeMenuButton(
                             selectedTheme = state.markdownTheme,
                             onThemeSelected = onMarkdownThemeSelected,
+                        )
+                        CodeThemeMenuButton(
+                            selectedTheme = state.codeTheme,
+                            onThemeSelected = onCodeThemeSelected,
                         )
                     }
                 }
@@ -377,6 +377,7 @@ private fun ArticlePreviewPane(
         WechatArticlePreview(
             document = state.preview,
             markdownTheme = state.markdownTheme,
+            codeTheme = state.codeTheme,
             modifier = Modifier.fillMaxWidth(),
             onBlockPositioned = onBlockPositioned,
         )

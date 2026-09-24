@@ -22,7 +22,7 @@ internal class DesktopWechatArticleRepository(
     /** Places rendered HTML on the desktop clipboard and reports whether it succeeded. */
     override fun copyAsHtml(markdown: String, codeTheme: CodeThemeId, markdownTheme: MarkdownThemeId): Boolean =
         runCatching {
-            val html = MarkdownToWechatHtml.render(preview(markdown, codeTheme), markdownTheme)
+            val html = MarkdownToWechatHtml.render(preview(markdown, codeTheme), markdownTheme, codeTheme)
             Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlTransferable(html), null)
         }.isSuccess
 

@@ -2,6 +2,8 @@ package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.CodeHighlightSpan
 import com.rocybyte.weisome.article.CodeLanguage
+import com.rocybyte.weisome.article.CodeThemeId
+import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import kotlin.test.Test
@@ -9,11 +11,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** GitHub Light palette, the default code theme assumed by these renderer tests. */
+private val githubLightCode = CodeThemes.forId(CodeThemeId.GITHUB_LIGHT)
+
 class CodeBlockTest {
     @Test
     /** Verifies fenced code is escaped inside the scrollable pre and code hierarchy. */
     fun `renders escaped fenced code in the scrollable structure`() {
-        val html = renderCodeBlock(codeBlock("val tag = \"<code>\""), HydrogenExportStyles)
+        val html = renderCodeBlock(codeBlock("val tag = \"<code>\""), HydrogenExportStyles, githubLightCode)
 
         assertTrue(html.startsWith("<pre style=\"font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; line-height: 1.75;"))
         assertTrue(
@@ -29,7 +34,7 @@ class CodeBlockTest {
     @Test
     /** Verifies exported fenced code preserves authored lines and scrolls instead of wrapping. */
     fun `exports fenced code without automatic wrapping`() {
-        val html = renderCodeBlock(codeBlock("val longValue = someVeryLongExpression()"), HydrogenExportStyles)
+        val html = renderCodeBlock(codeBlock("val longValue = someVeryLongExpression()"), HydrogenExportStyles, githubLightCode)
         val codeStyle = html.substringAfter("<code style=\"").substringBefore("\"")
         val preStyle = html.substringAfter("<pre style=\"").substringBefore("\"")
 
@@ -52,9 +57,31 @@ class CodeBlockTest {
                 highlights = listOf(CodeHighlightSpan(0, 3, 0xCF222E)),
             ),
             HydrogenExportStyles,
+            githubLightCode,
         )
 
         assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span> main()"))
+    }
+
+    @Test
+    /** Verifies the base text color follows the active code theme, not the Markdown theme. */
+    fun `colors unhighlighted code with the active code theme base color`() {
+        val matrixCode = CodeThemes.forId(CodeThemeId.MATRIX)
+
+        val html = renderCodeBlock(codeBlock("class Worker"), HydrogenExportStyles, matrixCode)
+
+        assertTrue(html.contains("color: #008500;"))
+        assertFalse(html.contains("color: #24292f;"))
+    }
+
+    @Test
+    /** Verifies the code background comes from the active code theme palette, not a hardcoded value. */
+    fun `colors the code background from the active code theme palette`() {
+        val darkCode = githubLightCode.copy(backgroundRgb = 0x282C34)
+
+        val html = renderCodeBlock(codeBlock("class Worker"), HydrogenExportStyles, darkCode)
+
+        assertTrue(html.contains("background: #282c34;"))
     }
 
     /** Builds an unhighlighted Kotlin code block for renderer tests. */
