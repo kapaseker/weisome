@@ -9,16 +9,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.widget.WeiSomeText
 
@@ -41,9 +43,13 @@ internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false
         Box(
             Modifier
                 .then(if (styles.quoteHasHover) Modifier.hoverable(interactionSource) else Modifier)
+                .shadow(styles.quoteShadowElevation, RoundedCornerShape(styles.quoteCornerRadius))
+                .clip(RoundedCornerShape(styles.quoteCornerRadius))
                 .drawBehind {
                     if (styles.quoteHasBackground) drawRect(styles.quoteBackground)
-                    drawRect(borderColor, size = Size(4.dp.toPx(), size.height))
+                    if (styles.quoteBorderWidth > 0.dp) {
+                        drawRect(borderColor, size = Size(styles.quoteBorderWidth.toPx(), size.height))
+                    }
                 }
                 .padding(
                     start = styles.quotePaddingStart.dp,
@@ -57,8 +63,12 @@ internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false
             }
         }
         if (styles.quoteHasMarks) {
-            QuoteMark("\u201C", Modifier.align(Alignment.TopStart).offset(x = 6.dp, y = 4.dp), styles)
-            QuoteMark("\u201D", Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp), styles)
+            val openingOffsetX = if (styles.quoteHasClosingMark) 6.dp else 21.dp
+            val openingOffsetY = if (styles.quoteHasClosingMark) 4.dp else 2.dp
+            QuoteMark("\u201C", Modifier.align(Alignment.TopStart).offset(x = openingOffsetX, y = openingOffsetY), styles)
+            if (styles.quoteHasClosingMark) {
+                QuoteMark("\u201D", Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp), styles)
+            }
         }
     }
 }
@@ -68,10 +78,14 @@ internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false
 private fun QuoteMark(mark: String, modifier: Modifier = Modifier, styles: MarkdownPreviewStyles) {
     WeiSomeText(
         text = mark,
-        color = styles.quoteBorder.copy(alpha = 0.6f),
-        fontSize = 24.sp,
+        color = if (styles.quoteMarkColor == androidx.compose.ui.graphics.Color.Unspecified) {
+            styles.quoteBorder.copy(alpha = 0.6f)
+        } else {
+            styles.quoteMarkColor
+        },
+        fontSize = styles.quoteMarkFontSize,
         fontWeight = FontWeight.ExtraBold,
-        lineHeight = 24.sp,
+        lineHeight = styles.quoteMarkFontSize,
         modifier = modifier,
     )
 }

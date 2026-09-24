@@ -5,7 +5,8 @@ package com.rocybyte.weisome.article
  * Each theme mirrors its canonical stylesheet in docs/theme/: HYDROGEN follows docs/theme/hydrogen/hydrogen.scss
  * (DawnLck/juejin-markdown-theme-hydrogen@b3f86fb), GITHUB follows docs/theme/github/github.scss
  * (primer/css src/markdown, light values resolved), SMART_BLUE follows docs/theme/smart-blue/smart-blue.css
- * (cumt-robin/juejin-markdown-theme-smart-blue@f740565). Keep the shared-ui Compose preview
+ * (cumt-robin/juejin-markdown-theme-smart-blue@f740565), and TYPORA_PAPER follows
+ * docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912. Keep the shared-ui Compose preview
  * (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -17,6 +18,16 @@ internal abstract class MarkdownExportStyles {
 
     /** Inline CSS for the decorative prefix rendered before level-one headings (h1HasPrefix only). */
     open val h1PrefixCss: String get() = ""
+
+    /** Returns real leading markup for heading decorations that inline CSS cannot express. */
+    open fun headingPrefixHtml(level: Int): String = if (level == 1 && h1HasPrefix) {
+        "<span style=\"$h1PrefixCss\">#</span>"
+    } else {
+        ""
+    }
+
+    /** Returns real trailing markup for heading decorations that inline CSS cannot express. */
+    open fun headingSuffixHtml(level: Int): String = ""
 
     abstract val paragraphCss: String
     abstract val quoteParagraphCss: String
@@ -30,6 +41,9 @@ internal abstract class MarkdownExportStyles {
 
     abstract val inlineCodeCss: String
     abstract val codeBlockCss: String
+
+    /** Real-element decoration inserted before code content inside the preformatted frame. */
+    open val codeBlockHeaderHtml: String get() = ""
 
     /** Inline CSS for the code element, colored with the active code theme's base text color and background. */
     abstract fun codeElementCss(codeTheme: CodeTheme): String
@@ -58,6 +72,9 @@ internal abstract class MarkdownExportStyles {
     open val quoteOpenCss: String get() = ""
     open val quoteCloseCss: String get() = ""
 
+    /** Whether a decorative closing quote is rendered alongside the opening quote. */
+    open val quoteHasClosingMark: Boolean get() = true
+
     abstract val hrCss: String
 
     abstract val tableCss: String
@@ -85,6 +102,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.GITHUB -> GitHubExportStyles
     MarkdownThemeId.HYDROGEN -> HydrogenExportStyles
     MarkdownThemeId.SMART_BLUE -> SmartBlueExportStyles
+    MarkdownThemeId.TYPORA_PAPER -> TyporaPaperExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -405,5 +423,124 @@ internal object SmartBlueExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = false
     override val quoteHasMarks = false
+    override val firstLetterCapitalized = false
+}
+
+/** Typora Paper export styles adapted from Esther Inspired Paper at commit 8c4f912. */
+internal object TyporaPaperExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#1a1a2e"
+
+    private data class HeadingSpec(
+        val size: String,
+        val lineHeight: String,
+        val top: String,
+        val bottom: String,
+        val color: String,
+        val letterSpacing: String,
+        val borderBottom: Boolean = false,
+    )
+
+    /** Returns Paper's heading metrics resolved at the upstream 16px base size. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        1 -> HeadingSpec("50.4px", "1.18", "27.72px", "36.288px", "#17172a", "-0.045em")
+        2 -> HeadingSpec("32px", "1.35", "67.2px", "23.04px", "#17172a", "-0.025em", borderBottom = true)
+        3 -> HeadingSpec("21.6px", "1.35", "45.36px", "15.552px", "#2b7fd8", "-0.025em")
+        4 -> HeadingSpec("17.92px", "1.35", "37.632px", "12.9024px", "#17172a", "-0.025em")
+        5 -> HeadingSpec("15.68px", "1.35", "32.928px", "11.2896px", "#17172a", "0.02em")
+        else -> HeadingSpec("14.08px", "1.35", "29.568px", "10.1376px", "#555568", "0.08em")
+    }
+
+    /** Builds the Paper heading style without changing the application's selected font. */
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        val border = if (spec.borderBottom) " padding-bottom: 13.44px; border-bottom: 1px solid #e8e0cf;" else ""
+        return "font-size: ${spec.size}; font-weight: 800; line-height: ${spec.lineHeight}; " +
+            "margin: ${spec.top} 0 ${spec.bottom}; color: ${spec.color}; letter-spacing: ${spec.letterSpacing};$border"
+    }
+
+    /** Renders Paper's paired blue and yellow dots before level-two headings. */
+    override fun headingPrefixHtml(level: Int): String = if (level == 2) {
+        "<span style=\"position: relative; display: inline-block; width: 23px; height: 23px; margin-right: 7px; " +
+            "vertical-align: -5px;\"><span style=\"position: absolute; left: 8px; top: 7px; width: 15px; height: 15px; " +
+            "border-radius: 50%; background: #f4d758;\"></span><span style=\"position: absolute; left: 0; top: 0; " +
+            "width: 15px; height: 15px; border-radius: 50%; background: #2b7fd8;\"></span></span>"
+    } else {
+        ""
+    }
+
+    /** Renders Paper's hand-drawn yellow accent bar after level-one headings. */
+    override fun headingSuffixHtml(level: Int): String = if (level == 1) {
+        "<span style=\"display: block; width: 51.2px; height: 6.72px; margin-top: 8px; " +
+            "border-radius: 999px 52% 999px 46%; background: #f4d758; transform: rotate(-1.5deg);\"></span>"
+    } else {
+        ""
+    }
+
+    override val paragraphCss =
+        "font-size: 16px; line-height: 1.82; letter-spacing: 0.012em; margin: 16px 0; color: $fontColor; word-break: break-word;"
+    override val quoteParagraphCss =
+        "font-size: 16px; line-height: 1.82; letter-spacing: 0.012em; margin: 0; color: #555568; word-break: break-word;"
+    override val listCss = "padding-left: 26.4px; margin: 16px 0;"
+    override val listItemCss = "font-size: 16px; line-height: 1.82; margin: 5.44px 0; padding-left: 2.56px; color: $fontColor;"
+    // ponytail: inline CSS cannot target ::marker without recoloring item text; add explicit marker spans if needed.
+    override val orderedListItemCss = listItemCss
+    override val nestedListCss = "padding-left: 26.4px; margin: 3.2px 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+    override val inlineCodeCss =
+        "color: #b43c50; background: #f5efe1; margin: 0 0.08em; padding: 0.16em 0.38em; " +
+            "border: 1px solid #e8e0cf; border-radius: 6px; font-family: $monospaceFont; font-size: 0.88em; " +
+            "white-space: break-spaces; overflow-wrap: anywhere; word-break: break-all; box-decoration-break: clone;"
+    override val codeBlockCss =
+        "font-family: $monospaceFont; margin: 24px 0; border: 1px solid #d9dde5; border-radius: 15px; " +
+            "background: #eef0f4; box-shadow: 0 12px 30px rgba(62, 48, 22, 0.10); overflow: hidden;"
+    override val codeBlockHeaderHtml =
+        "<span style=\"display: block; height: 38.4px; box-sizing: border-box; padding: 13px 19.2px; " +
+            "border-bottom: 1px solid #d9dde5;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
+            "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; width: 10px; height: 10px; " +
+            "margin-left: 7px; border-radius: 50%; background: #febc2e;\"></span><span style=\"display: inline-block; " +
+            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #28c840;\"></span></span>"
+
+    /** Keeps the active code palette while applying Paper's inner spacing and line rhythm. */
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
+            "font-size: 14.08px; line-height: 1.68; padding: 20px 19.2px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic; color: #555568;"
+    override val boldColor = "#17172a"
+    override val strikethroughCss = "color: $fontColor;"
+    override val linkCss =
+        "color: #2b7fd8; text-decoration-line: underline; text-decoration-color: #f4d758; " +
+            "text-decoration-thickness: 0.16em; text-underline-offset: 0.16em;"
+    override val imgCss =
+        "display: block; margin: 27.2px auto; max-width: 100%; border-radius: 14px; " +
+            "box-shadow: 0 12px 32px rgba(62, 48, 22, 0.10);"
+    override val tableImgCss = "display: block; margin: 0 auto; max-width: 100%; border-radius: 14px;"
+    override val blockquoteCss =
+        "position: relative; min-height: 36.8px; margin: 27.2px 0; padding: 24.8px 28px 23.2px 59.2px; " +
+            "overflow: hidden; border: 0; border-radius: 18px; color: #555568; background: #ffffff; " +
+            "box-shadow: 0 10px 34px rgba(62, 48, 22, 0.10);"
+    override val nestedBlockquoteCss =
+        "position: relative; margin: 16px 0 0; padding: 24.8px 28px 23.2px 59.2px; border: 0; " +
+            "border-radius: 18px; color: #555568; background: #faf6eb;"
+    override val quoteOpenCss =
+        "position: absolute; top: 0.02em; left: 0.28em; color: #f4d758; font-size: 73.6px; font-weight: 700; line-height: 1;"
+    override val quoteHasClosingMark = false
+    override val hrCss =
+        "width: 42%; height: 5px; margin: 51.2px auto; border: 0; border-radius: 50%; " +
+            "background: #f4d758; box-shadow: 14px 0 0 #2b7fd8, -14px 0 0 #e84a5f; opacity: 0.78;"
+    override val tableCss =
+        "width: 100%; margin: 16px 0; border: 1px solid #e8e0cf; border-spacing: 0; border-collapse: separate; " +
+            "border-radius: 14px; background: #fffdf8; box-shadow: 0 6px 22px rgba(62, 48, 22, 0.10); overflow: hidden;"
+    override val thCss =
+        "padding: 11.52px 14.4px; color: #17172a; background: rgba(43, 127, 216, 0.10); text-align: left; " +
+            "font-size: 16px; line-height: 1.82; font-weight: 800; border-right: 1px solid #e8e0cf; border-bottom: 1px solid #e8e0cf;"
+    override val tdCss =
+        "padding: 11.52px 14.4px; color: #1a1a2e; font-size: 16px; line-height: 1.82; " +
+            "border-right: 1px solid #e8e0cf; border-bottom: 1px solid #e8e0cf;"
+    override val stripedTdCss = "$tdCss background: #faf6eb;"
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = true
     override val firstLetterCapitalized = false
 }

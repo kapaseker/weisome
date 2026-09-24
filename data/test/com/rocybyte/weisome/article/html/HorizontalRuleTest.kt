@@ -2,6 +2,7 @@ package com.rocybyte.weisome.article.html
 
 import com.rocybyte.weisome.article.GitHubExportStyles
 import com.rocybyte.weisome.article.HydrogenExportStyles
+import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,6 +25,16 @@ class HorizontalRuleTest {
         assertEquals(
             "<div style=\"height: 0.25em; padding: 0; margin: 24px 0; background-color: #d1d9e0; border: 0;\"></div>",
             renderHorizontalRule(GitHubExportStyles),
+        )
+    }
+
+    @Test
+    /** Verifies Paper's short yellow rule keeps its blue and red offset accents. */
+    fun `renders typora paper accent rule`() {
+        assertEquals(
+            "<div style=\"width: 42%; height: 5px; margin: 51.2px auto; border: 0; border-radius: 50%; " +
+                "background: #f4d758; box-shadow: 14px 0 0 #2b7fd8, -14px 0 0 #e84a5f; opacity: 0.78;\"></div>",
+            renderHorizontalRule(TyporaPaperExportStyles),
         )
     }
 }

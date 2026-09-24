@@ -6,6 +6,7 @@ import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
+import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -95,6 +96,22 @@ class CodeBlockTest {
 
         assertTrue(html.contains("background: #282c34;"))
         assertTrue(html.contains("color: #abb2bf;"))
+    }
+
+    @Test
+    /** Verifies Paper code blocks include the three-dot window header without replacing the selected code palette. */
+    fun `renders typora paper code window`() {
+        val html = renderCodeBlock(
+            codeBlock("val answer = 42"),
+            TyporaPaperExportStyles,
+            CodeThemes.forId(CodeThemeId.MATRIX),
+        )
+
+        assertTrue(html.contains("background: #ff5f57"))
+        assertTrue(html.contains("background: #febc2e"))
+        assertTrue(html.contains("background: #28c840"))
+        assertTrue(html.contains("color: #008500;"))
+        assertTrue(html.contains("background: #000000;"))
     }
 
     /** Builds an unhighlighted Kotlin code block for renderer tests. */

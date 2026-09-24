@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
@@ -224,7 +225,11 @@ internal fun InlineMarkdownText(
                                         contentDescription = inline.alt,
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .clip(RoundedCornerShape(2.dp)),
+                                            .shadow(
+                                                styles.imageShadowElevation,
+                                                RoundedCornerShape(styles.imageCornerRadius),
+                                            )
+                                            .clip(RoundedCornerShape(styles.imageCornerRadius)),
                                     )
                                 } else {
                                     Box(

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.MarkdownBlock
 
@@ -19,7 +22,14 @@ internal fun Table(block: MarkdownBlock.Table) {
     val rows = block.rows
     val columns = header.size
     Column(
-        modifier = Modifier.border(width = styles.tableBorderWidth, color = styles.tableBorderColor),
+        modifier = Modifier
+            .shadow(styles.tableShadowElevation, RoundedCornerShape(styles.tableCornerRadius))
+            .clip(RoundedCornerShape(styles.tableCornerRadius))
+            .border(
+                width = styles.tableBorderWidth,
+                color = styles.tableBorderColor,
+                shape = RoundedCornerShape(styles.tableCornerRadius),
+            ),
     ) {
         Row(
             modifier = Modifier.background(styles.tableHeaderBackground),

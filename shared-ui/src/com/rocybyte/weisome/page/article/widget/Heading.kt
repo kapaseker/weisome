@@ -7,18 +7,22 @@ import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,7 +49,7 @@ internal fun Heading(block: MarkdownBlock.Heading) {
 @Composable
 private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
     val spec = styles.headingSpec(level)
-    Box(
+    Column(
         Modifier
             .padding(top = spec.top.dp, bottom = spec.bottom.dp)
             .padding(bottom = if (spec.borderBottom) (spec.size * 0.3f).dp else 0.dp),
@@ -61,6 +65,17 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                 )
                 Spacer(Modifier.width(10.dp))
             }
+            if (level == 2 && styles.h2AccentDots) {
+                Box(
+                    Modifier
+                        .size(23.dp)
+                        .drawBehind {
+                            drawCircle(styles.ruleSolidColor, radius = 7.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(15.5.dp.toPx(), 14.5.dp.toPx()))
+                            drawCircle(styles.themeColor, radius = 7.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(7.5.dp.toPx(), 7.5.dp.toPx()))
+                        },
+                )
+                Spacer(Modifier.width(7.dp))
+            }
             InlineMarkdownText(
                 lines = listOf(content),
                 fontSize = spec.size.sp,
@@ -71,10 +86,19 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                 modifier = Modifier.weight(1f),
             )
         }
+        if (level == 1 && styles.h1AccentBar) {
+            Box(
+                Modifier
+                    .padding(top = 8.dp)
+                    .width(51.2.dp)
+                    .height(6.72.dp)
+                    .rotate(-1.5f)
+                    .background(styles.ruleSolidColor, RoundedCornerShape(99.dp)),
+            )
+        }
         if (spec.borderBottom) {
             Box(
                 Modifier
-                    .align(Alignment.BottomStart)
                     .fillMaxWidth()
                     .height(1.dp)
                     .background(styles.headingBottomBorderColor),

@@ -7,6 +7,7 @@ import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.article.SmartBlueExportStyles
+import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -88,5 +89,23 @@ class BlockQuoteTest {
                 codeTheme = githubLightCode,
             ),
         )
+    }
+
+    @Test
+    /** Verifies Paper quotes render as rounded cards with one oversized opening mark. */
+    fun `renders typora paper quote card`() {
+        val html = renderBlockQuote(
+            MarkdownBlock.BlockQuote(
+                listOf(MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted"))))),
+            ),
+            inQuote = false,
+            styles = TyporaPaperExportStyles,
+            codeTheme = githubLightCode,
+        )
+
+        assertTrue(html.contains("border-radius: 18px"))
+        assertTrue(html.contains("box-shadow: 0 10px 34px rgba(62, 48, 22, 0.10)"))
+        assertEquals(1, html.count { it == '\u201c' })
+        assertEquals(0, html.count { it == '\u201d' })
     }
 }

@@ -5,6 +5,7 @@ import com.rocybyte.weisome.article.HydrogenExportStyles
 import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.article.SmartBlueExportStyles
+import com.rocybyte.weisome.article.TyporaPaperExportStyles
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -75,5 +76,22 @@ class HeadingTest {
                 "padding: 30px 0; margin: 0;\">Small</h6>",
             renderHeading(MarkdownBlock.Heading(6, listOf(MarkdownInline.Text("Small"))), SmartBlueExportStyles),
         )
+    }
+
+    @Test
+    /** Verifies Paper headings use real inline decorations that survive clipboard HTML sanitization. */
+    fun `renders typora paper heading decorations`() {
+        val h1 = renderHeading(
+            MarkdownBlock.Heading(1, listOf(MarkdownInline.Text("Hello"))),
+            TyporaPaperExportStyles,
+        )
+        val h2 = renderHeading(
+            MarkdownBlock.Heading(2, listOf(MarkdownInline.Text("Section"))),
+            TyporaPaperExportStyles,
+        )
+
+        assertEquals(1, Regex("background: #f4d758").findAll(h1).count())
+        assertEquals(1, Regex("background: #2b7fd8").findAll(h2).count())
+        assertEquals(1, Regex("background: #f4d758").findAll(h2).count())
     }
 }

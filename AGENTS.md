@@ -41,3 +41,17 @@
 - For documentation-only changes, review the diff for correctness and formatting; a project check is not required.
 - For UI changes with meaningful interaction risk, validate the affected flow in the desktop application or Compose Preview when available.
 - Add focused tests for new behavior and keep build output out of version control.
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked as local Markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The default five canonical triage labels are used. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This repository uses a single-context domain documentation layout. See `docs/agents/domain.md`.

@@ -14,7 +14,8 @@ internal fun renderBlockQuote(
     val css = if (inQuote) styles.nestedBlockquoteCss else styles.blockquoteCss
     val inner = block.blocks.joinToString("\n") { renderBlock(it, inQuote = true, styles, codeTheme) }
     val marks = if (styles.quoteHasMarks) {
-        "<span style=\"${styles.quoteOpenCss}\">\u201C</span>$inner<span style=\"${styles.quoteCloseCss}\">\u201D</span>"
+        val closeMark = if (styles.quoteHasClosingMark) "<span style=\"${styles.quoteCloseCss}\">\u201D</span>" else ""
+        "<span style=\"${styles.quoteOpenCss}\">\u201C</span>$inner$closeMark"
     } else {
         inner
     }

@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 
@@ -15,10 +19,42 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun HorizontalRule() {
     val styles = LocalMarkdownPreviewStyles.current
-    if (!styles.ruleIsGradient) {
+    if (styles.ruleHasPaperAccents) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = styles.ruleVerticalMargin.dp, bottom = styles.ruleVerticalMargin.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth(styles.ruleWidthFraction)
+                    .height(styles.ruleHeight)
+                    .graphicsLayer(alpha = 0.78f)
+                    .drawBehind {
+                        val corner = CornerRadius(size.height / 2f, size.height / 2f)
+                        drawRoundRect(
+                            color = styles.unorderedMarkerColor,
+                            topLeft = Offset(x = (-14).dp.toPx(), y = 0f),
+                            size = androidx.compose.ui.geometry.Size(size.width, size.height),
+                            cornerRadius = corner,
+                        )
+                        drawRoundRect(
+                            color = styles.themeColor,
+                            topLeft = Offset(x = 14.dp.toPx(), y = 0f),
+                            size = androidx.compose.ui.geometry.Size(size.width, size.height),
+                            cornerRadius = corner,
+                        )
+                        drawRoundRect(color = styles.ruleSolidColor, cornerRadius = corner)
+                    },
+            )
+        }
+        return
+    }
+    if (!styles.ruleIsGradient) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(styles.ruleWidthFraction)
                 .padding(top = styles.ruleVerticalMargin.dp, bottom = styles.ruleVerticalMargin.dp)
                 .height(styles.ruleHeight)
                 .background(styles.ruleSolidColor),

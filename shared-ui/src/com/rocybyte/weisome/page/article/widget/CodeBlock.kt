@@ -2,18 +2,28 @@ package com.rocybyte.weisome.page.article.widget
 
 import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,8 +42,16 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = styles.codeBlockTopMargin.dp, bottom = styles.codeBlockBottomMargin.dp)
-            .background(codeTheme.backgroundRgb.toComposeColor(), styles.codeBlockCornerShape),
+            .shadow(styles.codeBlockShadowElevation, styles.codeBlockCornerShape)
+            .clip(styles.codeBlockCornerShape)
+            .background(
+                if (styles.codeBlockHasWindowHeader) styles.codeBlockFrameColor else codeTheme.backgroundRgb.toComposeColor(),
+            )
+            .border(styles.codeBlockBorderWidth, styles.codeBlockBorderColor, styles.codeBlockCornerShape),
     ) {
+        if (styles.codeBlockHasWindowHeader) {
+            CodeWindowHeader(styles.codeBlockBorderColor)
+        }
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val minimumTextWidth = (
                 maxWidth -
@@ -42,6 +60,7 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(codeTheme.backgroundRgb.toComposeColor())
                     .horizontalScroll(horizontalScrollState)
                     .padding(
                         top = styles.codeBlockPaddingVertical.dp,
@@ -72,6 +91,24 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
             )
         }
     }
+}
+
+/** Renders Paper's compact red, yellow, and green code-window controls. */
+@Composable
+private fun CodeWindowHeader(borderColor: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(38.4.dp)
+            .padding(horizontal = 19.2.dp),
+    ) {
+        listOf(Color(0xFFFF5F57), Color(0xFFFEBC2E), Color(0xFF28C840)).forEachIndexed { index, color ->
+            if (index > 0) Spacer(Modifier.width(7.dp))
+            Box(Modifier.size(10.dp).background(color, CircleShape))
+        }
+    }
+    Box(Modifier.fillMaxWidth().height(1.dp).background(borderColor))
 }
 
 /** Builds styled Compose text from the same normalized spans used by HTML export. */

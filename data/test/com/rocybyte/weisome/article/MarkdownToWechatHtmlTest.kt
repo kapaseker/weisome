@@ -65,6 +65,21 @@ class MarkdownToWechatHtmlTest {
     }
 
     @Test
+    /** Verifies the Typora Paper theme renders its editorial heading decoration and warm body palette. */
+    fun `renders typora paper theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\nBody",
+            MarkdownThemeId.TYPORA_PAPER,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 50.4px; font-weight: 800; line-height: 1.18;"))
+        assertTrue(html.contains("background: #f4d758;"))
+        assertTrue(html.contains("font-size: 16px; line-height: 1.82;"))
+        assertTrue(html.contains("color: #1a1a2e;"))
+    }
+
+    @Test
     /** Verifies the public entry point forwards the code theme so code text follows it, not the Markdown theme. */
     fun `forwards the code theme to code blocks through the public entry point`() {
         val html = MarkdownToWechatHtml.render(

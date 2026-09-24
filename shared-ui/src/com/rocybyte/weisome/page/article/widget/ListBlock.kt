@@ -48,7 +48,12 @@ private fun ListItemRow(block: MarkdownBlock.ListBlock, item: ListItem, index: I
                 block.ordered -> "${index + 1}."
                 else -> "\u2022"
             }
-            WeiSomeText(marker, color = styles.bodyColor)
+            val markerColor = when {
+                block.ordered && styles.orderedMarkerColor != androidx.compose.ui.graphics.Color.Unspecified -> styles.orderedMarkerColor
+                !block.ordered && styles.unorderedMarkerColor != androidx.compose.ui.graphics.Color.Unspecified -> styles.unorderedMarkerColor
+                else -> styles.bodyColor
+            }
+            WeiSomeText(marker, color = markerColor)
             Spacer(Modifier.width(8.dp))
             InlineMarkdownText(
                 lines = listOf(item.content),
