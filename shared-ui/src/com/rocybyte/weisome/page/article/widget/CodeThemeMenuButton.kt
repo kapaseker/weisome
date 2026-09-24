@@ -45,6 +45,7 @@ import com.rocybyte.weisome.generated.resources.code_theme_github_light
 import com.rocybyte.weisome.generated.resources.code_theme_matrix
 import com.rocybyte.weisome.generated.resources.code_theme_monokai
 import com.rocybyte.weisome.generated.resources.code_theme_notepad
+import com.rocybyte.weisome.generated.resources.code_theme_one_dark_pro
 import com.rocybyte.weisome.generated.resources.code_theme_pastel
 import com.rocybyte.weisome.generated.resources.code_theme_selector
 import com.rocybyte.weisome.generated.resources.ic_code_pen
@@ -66,6 +67,7 @@ private val CodeThemeEntries = listOf(
     CodeThemeId.MATRIX,
     CodeThemeId.PASTEL,
     CodeThemeId.ATOM_ONE,
+    CodeThemeId.ONE_DARK_PRO,
 )
 
 /** Returns the localized display name for a code theme id. */
@@ -78,6 +80,7 @@ private fun CodeThemeId.displayName(): String = when (this) {
     CodeThemeId.MATRIX -> stringResource(Res.string.code_theme_matrix)
     CodeThemeId.PASTEL -> stringResource(Res.string.code_theme_pastel)
     CodeThemeId.ATOM_ONE -> stringResource(Res.string.code_theme_atom_one)
+    CodeThemeId.ONE_DARK_PRO -> stringResource(Res.string.code_theme_one_dark_pro)
 }
 
 /**

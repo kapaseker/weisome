@@ -84,6 +84,19 @@ class CodeBlockTest {
         assertTrue(html.contains("background: #282c34;"))
     }
 
+    @Test
+    /** Verifies One Dark Pro exports its own dark background with the matching light foreground. */
+    fun `exports one dark pro on its dark background`() {
+        val html = renderCodeBlock(
+            codeBlock("class Worker"),
+            HydrogenExportStyles,
+            CodeThemes.forId(CodeThemeId.ONE_DARK_PRO),
+        )
+
+        assertTrue(html.contains("background: #282c34;"))
+        assertTrue(html.contains("color: #abb2bf;"))
+    }
+
     /** Builds an unhighlighted Kotlin code block for renderer tests. */
     private fun codeBlock(code: String): MarkdownBlock.CodeBlock = MarkdownBlock.CodeBlock(
         language = CodeLanguage.Kotlin,

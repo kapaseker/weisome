@@ -75,17 +75,19 @@ enum class CodeThemeId {
     MATRIX,
     PASTEL,
     ATOM_ONE,
+    ONE_DARK_PRO,
 }
 
-/** Palette per [CodeThemeId]; all themes render on the fixed light background #f6f8fa. */
+/** Palette per [CodeThemeId]; the light themes share #f6f8fa while ONE_DARK_PRO carries its own dark background. */
 object CodeThemes {
-    private val background = 0xF6F8FA
+    private val lightBackground = 0xF6F8FA
 
     /** Returns the palette for the given theme id. */
     fun forId(id: CodeThemeId): CodeTheme = when (id) {
         CodeThemeId.GITHUB_LIGHT -> githubLight
+        CodeThemeId.ONE_DARK_PRO -> oneDarkPro
         CodeThemeId.DARCULA -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x121212,
             keywordRgb = 0xCC7832,
             stringRgb = 0x6A8759,
@@ -97,7 +99,7 @@ object CodeThemes {
             markRgb = 0x121212,
         )
         CodeThemeId.MONOKAI -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x07070D,
             keywordRgb = 0xF92672,
             stringRgb = 0xE6DB74,
@@ -109,7 +111,7 @@ object CodeThemes {
             markRgb = 0x07070D,
         )
         CodeThemeId.NOTEPAD -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x000080,
             keywordRgb = 0x0000FF,
             stringRgb = 0x808080,
@@ -121,7 +123,7 @@ object CodeThemes {
             markRgb = 0xAA2C8C,
         )
         CodeThemeId.MATRIX -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x008500,
             keywordRgb = 0x008500,
             stringRgb = 0x269926,
@@ -133,7 +135,7 @@ object CodeThemes {
             markRgb = 0x008500,
         )
         CodeThemeId.PASTEL -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x20211F,
             keywordRgb = 0x729FCF,
             stringRgb = 0x93CF55,
@@ -145,7 +147,7 @@ object CodeThemes {
             markRgb = 0xCB956D,
         )
         CodeThemeId.ATOM_ONE -> CodeTheme(
-            backgroundRgb = background,
+            backgroundRgb = lightBackground,
             codeRgb = 0x383A42,
             keywordRgb = 0xA626A4,
             stringRgb = 0x50A14F,
@@ -158,8 +160,22 @@ object CodeThemes {
         )
     }
 
+    /** One Dark Pro's palette; the only theme that carries its own dark background. */
+    private val oneDarkPro = CodeTheme(
+        backgroundRgb = 0x282C34,
+        codeRgb = 0xABB2BF,
+        keywordRgb = 0xC678DD,
+        stringRgb = 0x98C379,
+        literalRgb = 0xD19A66,
+        commentRgb = 0x5C6370,
+        metadataRgb = 0xE5C07B,
+        multilineCommentRgb = 0x5C6370,
+        punctuationRgb = 0xABB2BF,
+        markRgb = 0x56B6C2,
+    )
+
     private val githubLight = CodeTheme(
-        backgroundRgb = background,
+        backgroundRgb = lightBackground,
         codeRgb = 0x24292F,
         keywordRgb = 0xCF222E,
         stringRgb = 0x0A3069,
