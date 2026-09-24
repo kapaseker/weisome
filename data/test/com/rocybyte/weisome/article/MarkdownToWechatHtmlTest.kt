@@ -63,6 +63,6 @@ class MarkdownToWechatHtmlTest {
         )
 
         assertTrue(html.contains("color: #008500;"))
-        assertTrue(html.contains("background: #f6f8fa;"))
+        assertTrue(html.contains("background: #000000;"))
     }
 }

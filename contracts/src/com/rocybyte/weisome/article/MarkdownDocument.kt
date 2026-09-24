@@ -78,52 +78,53 @@ enum class CodeThemeId {
     ONE_DARK_PRO,
 }
 
-/** Palette per [CodeThemeId]; the light themes share #f6f8fa while ONE_DARK_PRO carries its own dark background. */
+/**
+ * Palette per [CodeThemeId], taken from each theme's own official colour scheme so every entry is
+ * self-consistent: the foregrounds and the background always come from the same source.
+ */
 object CodeThemes {
-    private val lightBackground = 0xF6F8FA
-
     /** Returns the palette for the given theme id. */
     fun forId(id: CodeThemeId): CodeTheme = when (id) {
         CodeThemeId.GITHUB_LIGHT -> githubLight
         CodeThemeId.ONE_DARK_PRO -> oneDarkPro
         CodeThemeId.DARCULA -> CodeTheme(
-            backgroundRgb = lightBackground,
-            codeRgb = 0x121212,
+            backgroundRgb = 0x2B2B2B,
+            codeRgb = 0xA9B7C6,
             keywordRgb = 0xCC7832,
             stringRgb = 0x6A8759,
             literalRgb = 0x6897BB,
-            commentRgb = 0x909090,
+            commentRgb = 0x808080,
             metadataRgb = 0xBBB529,
-            multilineCommentRgb = 0x629755,
+            multilineCommentRgb = 0x808080,
             punctuationRgb = 0xCC7832,
-            markRgb = 0x121212,
+            markRgb = 0xA9B7C6,
         )
         CodeThemeId.MONOKAI -> CodeTheme(
-            backgroundRgb = lightBackground,
-            codeRgb = 0x07070D,
+            backgroundRgb = 0x272822,
+            codeRgb = 0xF8F8F2,
             keywordRgb = 0xF92672,
             stringRgb = 0xE6DB74,
             literalRgb = 0xAE81FF,
-            commentRgb = 0xFD971F,
-            metadataRgb = 0xB8F4B8,
-            multilineCommentRgb = 0xFD971F,
-            punctuationRgb = 0x07070D,
-            markRgb = 0x07070D,
+            commentRgb = 0x75715E,
+            metadataRgb = 0x66D9EF,
+            multilineCommentRgb = 0x75715E,
+            punctuationRgb = 0xF8F8F2,
+            markRgb = 0xF8F8F2,
         )
         CodeThemeId.NOTEPAD -> CodeTheme(
-            backgroundRgb = lightBackground,
-            codeRgb = 0x000080,
+            backgroundRgb = 0xFFFFFF,
+            codeRgb = 0x000000,
             keywordRgb = 0x0000FF,
             stringRgb = 0x808080,
             literalRgb = 0xFF8000,
             commentRgb = 0x008000,
-            metadataRgb = 0x000080,
+            metadataRgb = 0x000000,
             multilineCommentRgb = 0x008000,
-            punctuationRgb = 0xAA2C8C,
-            markRgb = 0xAA2C8C,
+            punctuationRgb = 0x000000,
+            markRgb = 0x000080,
         )
         CodeThemeId.MATRIX -> CodeTheme(
-            backgroundRgb = lightBackground,
+            backgroundRgb = 0x000000,
             codeRgb = 0x008500,
             keywordRgb = 0x008500,
             stringRgb = 0x269926,
@@ -135,8 +136,8 @@ object CodeThemes {
             markRgb = 0x008500,
         )
         CodeThemeId.PASTEL -> CodeTheme(
-            backgroundRgb = lightBackground,
-            codeRgb = 0x20211F,
+            backgroundRgb = 0x2E3436,
+            codeRgb = 0xDFDEE0,
             keywordRgb = 0x729FCF,
             stringRgb = 0x93CF55,
             literalRgb = 0x8AE234,
@@ -147,20 +148,20 @@ object CodeThemes {
             markRgb = 0xCB956D,
         )
         CodeThemeId.ATOM_ONE -> CodeTheme(
-            backgroundRgb = lightBackground,
+            backgroundRgb = 0xFAFAFA,
             codeRgb = 0x383A42,
             keywordRgb = 0xA626A4,
             stringRgb = 0x50A14F,
             literalRgb = 0x986801,
-            commentRgb = 0xA1A1A1,
-            metadataRgb = 0xC18401,
-            multilineCommentRgb = 0xA1A1A1,
-            punctuationRgb = 0xE45649,
-            markRgb = 0x526FFF,
+            commentRgb = 0xA0A1A7,
+            metadataRgb = 0xA626A4,
+            multilineCommentRgb = 0xA0A1A7,
+            punctuationRgb = 0x383A42,
+            markRgb = 0x383A42,
         )
     }
 
-    /** One Dark Pro's palette; the only theme that carries its own dark background. */
+    /** One Dark Pro's palette. */
     private val oneDarkPro = CodeTheme(
         backgroundRgb = 0x282C34,
         codeRgb = 0xABB2BF,
@@ -175,16 +176,16 @@ object CodeThemes {
     )
 
     private val githubLight = CodeTheme(
-        backgroundRgb = lightBackground,
-        codeRgb = 0x24292F,
+        backgroundRgb = 0xF6F8FA,
+        codeRgb = 0x1F2328,
         keywordRgb = 0xCF222E,
         stringRgb = 0x0A3069,
         literalRgb = 0x0550AE,
         commentRgb = 0x6E7781,
         metadataRgb = 0x8250DF,
         multilineCommentRgb = 0x6E7781,
-        punctuationRgb = 0x24292F,
-        markRgb = 0x953800,
+        punctuationRgb = 0x1F2328,
+        markRgb = 0x1F2328,
     )
 }
 

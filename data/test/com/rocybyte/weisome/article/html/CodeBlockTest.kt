@@ -25,7 +25,7 @@ class CodeBlockTest {
             html.contains(
                 "<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
                     "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-                    "white-space: pre; color: #24292f; background: #f6f8fa; border-radius: 0 4px;\">val tag = &quot;&lt;code&gt;&quot;</code>",
+                    "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">val tag = &quot;&lt;code&gt;&quot;</code>",
             ),
         )
         assertTrue(html.endsWith("</code></pre>"))
@@ -71,7 +71,7 @@ class CodeBlockTest {
         val html = renderCodeBlock(codeBlock("class Worker"), HydrogenExportStyles, matrixCode)
 
         assertTrue(html.contains("color: #008500;"))
-        assertFalse(html.contains("color: #24292f;"))
+        assertFalse(html.contains("color: #1f2328;"))
     }
 
     @Test
