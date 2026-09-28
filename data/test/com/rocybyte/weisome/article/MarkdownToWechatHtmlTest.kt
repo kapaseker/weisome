@@ -73,7 +73,7 @@ class MarkdownToWechatHtmlTest {
             CodeThemeId.GITHUB_LIGHT,
         )
 
-        assertTrue(html.contains("font-size: 50.4px; font-weight: 800; line-height: 1.18;"))
+        assertTrue(html.contains("font-size: 30px; font-weight: 800; line-height: 1.18;"))
         assertTrue(html.contains("background: #f4d758;"))
         assertTrue(html.contains("font-size: 16px; line-height: 1.82;"))
         assertTrue(html.contains("color: #1a1a2e;"))

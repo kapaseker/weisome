@@ -33,4 +33,18 @@ class MarkdownPreviewStylesTest {
         assertEquals(1.dp, styles.codeBlockBorderWidth)
         assertEquals(3.dp, styles.inlineCodeCornerRadius)
     }
+
+    @Test
+    /** Verifies the Paper preview mirrors the export's nested-quote treatment and mark anchoring. */
+    fun `maps paper quote overrides`() {
+        val styles = previewStylesFor(MarkdownThemeId.TYPORA_PAPER)
+
+        assertEquals(Color(0xFFFAF6EB), styles.quoteNestedBackground)
+        assertEquals(0.dp, styles.quoteNestedShadowElevation)
+        assertEquals(0, styles.quoteNestedBottomMargin)
+        assertEquals(6.dp, styles.quoteMarkInkTop)
+        assertEquals(Color(0xFFE8E0CF), styles.inlineCodeBorderColor)
+        assertEquals(37.dp, styles.quoteMinHeight)
+        assertEquals(FontWeight.Bold, styles.quoteMarkWeight)
+    }
 }

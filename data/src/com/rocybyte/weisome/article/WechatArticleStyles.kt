@@ -442,14 +442,14 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
         val borderBottom: Boolean = false,
     )
 
-    /** Returns Paper's heading metrics resolved at the upstream 16px base size. */
+    /** Returns Paper's heading metrics with font sizes aligned to the hydrogen heading scale. */
     private fun heading(level: Int): HeadingSpec = when (level) {
-        1 -> HeadingSpec("50.4px", "1.18", "27.72px", "36.288px", "#17172a", "-0.045em")
-        2 -> HeadingSpec("32px", "1.35", "67.2px", "23.04px", "#17172a", "-0.025em", borderBottom = true)
-        3 -> HeadingSpec("21.6px", "1.35", "45.36px", "15.552px", "#2b7fd8", "-0.025em")
-        4 -> HeadingSpec("17.92px", "1.35", "37.632px", "12.9024px", "#17172a", "-0.025em")
-        5 -> HeadingSpec("15.68px", "1.35", "32.928px", "11.2896px", "#17172a", "0.02em")
-        else -> HeadingSpec("14.08px", "1.35", "29.568px", "10.1376px", "#555568", "0.08em")
+        1 -> HeadingSpec("30px", "1.18", "27.72px", "36.288px", "#17172a", "-0.045em")
+        2 -> HeadingSpec("28px", "1.35", "67.2px", "23.04px", "#17172a", "-0.025em", borderBottom = true)
+        3 -> HeadingSpec("24px", "1.35", "45.36px", "15.552px", "#2b7fd8", "-0.025em")
+        4 -> HeadingSpec("20px", "1.35", "37.632px", "12.9024px", "#17172a", "-0.025em")
+        5 -> HeadingSpec("16px", "1.35", "32.928px", "11.2896px", "#17172a", "0.02em")
+        else -> HeadingSpec("16px", "1.35", "29.568px", "10.1376px", "#555568", "0.08em")
     }
 
     /** Builds the Paper heading style without changing the application's selected font. */
@@ -519,14 +519,14 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
             "box-shadow: 0 12px 32px rgba(62, 48, 22, 0.10);"
     override val tableImgCss = "display: block; margin: 0 auto; max-width: 100%; border-radius: 14px;"
     override val blockquoteCss =
-        "position: relative; min-height: 36.8px; margin: 27.2px 0; padding: 24.8px 28px 23.2px 59.2px; " +
+        "position: relative; min-height: 36.8px; margin: 27.2px 0; padding: 24.8px 28px 23.2px 50px; " +
             "overflow: hidden; border: 0; border-radius: 18px; color: #555568; background: #ffffff; " +
             "box-shadow: 0 10px 34px rgba(62, 48, 22, 0.10);"
     override val nestedBlockquoteCss =
-        "position: relative; margin: 16px 0 0; padding: 24.8px 28px 23.2px 59.2px; border: 0; " +
+        "position: relative; margin: 16px 0 0; padding: 24.8px 28px 23.2px 50px; border: 0; " +
             "border-radius: 18px; color: #555568; background: #faf6eb;"
     override val quoteOpenCss =
-        "position: absolute; top: 0.02em; left: 0.28em; color: #f4d758; font-size: 73.6px; font-weight: 700; line-height: 1;"
+        "position: absolute; top: 1.5px; left: 6px; color: #f4d758; font-size: 73.6px; font-weight: 700; line-height: 1;"
     override val quoteHasClosingMark = false
     override val hrCss =
         "width: 42%; height: 5px; margin: 51.2px auto; border: 0; border-radius: 50%; " +
