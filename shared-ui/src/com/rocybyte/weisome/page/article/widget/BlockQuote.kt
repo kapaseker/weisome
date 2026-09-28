@@ -21,7 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +72,20 @@ internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false
                 .drawBehind {
                     if (styles.quoteHasBackground) drawRect(background)
                     if (styles.quoteBorderWidth > 0.dp) {
-                        drawRect(borderColor, size = Size(styles.quoteBorderWidth.toPx(), size.height))
+                        if (styles.quoteHasBoxBorder) {
+                            // CSS borders draw inside the box; inset the stroke by half its
+                            // width so the rounded clip keeps the full stroke visible.
+                            val inset = styles.quoteBorderWidth / 2
+                            drawRoundRect(
+                                borderColor,
+                                topLeft = Offset(inset.toPx(), inset.toPx()),
+                                size = Size(size.width - inset.toPx() * 2, size.height - inset.toPx() * 2),
+                                cornerRadius = CornerRadius((styles.quoteCornerRadius - inset).coerceAtLeast(0.dp).toPx()),
+                                style = Stroke(styles.quoteBorderWidth.toPx()),
+                            )
+                        } else {
+                            drawRect(borderColor, size = Size(styles.quoteBorderWidth.toPx(), size.height))
+                        }
                     }
                 }
                 .padding(
@@ -92,14 +108,14 @@ internal fun BlockQuote(block: MarkdownBlock.BlockQuote, nested: Boolean = false
                 Modifier.offset(x = openingOffsetX, y = openingOffsetY)
             }
             QuoteMark(
-                "\u201C",
+                styles.quoteOpenMark,
                 Modifier.align(Alignment.TopStart).then(openingModifier),
                 styles,
                 styles.quoteMarkInkTop,
                 openingLayout,
             ) { result -> openingLayout = result }
             if (styles.quoteHasClosingMark) {
-                QuoteMark("\u201D", Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp), styles)
+                QuoteMark(styles.quoteCloseMark, Modifier.align(Alignment.BottomEnd).offset(x = (-8).dp, y = 8.dp), styles)
             }
         }
     }

@@ -7,8 +7,10 @@ package com.rocybyte.weisome.article
  * (primer/css src/markdown, light values resolved), SMART_BLUE follows docs/theme/smart-blue/smart-blue.css
  * (cumt-robin/juejin-markdown-theme-smart-blue@f740565), and TYPORA_PAPER follows
  * docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912, and RIM follows
- * docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef. Keep the shared-ui Compose preview
- * (MarkdownPreviewStyles) aligned with these values.
+ * docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef, and CHOCOLATE follows
+ * docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290, and YU follows
+ * docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f. Keep the
+ * shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
     /** Base body text color. */
@@ -94,6 +96,10 @@ internal abstract class MarkdownExportStyles {
     /** Whether blockquotes render decorative opening/closing quote marks. */
     abstract val quoteHasMarks: Boolean
 
+    /** Glyphs inside the opening/closing quote mark spans (quoteHasMarks only). */
+    open val quoteOpenMark: String get() = "\u201C"
+    open val quoteCloseMark: String get() = "\u201D"
+
     /** Whether paragraphs and h2/h3 headings capitalize their first letter. */
     abstract val firstLetterCapitalized: Boolean
 }
@@ -105,6 +111,8 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.SMART_BLUE -> SmartBlueExportStyles
     MarkdownThemeId.TYPORA_PAPER -> TyporaPaperExportStyles
     MarkdownThemeId.RIM -> RimExportStyles
+    MarkdownThemeId.CHOCOLATE -> ChocolateExportStyles
+    MarkdownThemeId.YU -> YuExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -613,5 +621,269 @@ internal object RimExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = false
     override val quoteHasMarks = false
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * Chocolate export styles adapted from juejin-markdown-theme-qklhk at commit 4f2a290.
+ * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
+ * body wrapper. The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
+ * highlight are pseudo-element/combinator effects the inline-CSS model cannot express. Heading
+ * top margins fall back to the browser defaults the stylesheet leaves in place.
+ */
+internal object ChocolateExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#412c0c"
+
+    private data class HeadingSpec(
+        val size: String,
+        val color: String,
+        val lineHeight: String,
+        val margin: String,
+        val padding: String,
+        val borderBottom: String = "",
+    )
+
+    /** Returns the chocolate typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        1 -> HeadingSpec(
+            "25px", "#664900", "35px", "17px 0 10px", "padding-bottom: 0; padding-left: 25px;",
+            borderBottom = "border-bottom: 5px solid #6d4e00; text-shadow: 1px 1px 1px #8a6200;",
+        )
+        2 -> HeadingSpec("20px", "#614500", "1.5", "17px 0 10px", "padding: 0 0 5px 20px;")
+        3 -> HeadingSpec("18px", "#614500", "1.5", "20px 10px 0 0", "padding: 0 0 0 10px;")
+        4 -> HeadingSpec("17px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
+        5 -> HeadingSpec("14px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
+        else -> HeadingSpec("12px", "#a37400", "1.5", "28px 0 10px", "padding-bottom: 5px;")
+    }
+
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        val relative = if (level <= 2) " position: relative;" else ""
+        val borderLeft = if (level == 3) " border-left: 5px solid #8f6600;" else ""
+        return "font-size: ${spec.size}; font-weight: bold; line-height: ${spec.lineHeight}; " +
+            "margin: ${spec.margin}; ${spec.padding} color: ${spec.color};$borderLeft$relative ${spec.borderBottom}"
+    }
+
+    /** Renders the chocolate-piece icon before h1/h2 text, vertically centered like the ::before. */
+    override fun headingPrefixHtml(level: Int): String {
+        if (level > 2) return ""
+        val size = if (level == 1) "20px" else "15px"
+        val backgroundSize = if (level == 1) "20px 20px" else "100% 100%"
+        return "<span style=\"position: absolute; left: 0; top: 3px; bottom: 0; margin: auto; " +
+            "width: $size; height: $size; background-size: $backgroundSize; background-repeat: no-repeat; " +
+            "background-image: url('data:image/png;base64,$ChocolateThemeIconPngBase64');\"></span>"
+    }
+
+    override val paragraphCss =
+        "font-size: 15px; line-height: 1.75; margin: 0 0 16px; color: $fontColor; letter-spacing: 1px; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (color: #fff6e0). */
+    override val quoteParagraphCss =
+        "font-size: 15px; line-height: 25px; margin: 0; color: #fff6e0; letter-spacing: 2px; word-break: break-word;"
+
+    // The stylesheet keeps the browser's 1em ul/ol vertical margin; 15px is its equivalent at body size.
+    override val listCss = "padding-left: 28px; margin: 15px 0;"
+    override val listItemCss = "font-size: 15px; line-height: 1.75; margin-bottom: 0; color: #858585; letter-spacing: 1px;"
+    override val orderedListItemCss = "$listItemCss padding-left: 6px;"
+    override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #996d00; background-color: rgba(130, 98, 0, 0.3); padding: 0.065em 0.4em; border-radius: 2px; " +
+            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+            "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
+
+    // pre leaves its vertical margin to the browser default (1em); 15px is its equivalent at body size.
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
+
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic; color: #c28a00;"
+
+    override val boldColor = "#c28a00"
+
+    override val strikethroughCss = "color: #c28a00;"
+
+    /** Anchors keep the stylesheet's 1px bottom border instead of an underline. */
+    override val linkCss =
+        "color: #755300; text-decoration: none; font-weight: bolder; border-bottom: 1px solid #755300;"
+
+    override val imgCss = "display: block; margin: 0 auto; max-width: 100%;"
+
+    override val blockquoteCss =
+        "position: relative; line-height: 25px; border-radius: 10px; border: 1px solid #ffd87a; " +
+            "background-color: rgba(189, 134, 0, 0.5); margin: 20px 0; padding: 20px;"
+
+    override val quoteOpenCss =
+        "position: absolute; top: 8px; left: 5px; font-size: 34px; font-weight: 700; line-height: 1; color: #cc9100;"
+    override val quoteCloseCss =
+        "position: absolute; right: 5px; bottom: -5px; font-size: 34px; font-weight: 700; line-height: 1; color: #cc9100;"
+    override val quoteOpenMark = "\u275D"
+    override val quoteCloseMark = "\u275E"
+
+    // The stylesheet overrides its own first hr rule with border-top: 1px solid #805b00.
+    override val hrCss =
+        "height: 1px; border: none; margin: 32px 0; background-color: #805b00;"
+
+    // The stylesheet's width: 100% !important wins over its own width: auto.
+    override val tableCss =
+        "margin: 0; font-size: 12px; width: 100%; max-width: 100%; overflow: auto; border-collapse: collapse; border-spacing: 0;"
+
+    override val thCss =
+        "background: #f6f6f6; color: #000000; text-align: center; padding: 12px 7px; line-height: 24px; " +
+            "font-size: 12px; border: 1px solid rgba(72, 42, 10, 0.1);"
+
+    override val tdCss =
+        "padding: 12px 7px; line-height: 24px; font-size: 12px; color: $fontColor; border: 1px solid rgba(72, 42, 10, 0.1);"
+
+    override val stripedTdCss = tdCss
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = true
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * Yu export styles adapted from juejin-markdown-theme-yu at commit 1e3096f.
+ * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
+ * body wrapper. The strong `·` dashes and the blockquote/table hover styles are pseudo-element
+ * or interactive effects the inline-CSS model cannot express. The h2 font-size falls back to
+ * the browser default (1.5em) the stylesheet leaves in place.
+ */
+internal object YuExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#5f6368"
+
+    private data class HeadingSpec(
+        val size: String,
+        val margin: String,
+        val paddingBottom: String,
+        val borderBottom: String = "",
+    )
+
+    /** Returns the yu typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        1 -> HeadingSpec("32px", "35px 0 5px", "5px")
+        // The stylesheet defines no h2 font-size; the browser's 1.5em default at body size applies.
+        2 -> HeadingSpec("22.5px", "35px 0 10px", "24px", borderBottom = "border-bottom: 1px solid #ececec;")
+        3 -> HeadingSpec("18px", "35px 0 10px", "0")
+        4 -> HeadingSpec("16px", "35px 0 10px", "5px")
+        5 -> HeadingSpec("14px", "35px 0 10px", "5px")
+        else -> HeadingSpec("12px", "5px 0 10px", "5px")
+    }
+
+    /** Returns the animal emoji, its left offset, and its top offset for a heading level. */
+    private fun prefixEmoji(level: Int): Triple<String, Int, Int>? = when (level) {
+        1 -> Triple("\uD83E\uDD84", 0, 0)
+        2 -> Triple("\uD83D\uDC33", 8, 0)
+        3 -> Triple("\uD83D\uDC04", 8, -2)
+        4 -> Triple("\uD83E\uDDA5", 8, -2)
+        5 -> Triple("\uD83E\uDDA9", 9, -2)
+        6 -> Triple("\uD83D\uDC27", 10, -1)
+        else -> null
+    }
+
+    /** Returns the emoji glyph size for a heading level from 1 to 6. */
+    private fun prefixSize(level: Int): Int = when (level) {
+        1 -> 32
+        2 -> 24
+        3 -> 20
+        4 -> 18
+        5 -> 16
+        else -> 14
+    }
+
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        return "font-size: ${spec.size}; font-weight: bold; line-height: 1.5; " +
+            "margin: ${spec.margin}; padding: 0 0 ${spec.paddingBottom} 50px; color: $fontColor; " +
+            "position: relative;${spec.borderBottom}"
+    }
+
+    /** Renders the animal emoji before heading text, positioned like the ::before. */
+    override fun headingPrefixHtml(level: Int): String {
+        val (emoji, left, top) = prefixEmoji(level) ?: return ""
+        return "<span style=\"position: absolute; top: ${top}px; left: ${left}px; font-size: " +
+            "${prefixSize(level)}px;\">$emoji</span>"
+    }
+
+    override val paragraphCss =
+        "font-size: 15px; line-height: 1.9; margin: 22px 0; color: $fontColor; " +
+            "letter-spacing: 1px; word-spacing: 1px; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (margin: 10px 0). */
+    override val quoteParagraphCss =
+        "font-size: 15px; line-height: 1.9; margin: 10px 0; color: #666666; " +
+            "letter-spacing: 1px; word-spacing: 1px; word-break: break-word;"
+
+    // The stylesheet keeps the browser's 1em ul/ol vertical margin; 15px is its equivalent at body size.
+    override val listCss = "padding-left: 28px; margin: 15px 0;"
+    override val listItemCss =
+        "font-size: 15px; line-height: 1.75; margin-bottom: 0; color: #fd79a8; letter-spacing: 1px; word-spacing: 1px;"
+    override val orderedListItemCss = "$listItemCss padding-left: 6px;"
+    override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #ff502c; background-color: #fff5f5; padding: 0.065em 0.4em; border-radius: 2px; " +
+            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+            "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
+
+    // pre leaves its vertical margin to the browser default (1em); 15px is its equivalent at body size.
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
+
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 8px;"
+
+    override val emCss = "font-style: italic;"
+
+    override val boldColor = "#fd79a8"
+
+    override val strikethroughCss = "color: $fontColor;"
+
+    /** Anchors keep the stylesheet's 1px bottom border and 4px side padding. */
+    override val linkCss =
+        "color: #fd79a8; text-decoration: none; border-bottom: 1px solid #fd79a8; padding: 0 4px;"
+
+    override val imgCss = "display: block; margin: 0 auto; max-width: 100%;"
+
+    override val blockquoteCss =
+        "position: relative; color: #666666; padding: 23px; margin: 22px 0; " +
+            "border-left: 4px solid #ee69a9; background-color: rgba(253, 121, 168, 0.1);"
+
+    override val quoteOpenCss =
+        "position: absolute; top: 0; left: 10px; font-size: 27px; color: rgba(253, 121, 168, 0.8);"
+    override val quoteCloseCss =
+        "position: absolute; bottom: 0; right: 10px; font-size: 27px; color: rgba(253, 121, 168, 0.8);"
+    override val quoteOpenMark = "\u275D"
+    override val quoteCloseMark = "\u275E"
+
+    override val hrCss =
+        "height: 1px; border: none; margin: 32px 0; background-color: rgba(253, 121, 168, 0.5);"
+
+    override val tableCss =
+        "display: inline-block; font-size: 12px; width: auto; max-width: 100%; overflow: auto; " +
+            "border: solid 1px #f6f6f6; border-spacing: 0;"
+
+    override val thCss =
+        "background: rgba(253, 121, 168, 0.1); color: #fd79a8; text-align: left; padding: 12px 7px; " +
+            "line-height: 24px; font-size: 12px;"
+
+    override val tdCss = "padding: 12px 7px; line-height: 24px; font-size: 12px; min-width: 120px; color: $fontColor;"
+
+    override val stripedTdCss = "$tdCss background: #fcfcfc;"
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = true
     override val firstLetterCapitalized = false
 }

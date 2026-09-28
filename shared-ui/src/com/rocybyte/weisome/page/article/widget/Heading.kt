@@ -2,7 +2,9 @@ package com.rocybyte.weisome.page.article.widget
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -55,6 +57,29 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
             .padding(bottom = if (spec.borderBottom) (spec.size * 0.3f).dp else 0.dp),
     ) {
         Row(verticalAlignment = Alignment.Top) {
+            // Yu renders an animal emoji before each heading, inside the 50px icon gutter.
+            if (spec.prefixEmoji.isNotEmpty()) {
+                WeiSomeText(
+                    text = spec.prefixEmoji,
+                    color = styles.headingColor,
+                    fontSize = spec.prefixEmojiSize.sp,
+                    lineHeight = spec.prefixEmojiSize.sp,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .offset(x = spec.prefixEmojiLeft.dp),
+                )
+            }
+            // Chocolate renders its piece icon before h1/h2 text, vertically centered.
+            styles.iconFor(level)?.let { icon ->
+                Image(
+                    bitmap = icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(if (level == 1) 20.dp else 15.dp)
+                        .align(Alignment.CenterVertically),
+                )
+                Spacer(Modifier.width(5.dp))
+            }
             if (level == 1 && styles.h1HasPrefix) {
                 WeiSomeText(
                     text = "#",
@@ -100,7 +125,7 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .height(1.dp)
+                    .height(spec.borderBottomWidth)
                     .background(styles.headingBottomBorderColor),
             )
         }

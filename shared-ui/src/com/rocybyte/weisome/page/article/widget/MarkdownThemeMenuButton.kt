@@ -35,12 +35,14 @@ import androidx.compose.ui.window.PopupProperties
 import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.ic_palette
+import com.rocybyte.weisome.generated.resources.markdown_theme_chocolate
 import com.rocybyte.weisome.generated.resources.markdown_theme_github
 import com.rocybyte.weisome.generated.resources.markdown_theme_hydrogen
 import com.rocybyte.weisome.generated.resources.markdown_theme_rim
 import com.rocybyte.weisome.generated.resources.markdown_theme_selector
 import com.rocybyte.weisome.generated.resources.markdown_theme_smart_blue
 import com.rocybyte.weisome.generated.resources.markdown_theme_typora_paper
+import com.rocybyte.weisome.generated.resources.markdown_theme_yu
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
@@ -57,6 +59,8 @@ private val MarkdownThemeEntries = listOf(
     MarkdownThemeId.SMART_BLUE,
     MarkdownThemeId.TYPORA_PAPER,
     MarkdownThemeId.RIM,
+    MarkdownThemeId.CHOCOLATE,
+    MarkdownThemeId.YU,
 )
 
 /** Returns the localized display name for a Markdown theme id. */
@@ -67,6 +71,8 @@ private fun MarkdownThemeId.displayName(): String = when (this) {
     MarkdownThemeId.SMART_BLUE -> stringResource(Res.string.markdown_theme_smart_blue)
     MarkdownThemeId.TYPORA_PAPER -> stringResource(Res.string.markdown_theme_typora_paper)
     MarkdownThemeId.RIM -> stringResource(Res.string.markdown_theme_rim)
+    MarkdownThemeId.CHOCOLATE -> stringResource(Res.string.markdown_theme_chocolate)
+    MarkdownThemeId.YU -> stringResource(Res.string.markdown_theme_yu)
 }
 
 /**

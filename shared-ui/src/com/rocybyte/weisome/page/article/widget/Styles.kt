@@ -2,12 +2,18 @@ package com.rocybyte.weisome.page.article.widget
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rocybyte.weisome.article.ChocolateThemeIconPngBase64
 import com.rocybyte.weisome.article.CodeTheme
 import com.rocybyte.weisome.article.MarkdownThemeId
+import java.util.Base64
+import org.jetbrains.skia.Bitmap
+import org.jetbrains.skia.Image
 
 /** Typography and decoration spec for one heading level. */
 internal data class HeadingSpec(
@@ -20,6 +26,10 @@ internal data class HeadingSpec(
     val borderBottom: Boolean,
     val muted: Boolean,
     val lineHeightMultiplier: Float,
+    val borderBottomWidth: Dp = 1.dp,
+    val prefixEmoji: String = "",
+    val prefixEmojiSize: Float = 0f,
+    val prefixEmojiLeft: Int = 0,
 )
 
 /**
@@ -29,6 +39,8 @@ internal data class HeadingSpec(
  * SMART_BLUE mirrors docs/theme/smart-blue/smart-blue.css (cumt-robin/juejin-markdown-theme-smart-blue@f740565).
  * TYPORA_PAPER mirrors docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912.
  * RIM mirrors docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef.
+ * CHOCOLATE mirrors docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290.
+ * YU mirrors docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f.
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -101,6 +113,9 @@ internal data class MarkdownPreviewStyles(
     private val headingSpecs: List<HeadingSpec>,
     val h1AccentBar: Boolean = false,
     val h2AccentDots: Boolean = false,
+    /** Optional decorative bitmap rendered before h1/h2 text (chocolate's piece icon). */
+    val h1Icon: ImageBitmap? = null,
+    val h2Icon: ImageBitmap? = null,
     val quoteBorderWidth: Dp = 4.dp,
     val quoteCornerRadius: Dp = 0.dp,
     val quoteShadowElevation: Dp = 0.dp,
@@ -117,6 +132,11 @@ internal data class MarkdownPreviewStyles(
     /** When set, the opening mark's ink top is anchored this far below the card top, matching the export CSS; null keeps the legacy top-left offset. */
     val quoteMarkInkTop: Dp? = null,
     val quoteMarkWeight: FontWeight = FontWeight.ExtraBold,
+    /** Glyphs of the decorative opening/closing quote marks (quoteHasMarks only). */
+    val quoteOpenMark: String = "\u201C",
+    val quoteCloseMark: String = "\u201D",
+    /** Whether [quoteBorder] strokes the full rounded box instead of only the start edge. */
+    val quoteHasBoxBorder: Boolean = false,
     val codeBlockHasWindowHeader: Boolean = false,
     val codeBlockFrameColor: Color = Color.Transparent,
     val codeBlockBorderColor: Color = Color.Transparent,
@@ -145,6 +165,13 @@ internal data class MarkdownPreviewStyles(
 
     /** Returns the configured bottom margin for a heading level. */
     fun headingBottomMargin(level: Int) = headingSpec(level).bottom.dp
+
+    /** Returns the decorative bitmap rendered before h1/h2 text, or null for other levels. */
+    fun iconFor(level: Int): ImageBitmap? = when (level) {
+        1 -> h1Icon
+        2 -> h2Icon
+        else -> null
+    }
 }
 
 /** Returns the preview style set for the requested Markdown theme. */
@@ -154,6 +181,8 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.SMART_BLUE -> SmartBluePreviewStyles
     MarkdownThemeId.TYPORA_PAPER -> TyporaPaperPreviewStyles
     MarkdownThemeId.RIM -> RimPreviewStyles
+    MarkdownThemeId.CHOCOLATE -> ChocolatePreviewStyles
+    MarkdownThemeId.YU -> YuPreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -602,6 +631,202 @@ internal val RimPreviewStyles = MarkdownPreviewStyles(
     quoteBorderWidth = 3.dp,
     codeBlockBorderColor = Color(0xFFE7EAED),
     codeBlockBorderWidth = 1.dp,
+)
+
+/** Chocolate's piece icon decoded once for preview headings; null when decoding fails. */
+private val chocolateIcon: ImageBitmap? by lazy {
+    runCatching {
+        val encoded = Base64.getDecoder().decode(ChocolateThemeIconPngBase64)
+        Bitmap.makeFromImage(Image.makeFromEncoded(encoded)).asComposeImageBitmap()
+    }.getOrNull()
+}
+
+/** Chocolate preview styles adapted from juejin-markdown-theme-qklhk at commit 4f2a290.
+ * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
+ * body wrapper. The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
+ * highlight have no preview equivalent. List items keep the body color although the stylesheet
+ * grays them (#858585); the export carries the gray. Heading top margins fall back to the
+ * browser defaults the stylesheet leaves in place.
+ */
+internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF412C0C),
+    // Unused: no chocolate heading takes the muted color.
+    mutedColor = Color(0xFFA37400),
+    // The stylesheet tints each level differently (#664900/#614500/#a37400); h1's tone leads.
+    headingColor = Color(0xFF664900),
+    themeColor = Color(0xFF6D4E00),
+    linkColor = Color(0xFF755300),
+    boldColor = Color(0xFFC28A00),
+    // The stylesheet underlines links with a 1px bottom border; approximated as an underline.
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color(0xFF8F6600),
+    headingBottomBorderColor = Color(0xFF6D4E00),
+    bodyFontSize = 15.sp,
+    bodyLineHeight = 26.25.sp,
+    paragraphTopMargin = 0,
+    paragraphBottomMargin = 16,
+    quoteParagraphTopMargin = 0,
+    quoteParagraphBottomMargin = 0,
+    quoteColor = Color(0xFFFFF6E0),
+    quoteBackground = Color(0x80BD8600),
+    quoteBorder = Color(0xFFFFD87A),
+    quoteHasBackground = true,
+    quoteHasMarks = true,
+    quoteHasHover = false,
+    quotePaddingStart = 20,
+    quotePaddingEnd = 20,
+    quotePaddingTop = 20,
+    quotePaddingBottom = 20,
+    quoteVerticalMargin = 20,
+    quoteNestedVerticalMargin = 20,
+    inlineCodeColor = Color(0xFF996D00),
+    inlineCodeBackground = Color(0x4D826200),
+    inlineCodeFontScale = 0.87f,
+    inlineCodeCornerRadius = 2.dp,
+    codeBlockTopMargin = 15,
+    codeBlockBottomMargin = 15,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
+    codeBlockPaddingVertical = 15,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFFC28A00),
+    tableBorderColor = Color(0x1A482A0A),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0xFFF6F6F6),
+    tableHeaderColor = Color.Black,
+    tableHeaderFontWeight = FontWeight.Bold,
+    // The stylesheet stripes no body rows.
+    tableStripeBackground = Color.Transparent,
+    tableCellPaddingHorizontal = 7,
+    tableCellPaddingVertical = 12,
+    tableFontSize = 12.sp,
+    tableLineHeight = 24.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFF805B00),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 32,
+    listPaddingStart = 28,
+    listTopMargin = 15,
+    listBottomMargin = 15,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 6,
+    nestedListPaddingStart = 28,
+    nestedListTopMargin = 3,
+    headingSpecs = listOf(
+        // h1 keeps the shared 10px bottom margin and drops the shared 5px padding-bottom.
+        HeadingSpec(25f, FontWeight.Bold, 17, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.4f, borderBottomWidth = 5.dp),
+        HeadingSpec(20f, FontWeight.Bold, 17, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(18f, FontWeight.Bold, 20, 0, borderLeft = true, borderWidth = 5.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(17f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(14f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(12f, FontWeight.Bold, 28, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+    ),
+    h1Icon = chocolateIcon,
+    h2Icon = chocolateIcon,
+    quoteBorderWidth = 1.dp,
+    quoteCornerRadius = 10.dp,
+    quoteHasBoxBorder = true,
+    quoteMarkColor = Color(0xFFCC9100),
+    quoteMarkFontSize = 34.sp,
+    quoteMarkWeight = FontWeight.Bold,
+    quoteOpenMark = "\u275D",
+    quoteCloseMark = "\u275E",
+)
+
+/** Yu preview styles adapted from juejin-markdown-theme-yu at commit 1e3096f.
+ * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
+ * body wrapper. The strong `·` dashes have no preview equivalent. Headings keep the body color;
+ * list markers use the widget's default tone although the stylesheet tints them (#ee69a9); the
+ * export carries the tint. The h2 font-size falls back to the browser default (1.5em).
+ */
+internal val YuPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF5F6368),
+    // Unused: no yu heading takes the muted color.
+    mutedColor = Color(0xFF666666),
+    headingColor = Color(0xFF5F6368),
+    themeColor = Color(0xFFFD79A8),
+    linkColor = Color(0xFFFD79A8),
+    boldColor = Color(0xFFFD79A8),
+    // The stylesheet underlines links with a 1px bottom border; approximated as an underline.
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color(0xFFFD79A8),
+    headingBottomBorderColor = Color(0xFFECECEC),
+    bodyFontSize = 15.sp,
+    bodyLineHeight = 26.25.sp,
+    paragraphTopMargin = 22,
+    paragraphBottomMargin = 22,
+    quoteParagraphTopMargin = 10,
+    quoteParagraphBottomMargin = 10,
+    quoteColor = Color(0xFF666666),
+    quoteBackground = Color(0x1AFD79A8),
+    quoteBorder = Color(0xFFEE69A9),
+    quoteHasBackground = true,
+    quoteHasMarks = true,
+    quoteHasHover = false,
+    quotePaddingStart = 27,
+    quotePaddingEnd = 23,
+    quotePaddingTop = 23,
+    quotePaddingBottom = 23,
+    quoteVerticalMargin = 22,
+    quoteNestedVerticalMargin = 22,
+    inlineCodeColor = Color(0xFFFF502C),
+    inlineCodeBackground = Color(0xFFFFF5F5),
+    inlineCodeFontScale = 0.87f,
+    inlineCodeCornerRadius = 2.dp,
+    codeBlockTopMargin = 15,
+    codeBlockBottomMargin = 15,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+    codeBlockPaddingVertical = 15,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFF5F6368),
+    tableBorderColor = Color(0xFFF6F6F6),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0x1AFD79A8),
+    tableHeaderColor = Color(0xFFFD79A8),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color(0xFFFCFCFC),
+    tableCellPaddingHorizontal = 7,
+    tableCellPaddingVertical = 12,
+    tableFontSize = 12.sp,
+    tableLineHeight = 24.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0x80FD79A8),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 32,
+    listPaddingStart = 28,
+    listTopMargin = 15,
+    listBottomMargin = 15,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 6,
+    nestedListPaddingStart = 28,
+    nestedListTopMargin = 3,
+    headingSpecs = listOf(
+        HeadingSpec(32f, FontWeight.Bold, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 32f, prefixEmojiLeft = 0),
+        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 24f, prefixEmojiLeft = 8),
+        HeadingSpec(18f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 20f, prefixEmojiLeft = 8),
+        HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
+        HeadingSpec(14f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 16f, prefixEmojiLeft = 9),
+        HeadingSpec(12f, FontWeight.Bold, 5, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC27", prefixEmojiSize = 14f, prefixEmojiLeft = 10),
+    ),
+    quoteBorderWidth = 4.dp,
+    quoteMarkColor = Color(0xCCFD79A8),
+    quoteMarkFontSize = 27.sp,
+    quoteMarkWeight = FontWeight.Normal,
+    quoteOpenMark = "\u275D",
+    quoteCloseMark = "\u275E",
 )
 
 /** Converts a packed RGB value to an opaque Compose color. */
