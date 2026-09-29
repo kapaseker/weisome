@@ -108,4 +108,24 @@ class MarkdownToWechatHtmlTest {
         assertTrue(html.contains("color: #008500;"))
         assertTrue(html.contains("background: #000000;"))
     }
+
+    @Test
+    /** Verifies the Cyanosis theme renders its headings, decorations, and body palette end to end. */
+    fun `renders cyanosis theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "## Title\n\n### Section\n\nBody with [link](https://example.com), **bold** and ~~gone~~.\n\n> Quote\n\n| A | B |\n| - | - |\n| 1 | 2 |\n",
+            MarkdownThemeId.CYANOSIS,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 24px; font-weight: bold; line-height: 1.5;"))
+        assertTrue(html.contains("position: absolute; top: -6px; left: -10px;"))
+        assertTrue(html.contains("color: #005bb7;"))
+        assertTrue(html.contains("color: #353535;"))
+        assertTrue(html.contains("color: #2196f3;"))
+        assertTrue(html.contains("color: #ccc;"))
+        assertTrue(html.contains("border-left: 4px solid #2196f3; background-color: #f0fdff;"))
+        assertTrue(html.contains("border: 1px solid #c3e0fd;"))
+        assertTrue(html.contains("color: #3da8f5; text-decoration: none; border-bottom: 1px solid #bedcff;"))
+    }
 }

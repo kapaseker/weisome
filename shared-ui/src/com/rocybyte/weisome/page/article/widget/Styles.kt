@@ -41,6 +41,7 @@ internal data class HeadingSpec(
  * RIM mirrors docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef.
  * CHOCOLATE mirrors docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290.
  * YU mirrors docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f.
+ * CYANOSIS mirrors docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea.
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -183,6 +184,7 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.RIM -> RimPreviewStyles
     MarkdownThemeId.CHOCOLATE -> ChocolatePreviewStyles
     MarkdownThemeId.YU -> YuPreviewStyles
+    MarkdownThemeId.CYANOSIS -> CyanosisPreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -830,6 +832,100 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     quoteMarkWeight = FontWeight.Normal,
     quoteOpenMark = "\u275D",
     quoteCloseMark = "\u275E",
+)
+
+/** Cyanosis preview styles adapted from juejin-markdown-theme-cyanosis at commit 6b814ea.
+ * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
+ * body wrapper. The h2 「」 marks and the h3 » prefix have no preview equivalent; the export
+ * renders them as real elements. The heading widget's 0.3em border gap approximates h2's 10px
+ * padding-bottom. The export sizes the table header at the thead's 14px while the preview shares
+ * the 12sp cell size. The hr's scissors ornament and the row hover are not rendered. The
+ * stylesheet underlines links with a 1px bottom border; approximated as an underline.
+ */
+internal val CyanosisPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF353535),
+    // Unused: no cyanosis heading takes the muted color.
+    mutedColor = Color(0xFF8C8C8C),
+    headingColor = Color(0xFF005BB7),
+    themeColor = Color(0xFF2196F3),
+    linkColor = Color(0xFF3DA8F5),
+    boldColor = Color(0xFF2196F3),
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color.Transparent,
+    headingBottomBorderColor = Color(0xFFECECEC),
+    bodyFontSize = 14.sp,
+    bodyLineHeight = 24.5.sp,
+    paragraphTopMargin = 16,
+    paragraphBottomMargin = 16,
+    quoteParagraphTopMargin = 10,
+    quoteParagraphBottomMargin = 10,
+    quoteColor = Color(0xFF8C8C8C),
+    quoteBackground = Color(0xFFF0FDFF),
+    quoteBorder = Color(0xFF2196F3),
+    quoteHasBackground = true,
+    quoteHasMarks = false,
+    quoteHasHover = false,
+    // 24 = the stylesheet's 20px padding-left plus the 4px left border the widget paints inside.
+    quotePaddingStart = 24,
+    quotePaddingEnd = 20,
+    quotePaddingTop = 1,
+    quotePaddingBottom = 1,
+    quoteVerticalMargin = 22,
+    quoteNestedVerticalMargin = 22,
+    inlineCodeColor = Color(0xFFC2185B),
+    inlineCodeBackground = Color(0xFFFFF4F4),
+    inlineCodeFontScale = 0.87f,
+    inlineCodeCornerRadius = 2.dp,
+    codeBlockTopMargin = 14,
+    codeBlockBottomMargin = 14,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
+    codeBlockPaddingVertical = 16,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFFCCCCCC),
+    tableBorderColor = Color(0xFFC3E0FD),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0xFFDFF0FF),
+    tableHeaderColor = Color(0xFF005BB7),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color(0xFFF7FBFF),
+    tableCellPaddingHorizontal = 8,
+    tableCellPaddingVertical = 12,
+    tableFontSize = 12.sp,
+    tableLineHeight = 24.sp,
+    ruleIsGradient = true,
+    ruleGradient = listOf(
+        Color(0xFF007FFF),
+        Color(0x4DFF0000),
+        Color(0x1AFFFFFF),
+        Color(0x4DFF0000),
+        Color(0xFF007FFF),
+    ),
+    ruleSolidColor = Color(0xFF007FFF),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 32,
+    ruleWidthFraction = 0.98f,
+    listPaddingStart = 28,
+    listTopMargin = 16,
+    listBottomMargin = 16,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 6,
+    nestedListPaddingStart = 28,
+    nestedListTopMargin = 4,
+    headingSpecs = listOf(
+        HeadingSpec(30f, FontWeight.Bold, 36, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(24f, FontWeight.Bold, 36, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(20f, FontWeight.Bold, 30, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Bold, 24, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(14f, FontWeight.Bold, 18, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(12f, FontWeight.Bold, 12, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+    ),
+    quoteBorderWidth = 4.dp,
 )
 
 /** Converts a packed RGB value to an opaque Compose color. */

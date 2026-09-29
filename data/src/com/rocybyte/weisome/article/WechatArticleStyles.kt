@@ -9,7 +9,8 @@ package com.rocybyte.weisome.article
  * docs/theme/typora-paper at lisitan/esther-obsidian-typora-themes@8c4f912, and RIM follows
  * docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef, and CHOCOLATE follows
  * docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290, and YU follows
- * docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f. Keep the
+ * docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f, and CYANOSIS follows
+ * docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea. Keep the
  * shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -113,6 +114,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.RIM -> RimExportStyles
     MarkdownThemeId.CHOCOLATE -> ChocolateExportStyles
     MarkdownThemeId.YU -> YuExportStyles
+    MarkdownThemeId.CYANOSIS -> CyanosisExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -885,5 +887,128 @@ internal object YuExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = false
     override val quoteHasMarks = true
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * Cyanosis export styles adapted from juejin-markdown-theme-cyanosis at commit 6b814ea.
+ * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
+ * body wrapper. The hr's centered scissors ornament, the link hover underline animation, the
+ * selection styles, the `details`/`summary` rules, the task-list checkbox art, and the table row
+ * hover are pseudo-element or interactive effects the inline-CSS model cannot express. The
+ * heading `font-weight` stays at the browser default (bold) the stylesheet leaves in place.
+ */
+internal object CyanosisExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#353535"
+
+    private data class HeadingSpec(
+        val size: Int,
+        val top: Int,
+        val padding: String,
+        val borderBottom: String = "",
+    )
+
+    /** Returns the cyanosis typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): HeadingSpec = when (level) {
+        1 -> HeadingSpec(30, 36, "padding-bottom: 4px;")
+        2 -> HeadingSpec(
+            24, 36, "padding: 0 10px 10px 16px;",
+            borderBottom = "border-bottom: 1px solid #ececec;",
+        )
+        3 -> HeadingSpec(20, 30, "padding-bottom: 0; padding-left: 6px;")
+        4 -> HeadingSpec(16, 24, "padding-bottom: 0; padding-left: 6px;")
+        5 -> HeadingSpec(14, 18, "padding-bottom: 0; padding-left: 6px;")
+        else -> HeadingSpec(12, 12, "padding-bottom: 0; padding-left: 6px;")
+    }
+
+    override fun headingCss(level: Int): String {
+        val spec = heading(level)
+        val relative = if (level == 2) " position: relative;" else ""
+        return "font-size: ${spec.size}px; font-weight: bold; line-height: 1.5; " +
+            "margin: ${spec.top}px 0 10px; ${spec.padding} color: #005bb7;$relative${spec.borderBottom}"
+    }
+
+    /** Renders the opening 「 mark before h2 text, positioned like the ::before. */
+    override fun headingPrefixHtml(level: Int): String = when (level) {
+        2 -> "<span style=\"position: absolute; top: -6px; left: -10px;\">\u300C</span>"
+        3 -> "<span style=\"padding-right: 6px; color: #2196f3;\">\u00BB</span>"
+        else -> ""
+    }
+
+    /** Renders the closing 」 mark after h2 text at its static position like the ::after. */
+    override fun headingSuffixHtml(level: Int): String = if (level == 2) {
+        "<span style=\"position: absolute; top: 6px;\">\u300D</span>"
+    } else {
+        ""
+    }
+
+    override val paragraphCss =
+        "font-size: 14px; line-height: 1.75; margin: 16px 0; color: $fontColor; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (margin: 10px 0). */
+    override val quoteParagraphCss =
+        "font-size: 14px; line-height: 1.75; margin: 10px 0; color: #8c8c8c; word-break: break-word;"
+
+    // The stylesheet keeps the browser's 1em ul/ol vertical margin; 16px is its equivalent at body size.
+    override val listCss = "padding-left: 28px; margin: 16px 0;"
+    override val listItemCss = "font-size: 14px; line-height: 1.75; margin-bottom: 0; color: $fontColor;"
+    override val orderedListItemCss = "$listItemCss padding-left: 6px;"
+    override val nestedListCss = "padding-left: 28px; margin: 4px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #c2185b; background-color: #fff4f4; padding: 0.065em 0.4em; border-radius: 2px; " +
+            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+            "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
+
+    // pre leaves its vertical margin to the browser default (1em); 14px is its equivalent at body size.
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 14px 0; white-space: pre; overflow: auto;"
+
+    /** Keeps the active code palette while applying cyanosis's compact code type. */
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 16px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic; color: #4fc3f7;"
+
+    override val boldColor = "#2196f3"
+
+    override val strikethroughCss = "color: #ccc;"
+
+    /** Anchors keep the stylesheet's 1px bottom border instead of an underline. */
+    override val linkCss =
+        "color: #3da8f5; text-decoration: none; border-bottom: 1px solid #bedcff;"
+
+    override val imgCss = "display: block; margin: 0 auto; max-width: 100%;"
+
+    override val blockquoteCss =
+        "color: #8c8c8c; padding: 1px 20px; margin: 22px 0; " +
+            "border-left: 4px solid #2196f3; background-color: #f0fdff;"
+
+    override val hrCss =
+        "position: relative; width: 98%; height: 1px; border: none; margin: 32px 0; " +
+            "background-image: linear-gradient(to right, #007fff, rgba(255, 0, 0, 0.3), " +
+            "rgba(255, 255, 255, 0.1), rgba(255, 0, 0, 0.3), #007fff); overflow: visible;"
+
+    override val tableCss =
+        "display: inline-block; font-size: 12px; width: auto; max-width: 100%; overflow: auto; " +
+            "border: 1px solid #c3e0fd; border-spacing: 0; border-collapse: collapse;"
+
+    override val thCss =
+        "color: #005bb7; background-color: #dff0ff; text-align: left; padding: 12px 8px; " +
+            "line-height: 24px; font-size: 14px; border: 1px solid #c3e0fd;"
+
+    override val tdCss =
+        "padding: 12px 8px; line-height: 24px; font-size: 12px; min-width: 120px; " +
+            "color: $fontColor; border: 1px solid #c3e0fd;"
+
+    override val stripedTdCss = "$tdCss background: #f7fbff;"
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = false
     override val firstLetterCapitalized = false
 }

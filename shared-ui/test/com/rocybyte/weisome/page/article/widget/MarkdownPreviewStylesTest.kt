@@ -47,4 +47,33 @@ class MarkdownPreviewStylesTest {
         assertEquals(37.dp, styles.quoteMinHeight)
         assertEquals(FontWeight.Bold, styles.quoteMarkWeight)
     }
+
+    @Test
+    /** Verifies the Cyanosis selector resolves its core typography and color tokens. */
+    fun `selects cyanosis preview styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.CYANOSIS)
+
+        assertEquals(Color(0xFF353535), styles.bodyColor)
+        assertEquals(Color(0xFF005BB7), styles.headingColor)
+        assertEquals(Color(0xFF3DA8F5), styles.linkColor)
+        assertEquals(Color(0xFFC2185B), styles.inlineCodeColor)
+        assertEquals(14.sp, styles.bodyFontSize)
+        assertEquals(24.5.sp, styles.bodyLineHeight)
+        assertEquals(24.sp, styles.headingFontSize(2))
+        assertEquals(FontWeight.Bold, styles.headingFontWeight(2))
+    }
+
+    @Test
+    /** Verifies the Cyanosis preview keeps the upstream quote, table, and rule treatment. */
+    fun `maps cyanosis structural styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.CYANOSIS)
+
+        assertEquals(Color(0xFF2196F3), styles.quoteBorder)
+        assertEquals(4.dp, styles.quoteBorderWidth)
+        assertEquals(Color(0xFFC3E0FD), styles.tableBorderColor)
+        assertEquals(Color(0xFFDFF0FF), styles.tableHeaderBackground)
+        assertEquals(1.dp, styles.ruleHeight)
+        assertEquals(true, styles.ruleIsGradient)
+        assertEquals(2.dp, styles.inlineCodeCornerRadius)
+    }
 }

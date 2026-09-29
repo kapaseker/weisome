@@ -69,6 +69,7 @@ enum class MarkdownThemeId {
     RIM,
     CHOCOLATE,
     YU,
+    CYANOSIS,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */
