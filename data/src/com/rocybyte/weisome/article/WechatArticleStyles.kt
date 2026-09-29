@@ -689,7 +689,7 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
     override val taskItemPrefixCss = "list-style: none; "
 
     override val inlineCodeCss =
-        "color: #996d00; background-color: rgba(130, 98, 0, 0.3); padding: 0.065em 0.4em; border-radius: 2px; " +
+        "color: #996d00; background-color: rgba(130, 98, 0, 0.3); padding: 0.065em 0.4em; border-radius: 4px; " +
             "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
             "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
 

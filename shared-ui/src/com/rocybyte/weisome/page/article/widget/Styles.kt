@@ -686,7 +686,7 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     inlineCodeColor = Color(0xFF996D00),
     inlineCodeBackground = Color(0x4D826200),
     inlineCodeFontScale = 0.87f,
-    inlineCodeCornerRadius = 2.dp,
+    inlineCodeCornerRadius = 4.dp,
     codeBlockTopMargin = 15,
     codeBlockBottomMargin = 15,
     codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
@@ -735,6 +735,9 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     quoteMarkColor = Color(0xFFCC9100),
     quoteMarkFontSize = 34.sp,
     quoteMarkWeight = FontWeight.Bold,
+    // Anchors the 34sp mark's ink at the stylesheet's left: 5px; text start spacing is then
+    // derived from the measured glyph width, keeping the wide ❝ clear of the first characters.
+    quoteMarkInkTop = 5.dp,
     quoteOpenMark = "\u275D",
     quoteCloseMark = "\u275E",
 )
