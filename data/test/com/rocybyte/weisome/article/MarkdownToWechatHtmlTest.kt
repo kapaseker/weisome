@@ -128,4 +128,48 @@ class MarkdownToWechatHtmlTest {
         assertTrue(html.contains("border: 1px solid #c3e0fd;"))
         assertTrue(html.contains("color: #3da8f5; text-decoration: none; border-bottom: 1px solid #bedcff;"))
     }
+
+    @Test
+    /** Verifies the Cyan theme renders its headings, decorations, quote marks, and body palette end to end. */
+    fun `renders cyan theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\n## Heading\n\n### Section\n\nBody with **bold**, *italic* and ~~gone~~.\n\n> Quote\n\n---\n\n| A | B |\n| - | - |\n| 1 | 2 |\n",
+            MarkdownThemeId.CYAN,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 24px; font-weight: bold; color: #4dd0e1;"))
+        assertTrue(html.contains("border-bottom: 4px solid #4dd0e1;"))
+        assertTrue(html.contains("data:image/png;base64,iVBORw0KGgo"))
+        assertTrue(html.contains("color: #2b2b2b;"))
+        assertTrue(html.contains("color: #26c6da;"))
+        assertTrue(html.contains("font-style: normal; color: #4dd0e1; font-weight: bold;"))
+        assertTrue(html.contains("background: rgba(77, 208, 225, 0.15);"))
+        assertTrue(html.contains("border-left: 4px solid #26c6da;"))
+        assertTrue(html.contains("border-top: 1px solid #4dd0e1;"))
+        assertTrue(html.contains("border: solid 1px #f6f6f6;"))
+        assertTrue(html.contains("background: #f6f6f6; color: #000;"))
+    }
+
+    @Test
+    /** Verifies the V-Green theme renders its green palette, heading prefixes, and structure end to end. */
+    fun `renders v-green theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\n## Heading\n\nBody with **bold**, `code`, [link](https://example.com), *italic* and ~~gone~~.\n\n> Quote\n\n---\n\n```kotlin\nval ok = true\n```\n\n| A | B |\n| - | - |\n| 1 | 2 |\n",
+            MarkdownThemeId.V_GREEN,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 32px; font-weight: bold;"))
+        assertTrue(html.contains("padding-right: 0.23em;\">#</span>"))
+        assertTrue(html.contains("color: #3eaf7c;"))
+        assertTrue(html.contains("font-weight: 700; background-color: rgba(27, 31, 35, 0.05);"))
+        assertTrue(html.contains("border: 2px solid #3eaf7c;"))
+        assertTrue(html.contains("border-left: 0.5rem solid #42b983; background-color: #f8f8f8;"))
+        assertTrue(html.contains("color: #333333;"))
+        assertTrue(html.contains("\u21F2</span>"))
+        assertTrue(html.contains("border: solid 1px #3eaf7c;"))
+        assertTrue(html.contains("background: #3eaf7c; color: #fff;"))
+        assertTrue(html.contains("border-top: 1px solid #3eaf7c;"))
+    }
 }

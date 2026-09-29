@@ -70,6 +70,8 @@ enum class MarkdownThemeId {
     CHOCOLATE,
     YU,
     CYANOSIS,
+    CYAN,
+    V_GREEN,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */

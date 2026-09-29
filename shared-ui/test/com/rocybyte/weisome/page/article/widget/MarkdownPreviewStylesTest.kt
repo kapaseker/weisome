@@ -76,4 +76,66 @@ class MarkdownPreviewStylesTest {
         assertEquals(true, styles.ruleIsGradient)
         assertEquals(2.dp, styles.inlineCodeCornerRadius)
     }
+
+    @Test
+    /** Verifies the Cyan selector resolves its core typography and color tokens. */
+    fun `selects cyan preview styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.CYAN)
+
+        assertEquals(Color(0xFF2B2B2B), styles.bodyColor)
+        assertEquals(Color(0xFF4DD0E1), styles.headingColor)
+        assertEquals(Color(0xFF26C6DA), styles.boldColor)
+        assertEquals(15.sp, styles.bodyFontSize)
+        assertEquals(30.sp, styles.headingFontSize(1))
+        assertEquals(FontWeight.Bold, styles.headingFontWeight(1))
+        assertEquals(true, styles.h1Centered)
+    }
+
+    @Test
+    /** Verifies the Cyan preview keeps the upstream quote marks, table, and solid rule treatment. */
+    fun `maps cyan structural styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.CYAN)
+
+        assertEquals(Color(0x264DD0E1), styles.quoteBackground)
+        assertEquals(Color(0xFF26C6DA), styles.quoteBorder)
+        assertEquals(true, styles.quoteHasMarks)
+        assertEquals("\u275D", styles.quoteOpenMark)
+        assertEquals(Color(0xFFF6F6F6), styles.tableHeaderBackground)
+        assertEquals(Color(0x0D4DD0E1), styles.tableStripeBackground)
+        assertEquals(false, styles.ruleIsGradient)
+        assertEquals(Color(0xFF4DD0E1), styles.ruleSolidColor)
+        assertEquals(2.dp, styles.inlineCodeCornerRadius)
+    }
+
+    @Test
+    /** Verifies the V-Green selector resolves its core typography and color tokens. */
+    fun `selects v-green preview styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.V_GREEN)
+
+        assertEquals(Color(0xFF333333), styles.bodyColor)
+        assertEquals(Color(0xFF333333), styles.headingColor)
+        assertEquals(Color(0xFF3EAF7C), styles.linkColor)
+        assertEquals(Color(0xFF3EAF7C), styles.boldColor)
+        assertEquals(15.sp, styles.bodyFontSize)
+        assertEquals(32.sp, styles.headingFontSize(1))
+        assertEquals(FontWeight.Bold, styles.headingFontWeight(1))
+        assertEquals(true, styles.h1HasPrefix)
+        assertEquals(true, styles.linkHasIcon)
+    }
+
+    @Test
+    /** Verifies the V-Green preview keeps the upstream quote, table, code frame, and rule treatment. */
+    fun `maps v-green structural styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.V_GREEN)
+
+        assertEquals(Color(0xFF42B983), styles.quoteBorder)
+        assertEquals(8.dp, styles.quoteBorderWidth)
+        assertEquals(Color(0xFFF8F8F8), styles.quoteBackground)
+        assertEquals(Color(0xFF3EAF7C), styles.codeBlockBorderColor)
+        assertEquals(2.dp, styles.codeBlockBorderWidth)
+        assertEquals(Color(0xFF3EAF7C), styles.tableHeaderBackground)
+        assertEquals(Color(0x333EAF7C), styles.tableStripeBackground)
+        assertEquals(false, styles.ruleIsGradient)
+        assertEquals(3.dp, styles.inlineCodeCornerRadius)
+    }
 }

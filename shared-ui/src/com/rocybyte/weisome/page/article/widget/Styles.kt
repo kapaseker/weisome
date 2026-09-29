@@ -42,6 +42,8 @@ internal data class HeadingSpec(
  * CHOCOLATE mirrors docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290.
  * YU mirrors docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f.
  * CYANOSIS mirrors docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea.
+ * CYAN mirrors docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f.
+ * V_GREEN mirrors docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b.
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -185,6 +187,8 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.CHOCOLATE -> ChocolatePreviewStyles
     MarkdownThemeId.YU -> YuPreviewStyles
     MarkdownThemeId.CYANOSIS -> CyanosisPreviewStyles
+    MarkdownThemeId.CYAN -> CyanPreviewStyles
+    MarkdownThemeId.V_GREEN -> VGreenPreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -924,6 +928,189 @@ internal val CyanosisPreviewStyles = MarkdownPreviewStyles(
         HeadingSpec(16f, FontWeight.Bold, 24, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(14f, FontWeight.Bold, 18, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(12f, FontWeight.Bold, 12, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+    ),
+    quoteBorderWidth = 4.dp,
+)
+
+/** V-Green preview styles adapted from juejin-markdown-theme-v-green at commit 015f88b.
+ * The heading `:first-child` negative top margin and the green ordered-list `::marker` have no
+ * preview equivalent. The unordered list's green `•` bullets are drawn via `li::before`; the
+ * widget renders standard bullets. The link `⇲` glyph renders after the anchor text (upstream
+ * places it before). The heading text stays body-colored with a green `#` prefix; the preview
+ * prefix mechanism only covers h1. The `details`/`summary` rules have no model element.
+ */
+internal val VGreenPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF333333),
+    // Unused: no v-green heading takes the muted color.
+    mutedColor = Color(0xFF8C8C8C),
+    headingColor = Color(0xFF333333),
+    themeColor = Color(0xFF3EAF7C),
+    linkColor = Color(0xFF3EAF7C),
+    boldColor = Color(0xFF3EAF7C),
+    linkUnderlined = false,
+    linkHasIcon = true,
+    firstLetterCapitalized = false,
+    h1HasPrefix = true,
+    h1Centered = false,
+    headingBorderColor = Color.Transparent,
+    headingBottomBorderColor = Color(0xFFECECEC),
+    bodyFontSize = 15.sp,
+    bodyLineHeight = 26.25.sp,
+    paragraphTopMargin = 22,
+    paragraphBottomMargin = 22,
+    quoteParagraphTopMargin = 10,
+    quoteParagraphBottomMargin = 10,
+    quoteColor = Color(0xFF666666),
+    quoteBackground = Color(0xFFF8F8F8),
+    quoteBorder = Color(0xFF42B983),
+    quoteHasBackground = true,
+    quoteHasMarks = false,
+    quoteHasHover = false,
+    // 31 = the stylesheet's 23px padding-left plus the 8px (0.5rem) left border the widget paints inside.
+    quotePaddingStart = 31,
+    quotePaddingEnd = 23,
+    quotePaddingTop = 1,
+    quotePaddingBottom = 1,
+    quoteVerticalMargin = 22,
+    quoteNestedVerticalMargin = 22,
+    inlineCodeColor = Color(0xFF3EAF7C),
+    inlineCodeBackground = Color(0x0D1B1F23),
+    inlineCodeFontScale = 0.85f,
+    inlineCodeCornerRadius = 3.dp,
+    codeBlockTopMargin = 15,
+    codeBlockBottomMargin = 15,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp),
+    codeBlockBorderColor = Color(0xFF3EAF7C),
+    codeBlockBorderWidth = 2.dp,
+    codeBlockPaddingVertical = 15,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFF333333),
+    tableBorderColor = Color(0xFF3EAF7C),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0xFF3EAF7C),
+    tableHeaderColor = Color(0xFFFFFFFF),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color(0x333EAF7C),
+    tableCellPaddingHorizontal = 7,
+    tableCellPaddingVertical = 12,
+    tableFontSize = 12.sp,
+    tableLineHeight = 24.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFF3EAF7C),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 32,
+    ruleWidthFraction = 1.0f,
+    listPaddingStart = 28,
+    listTopMargin = 15,
+    listBottomMargin = 15,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 6,
+    nestedListPaddingStart = 28,
+    nestedListTopMargin = 3,
+    headingSpecs = listOf(
+        HeadingSpec(32f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(28f, FontWeight.Bold, 35, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(24f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(20f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(15f, FontWeight.Bold, 5, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+    ),
+    quoteBorderWidth = 8.dp,
+)
+
+/** Cyan preview styles adapted from juejin-markdown-theme-channing-cyan at commit c843c2f.
+ * The `.markdown-body` checkered grid background is not rendered: the preview is a block flow with
+ * no body wrapper. The h1 background glow and animated gradient shadow, the h2 leaf icon, and the
+ * h3 underline bar and circle have no preview equivalent; the export renders them as real
+ * elements. The `strong` 「」 marks and `figcaption` rules have no model element. Paragraphs use a
+ * 14px size with 2px letter/word spacing in the export; the preview shares the 15sp body type.
+ * The heading widget's 0.3em border gap approximates h2's 12px vertical padding. Code-block colors
+ * continue to come from the selected code theme.
+ */
+internal val CyanPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF2B2B2B),
+    // Unused: no cyan heading takes the muted color.
+    mutedColor = Color(0xFF8C8C8C),
+    headingColor = Color(0xFF4DD0E1),
+    themeColor = Color(0xFF4DD0E1),
+    linkColor = Color(0xFF4DD0E1),
+    boldColor = Color(0xFF26C6DA),
+    linkUnderlined = true,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = true,
+    headingBorderColor = Color.Transparent,
+    headingBottomBorderColor = Color(0xFF4DD0E1),
+    bodyFontSize = 15.sp,
+    bodyLineHeight = 26.25.sp,
+    paragraphTopMargin = 22,
+    paragraphBottomMargin = 22,
+    quoteParagraphTopMargin = 22,
+    quoteParagraphBottomMargin = 22,
+    quoteColor = Color(0xFF595959),
+    quoteBackground = Color(0x264DD0E1),
+    quoteBorder = Color(0xFF26C6DA),
+    quoteHasBackground = true,
+    quoteHasMarks = true,
+    quoteHasHover = false,
+    quoteMarkColor = Color(0xB34DD0E1),
+    quoteMarkFontSize = 30.sp,
+    quoteMarkWeight = FontWeight.Bold,
+    quoteOpenMark = "\u275D",
+    quoteCloseMark = "\u275E",
+    // 36 = the stylesheet's 32px padding-left plus the 4px left border the widget paints inside.
+    quotePaddingStart = 36,
+    quotePaddingEnd = 32,
+    quotePaddingTop = 24,
+    quotePaddingBottom = 24,
+    quoteVerticalMargin = 30,
+    quoteNestedVerticalMargin = 30,
+    inlineCodeColor = Color(0xFF26C6DA),
+    inlineCodeBackground = Color(0x144DD0E1),
+    inlineCodeFontScale = 1.0f,
+    inlineCodeCornerRadius = 2.dp,
+    codeBlockTopMargin = 16,
+    codeBlockBottomMargin = 16,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+    codeBlockPaddingVertical = 15,
+    codeBlockPaddingHorizontal = 12,
+    codeBlockFontSize = 12.sp,
+    codeBlockLineHeight = 21.sp,
+    strikethroughColor = Color(0xFF4DD0E1),
+    tableBorderColor = Color(0xFFF6F6F6),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0xFFF6F6F6),
+    tableHeaderColor = Color(0xFF000000),
+    tableHeaderFontWeight = FontWeight.Bold,
+    tableStripeBackground = Color(0x0D4DD0E1),
+    tableCellPaddingHorizontal = 7,
+    tableCellPaddingVertical = 12,
+    tableFontSize = 12.sp,
+    tableLineHeight = 24.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFF4DD0E1),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 32,
+    ruleWidthFraction = 1.0f,
+    listPaddingStart = 28,
+    listTopMargin = 15,
+    listBottomMargin = 15,
+    listItemTopMargin = 0,
+    orderedItemExtraPaddingStart = 6,
+    nestedListPaddingStart = 28,
+    nestedListTopMargin = 3,
+    headingSpecs = listOf(
+        HeadingSpec(30f, FontWeight.Bold, 30, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(24f, FontWeight.Bold, 42, 42, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(18f, FontWeight.Bold, 39, 14, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(16f, FontWeight.Bold, 65, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(15f, FontWeight.Bold, 65, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(15f, FontWeight.Bold, 35, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
     ),
     quoteBorderWidth = 4.dp,
 )

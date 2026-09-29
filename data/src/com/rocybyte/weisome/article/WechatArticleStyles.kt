@@ -10,8 +10,10 @@ package com.rocybyte.weisome.article
  * docs/theme/rim/rim.css at Rimseg/typora-theme-rim@f0d54ef, and CHOCOLATE follows
  * docs/theme/chocolate/chocolate.scss at qklhk/juejin-markdown-theme-qklhk@4f2a290, and YU follows
  * docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f, and CYANOSIS follows
- * docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea. Keep the
- * shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
+ * docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea, and CYAN
+ * follows docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f,
+ * and V_GREEN follows docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b.
+ * Keep the shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
     /** Base body text color. */
@@ -115,6 +117,8 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.CHOCOLATE -> ChocolateExportStyles
     MarkdownThemeId.YU -> YuExportStyles
     MarkdownThemeId.CYANOSIS -> CyanosisExportStyles
+    MarkdownThemeId.CYAN -> CyanExportStyles
+    MarkdownThemeId.V_GREEN -> VGreenExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -1009,6 +1013,256 @@ internal object CyanosisExportStyles : MarkdownExportStyles() {
 
     override val h1HasPrefix = false
     override val linkHasIcon = false
+    override val quoteHasMarks = false
+    override val firstLetterCapitalized = false
+}
+
+/** Leaf icon PNG embedded before h2 text, extracted from the upstream `channing-cyan.scss`. */
+private const val CyanH2IconPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADGklEQVRYR81X32vTYBQ999s6mFjQgQ+DrbHiVFZYU4cDcQ/6pGhTFVYFEXGi82H+Bz448UnEF1Fx9ccEEcXpZE3d5tP2ooKiTacTHaLNpigMHDgnU9tcSbrWrkwWR0sbyEOSe885ObnfvV8IRT6oyPwoLQHBx+OVM5WJvSyEVAhnBOjt7yU/+/rr6r6l8TMO+F/EN0JQhICqQpD/xaRpcpAc9tS+M+9lBCia/oqBamK+zeDuQogQZaKJk3wcQjxSva7tGQGB2Ke1zIk3DNyMyNL+QpCnMQOaPsDAVuGAp9cjvbYc8Ec/bCYSg0zoiHilk1tHxqsqEsYlML4kjIpT/eurJxRNPweQU5VdrWaOEo1fgKAVbBgXIz73kF3R/ph+ghgdzMYWM29eAWlBJqgZaFlFYtC6nhWpaDqnSGlIlV1WjJ3DloDNgyNLncudqgX//Ucg3LxuStHGuhi8pqKCW3rqV342rwFjRznKm+/LNaN2yC237ThgF2wxcfMLeP6+ncrKzoPoKTGeLQbYbg4TNoC5iZPJY5HGVRdSNZAWYBclD3FzBQzrR8hACAKdzBzKA/4/IYioDQaOskBbpEG6PO8qKKSAEi3CnEb0Pw4oMf0OmKbTDWqh3Lw6EIiNBZi5lxh3wz4puBD5ovqAMvxhHSdFKxE1CQe3m/07TeTX4lcJdAhE+1Sv65Z5P/ByvIGTRowIZ9igbtXnmrOsbTvgj+kHBNMuBu9OdVw8EeU4nC1A0cYmAHZOTRrLhra4Z8ywnSN6vZHAFTA2WnnMfQB3qz73ddsOZM8CACFDIPSgQXqebXEgqgeZcAeEe6pXasm1f8ew3igMtAHWac0Uc/jYdyAaP0xEBwFsmgUPqbJ0NE2UKj4EGcahiOzuyhagaHpnmtgcVgTcCMuua7YdyAHbA3ArQNscVFbb4635aD6fnYaTvxxi9UNP7ddMXaRWVBdAcaLk6bDXPZCNZ9uBXEsDUX1T2Cc9yjig6Z0EHg3LK8/aqf6MwJKchkXfks1+0+JtSq3qLPa23BRR1B+T/6nkfMaW1r9hPt/MLtYfTLEpP+T9FNoAAAAASUVORK5CYII="
+
+/** Outline icon PNG drawn inside the h3 underline bar and circle, from the upstream stylesheet. */
+private const val CyanH3IconPngBase64 = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABRklEQVRYR2NkGGDAOMD2M4w6YDQERkNg+ITAppcfY/8zMv3wF+NdTUrZQpUQ2PT6cz8Dw/8CkMWMDIwNvqK8jcQ6gmIHNN19EaXPx1XPyMCghrCUKcpPlGc5MY6gyAE+Fx52MjL8j3cU5a1UYWXtZGBkEAVb+p8hxU+Mby5NHQCxnKEMaskzJ37uFmUetkmMjAzrfUX4woixHBJlZAA0y2EmPPYU4enLkhGeQIqRJDsAh+UgO7duNpD3IcVykkOA2paT5ABaWE60A2hlOdEO8D3/4CMDIyMfWvySFefoaYSoROh74eFXBgYGLiTNVLGc+BC48PAnAwMDG9QBVLOcaAd8P5ox+x/jf5AjGLgYfnwnKqv9/8/PwPO/kFF/MSj0cAKiouD/0bgYoixFU8RovWgJIX1EOYCQIZTIjzpgNARGQ2DAQwAAvHBaIdB7zxsAAAAASUVORK5CYII="
+
+/**
+ * Cyan export styles adapted from juejin-markdown-theme-channing-cyan at commit c843c2f
+ * (registered upstream as `channing-cyan`, renamed `cyan` here).
+ * The `.markdown-body` checkered grid background is not rendered: the export is a block fragment
+ * with no body wrapper. The h1 background glow and animated gradient shadow are skipped; the h3
+ * underline and circle render in their final static state without the upstream animations. The
+ * `strong` 「」 marks and `figcaption` rules have no model element. Code-block colors continue to
+ * come from the active code theme.
+ */
+internal object CyanExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#2b2b2b"
+
+    /** Returns the cyan typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): String = when (level) {
+        1 -> "font-size: 30px; font-weight: bold; color: #4dd0e1; text-align: center; " +
+            "width: max-content; padding: 30px 0; margin: 0 auto;"
+        2 -> "font-size: 24px; font-weight: bold; color: #4dd0e1; position: relative; " +
+            "border-bottom: 4px solid #4dd0e1; padding: 12px 32px; margin: 30px 0;"
+        3 -> "font-size: 18px; font-weight: bold; color: #4dd0e1; position: relative; " +
+            "width: max-content; padding: 4px 32px; margin: 35px 0 10px;"
+        4 -> "font-size: 16px; font-weight: bold; color: #4dd0e1; padding: 30px 0; margin: 35px 0 10px;"
+        5 -> "font-size: 15px; font-weight: bold; color: #4dd0e1; padding: 30px 0; margin: 35px 0 10px;"
+        else -> "font-size: 15px; font-weight: bold; color: #4dd0e1; padding: 30px 0; margin: 5px 0 10px;"
+    }
+
+    override fun headingCss(level: Int): String = heading(level)
+
+    /** Renders the leaf icon before h2 text and the h3 underline bar like their ::before. */
+    override fun headingPrefixHtml(level: Int): String = when (level) {
+        2 -> "<span style=\"position: absolute; left: 0; top: 0; bottom: 0; margin: auto; " +
+            "width: 24px; height: 24px; background: url('data:image/png;base64,$CyanH2IconPngBase64') " +
+            "no-repeat; background-size: 24px 24px;\"></span>"
+        3 -> "<span style=\"display: block; position: absolute; left: 0; top: 0; bottom: -2px; " +
+            "margin: auto; width: 100%; height: 28px; border-bottom: 2px solid #4dd0e1; " +
+            "background: url('data:image/png;base64,$CyanH3IconPngBase64') no-repeat; " +
+            "background-size: 28px 28px;\"></span>"
+        else -> ""
+    }
+
+    /** Renders the h3 outline circle after the text at its ::after position, without animation. */
+    override fun headingSuffixHtml(level: Int): String = if (level == 3) {
+        "<span style=\"display: block; position: absolute; right: -15px; top: 0; bottom: 0; " +
+            "margin: auto; width: 28px; height: 28px; box-sizing: border-box; " +
+            "border: 2px solid #4dd0e1; border-radius: 50%; " +
+            "background: url('data:image/png;base64,$CyanH3IconPngBase64') no-repeat center; " +
+            "background-size: 28px 28px;\"></span>"
+    } else {
+        ""
+    }
+
+    override val paragraphCss =
+        "font-size: 14px; line-height: 1.75; margin: 22px 0; color: $fontColor; " +
+            "letter-spacing: 2px; word-spacing: 2px; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (line-height: 2). */
+    override val quoteParagraphCss =
+        "font-size: 14px; line-height: 2; margin: 22px 0; color: #595959; word-break: break-word;"
+
+    // The stylesheet keeps the browser's 1em ul/ol vertical margin; 15px is its equivalent at body size.
+    override val listCss = "padding-left: 28px; margin: 15px 0; color: #595959;"
+    override val listItemCss = "font-size: 15px; line-height: 1.75; margin-bottom: 0; color: #595959;"
+    override val orderedListItemCss = "$listItemCss padding-left: 6px;"
+    override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #26c6da; background-color: rgba(77, 208, 225, 0.08); border-radius: 2px; " +
+            "font-family: $monospaceFont; padding: 0.195em 0.4em; word-break: break-word; " +
+            "overflow-x: auto; overflow-wrap: anywhere; box-decoration-break: clone; " +
+            "-webkit-box-decoration-break: clone;"
+
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 16px; border-radius: 4px; " +
+            "box-shadow: 0 0 8px rgba(110, 110, 110, 0.45); overflow: auto; position: relative;"
+
+    /** Renders the mac-style dots bar the stylesheet draws via pre::before. */
+    override val codeBlockHeaderHtml =
+        "<span style=\"display: block; height: 30px; margin-bottom: -7px; box-sizing: border-box; " +
+            "padding: 10px 0 0 10px;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
+            "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; " +
+            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #febc2e;\"></span>" +
+            "<span style=\"display: inline-block; width: 10px; height: 10px; margin-left: 7px; " +
+            "border-radius: 50%; background: #28c840;\"></span></span>"
+
+    /** Keeps the active code palette while applying cyan's compact code type. */
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: normal; color: #4dd0e1; font-weight: bold;"
+
+    override val boldColor = "#26c6da"
+
+    override val strikethroughCss = "color: #4dd0e1;"
+
+    /** Anchors keep the stylesheet's 1px bottom border and side margins instead of an underline. */
+    override val linkCss =
+        "color: #4dd0e1; border-bottom: 1px solid #4dd0e1; font-weight: 400; text-decoration: none; margin: 0 4px;"
+
+    override val imgCss =
+        "display: block; margin: 20px auto; max-width: 80%; border-radius: 6px; " +
+            "object-fit: contain; box-shadow: 0 0 16px rgba(110, 110, 110, 0.45);"
+
+    override val blockquoteCss =
+        "color: #595959; padding: 24px 32px; margin: 2em 0; border-left: 4px solid #26c6da; " +
+            "background: rgba(77, 208, 225, 0.15); position: relative;"
+
+    override val quoteOpenCss =
+        "position: absolute; top: 8px; left: 8px; color: #4dd0e1; font-size: 30px; " +
+            "line-height: 1; font-weight: 700; opacity: 0.7;"
+    override val quoteCloseCss =
+        "position: absolute; right: 8px; bottom: 0; color: #4dd0e1; font-size: 30px; line-height: 1; opacity: 0.7;"
+    override val quoteOpenMark = "\u275D"
+    override val quoteCloseMark = "\u275E"
+
+    override val hrCss =
+        "border: none; border-top: 1px solid #4dd0e1; margin: 32px 0;"
+
+    override val tableCss =
+        "display: inline-block; font-size: 12px; width: auto; max-width: 100%; overflow: auto; border: solid 1px #f6f6f6;"
+
+    override val thCss =
+        "background: #f6f6f6; color: #000; text-align: left; padding: 12px 7px; line-height: 24px; font-weight: bold;"
+
+    override val tdCss =
+        "padding: 12px 7px; line-height: 24px; font-size: 12px; min-width: 120px; color: $fontColor;"
+
+    override val stripedTdCss = "$tdCss background: rgba(77, 208, 225, 0.05);"
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = true
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * V-Green export styles adapted from juejin-markdown-theme-v-green at commit 015f88b.
+ * The heading `:first-child` negative top margin and the green ordered-list `::marker` are
+ * selector-based effects the per-element inline-CSS model cannot express. The unordered list's
+ * green `•` bullets are drawn via `li::before`; the model has no list-item content hook. The
+ * link `⇲` glyph renders after the anchor text (the model appends icons; upstream places it
+ * before). The `details`/`summary` rules have no model element. Code-block colors continue to
+ * come from the active code theme. h1/h2 render at 32px/28px instead of the upstream
+ * 2.5rem/2.2rem: the rem-based values are disproportionately large next to the other themes.
+ */
+internal object VGreenExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#333333"
+
+    /** Returns the v-green typography for a heading level from 1 to 6. */
+    private fun heading(level: Int): String = when (level) {
+        1 -> "font-size: 32px; font-weight: bold; line-height: 1.5; margin: 35px 0 5px; " +
+            "padding-bottom: 5px; position: relative; color: $fontColor;"
+        2 -> "font-size: 28px; font-weight: bold; line-height: 1.5; margin: 35px 0 10px; " +
+            "padding-bottom: 0.5rem; border-bottom: 1px solid #ececec; color: $fontColor;"
+        3 -> "font-size: 24px; font-weight: bold; line-height: 1.5; margin: 35px 0 10px; " +
+            "padding-bottom: 0; color: $fontColor;"
+        4 -> "font-size: 20px; font-weight: bold; line-height: 1.5; margin: 35px 0 10px; " +
+            "padding-bottom: 5px; color: $fontColor;"
+        5 -> "font-size: 16px; font-weight: bold; line-height: 1.5; margin: 35px 0 10px; " +
+            "padding-bottom: 5px; color: $fontColor;"
+        else -> "font-size: 15px; font-weight: bold; line-height: 1.5; margin: 5px 0 10px; " +
+            "padding-bottom: 5px; color: $fontColor;"
+    }
+
+    override fun headingCss(level: Int): String = heading(level)
+
+    /** Renders the green # prefix every heading level carries before its text. */
+    override fun headingPrefixHtml(level: Int): String =
+        "<span style=\"color: #3eaf7c; padding-right: 0.23em;\">#</span>"
+
+    override val paragraphCss =
+        "font-size: 15px; line-height: 1.75; margin: 22px 0; color: $fontColor; word-break: break-word;"
+
+    /** Paragraph override applied to paragraphs nested inside a blockquote (margin: 10px 0). */
+    override val quoteParagraphCss =
+        "font-size: 15px; line-height: 1.75; margin: 10px 0; color: #666666; word-break: break-word;"
+
+    // The stylesheet keeps the browser's 1em ul/ol vertical margin; 15px is its equivalent at body size.
+    override val listCss = "padding-left: 28px; margin: 15px 0;"
+    override val listItemCss = "font-size: 15px; line-height: 1.75; margin-bottom: 0; color: $fontColor;"
+    override val orderedListItemCss = "$listItemCss padding-left: 6px;"
+    override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #3eaf7c; font-weight: 700; background-color: rgba(27, 31, 35, 0.05); " +
+            "border-radius: 3px; font-family: $monospaceFont; font-size: 0.85em; padding: 0.2rem 0.5rem; " +
+            "word-break: break-word; overflow-wrap: anywhere; box-decoration-break: clone; " +
+            "-webkit-box-decoration-break: clone;"
+
+    override val codeBlockCss =
+        "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; border-radius: 6px; " +
+            "border: 2px solid #3eaf7c;"
+
+    /** Keeps the active code palette while applying v-green's compact code type. */
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic;"
+
+    override val boldColor = "#3eaf7c"
+
+    override val strikethroughCss = "color: $fontColor;"
+
+    /** Anchors keep the stylesheet's static look; the hover border is a dynamic effect. */
+    override val linkCss = "font-weight: 500; text-decoration: none; color: #3eaf7c;"
+
+    /** Renders the ⇲ glyph after the anchor text; upstream places it before via a::before. */
+    override val linkIconSpan = "<span style=\"color: #3eaf7c;\">\u21F2</span>"
+
+    override val imgCss =
+        "display: block; margin: 0 auto; max-width: 100%; border-radius: 2px; " +
+            "border: 3px solid rgba(62, 175, 124, 0.2);"
+
+    override val blockquoteCss =
+        "color: #666666; padding: 1px 23px; margin: 22px 0; border-left: 0.5rem solid #42b983; " +
+            "background-color: #f8f8f8;"
+
+    override val hrCss =
+        "border: none; border-top: 1px solid #3eaf7c; margin: 32px 0;"
+
+    override val tableCss =
+        "display: inline-block; font-size: 12px; width: auto; max-width: 100%; overflow: auto; " +
+            "border: solid 1px #3eaf7c;"
+
+    override val thCss =
+        "background: #3eaf7c; color: #fff; text-align: left; padding: 12px 7px; line-height: 24px; font-weight: bold;"
+
+    override val tdCss =
+        "padding: 12px 7px; line-height: 24px; font-size: 12px; min-width: 120px; color: $fontColor;"
+
+    override val stripedTdCss = "$tdCss background: rgba(62, 175, 124, 0.2);"
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = true
     override val quoteHasMarks = false
     override val firstLetterCapitalized = false
 }
