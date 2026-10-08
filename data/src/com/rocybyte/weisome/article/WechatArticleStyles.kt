@@ -651,11 +651,12 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
 
     /** Returns the chocolate typography for a heading level from 1 to 6. */
     private fun heading(level: Int): HeadingSpec = when (level) {
+        // h1/h2 indent comes from the inline icon image plus its 5px margin.
         1 -> HeadingSpec(
-            "25px", "#664900", "35px", "17px 0 10px", "padding-bottom: 0; padding-left: 25px;",
+            "25px", "#664900", "35px", "17px 0 10px", "padding-bottom: 0;",
             borderBottom = "border-bottom: 5px solid #6d4e00; text-shadow: 1px 1px 1px #8a6200;",
         )
-        2 -> HeadingSpec("20px", "#614500", "1.5", "17px 0 10px", "padding: 0 0 5px 20px;")
+        2 -> HeadingSpec("20px", "#614500", "1.5", "17px 0 10px", "padding: 0 0 5px;")
         3 -> HeadingSpec("18px", "#614500", "1.5", "20px 10px 0 0", "padding: 0 0 0 10px;")
         4 -> HeadingSpec("17px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
         5 -> HeadingSpec("14px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
@@ -664,20 +665,23 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
 
     override fun headingCss(level: Int): String {
         val spec = heading(level)
-        val relative = if (level <= 2) " position: relative;" else ""
         val borderLeft = if (level == 3) " border-left: 5px solid #8f6600;" else ""
         return "font-size: ${spec.size}; font-weight: bold; line-height: ${spec.lineHeight}; " +
-            "margin: ${spec.margin}; ${spec.padding} color: ${spec.color};$borderLeft$relative ${spec.borderBottom}"
+            "margin: ${spec.margin}; ${spec.padding} color: ${spec.color};$borderLeft ${spec.borderBottom}"
     }
 
-    /** Renders the chocolate-piece icon before h1/h2 text, vertically centered like the ::before. */
+    /**
+     * Renders the chocolate-piece icon before h1/h2 text like the ::before.
+     * The icon flows inline (vertical-align: middle) instead of absolute positioning: the
+     * WeChat editor's paste sanitizer strips empty decorative spans and rewrites <img> without
+     * position styles, so the icon plus its margin must reproduce the upstream 25px/20px indent.
+     */
     override fun headingPrefixHtml(level: Int): String {
         if (level > 2) return ""
         val size = if (level == 1) "20px" else "15px"
-        val backgroundSize = if (level == 1) "20px 20px" else "100% 100%"
-        return "<span style=\"position: absolute; left: 0; top: 3px; bottom: 0; margin: auto; " +
-            "width: $size; height: $size; background-size: $backgroundSize; background-repeat: no-repeat; " +
-            "background-image: url('data:image/png;base64,$ChocolateThemeIconPngBase64');\"></span>"
+        return "<img src=\"data:image/png;base64,$ChocolateThemeIconPngBase64\" " +
+            "style=\"display: inline-block; vertical-align: middle; width: $size; height: $size; " +
+            "margin-right: 5px;\">"
     }
 
     override val paragraphCss =
@@ -1039,8 +1043,8 @@ internal object CyanExportStyles : MarkdownExportStyles() {
     private fun heading(level: Int): String = when (level) {
         1 -> "font-size: 30px; font-weight: bold; color: #4dd0e1; text-align: center; " +
             "width: max-content; padding: 30px 0; margin: 0 auto;"
-        2 -> "font-size: 24px; font-weight: bold; color: #4dd0e1; position: relative; " +
-            "border-bottom: 4px solid #4dd0e1; padding: 12px 32px; margin: 30px 0;"
+        2 -> "font-size: 24px; font-weight: bold; color: #4dd0e1; " +
+            "border-bottom: 4px solid #4dd0e1; padding: 12px 32px 12px 0; margin: 30px 0;"
         3 -> "font-size: 18px; font-weight: bold; color: #4dd0e1; position: relative; " +
             "width: max-content; padding: 4px 32px; margin: 35px 0 10px;"
         4 -> "font-size: 16px; font-weight: bold; color: #4dd0e1; padding: 30px 0; margin: 35px 0 10px;"
@@ -1050,15 +1054,20 @@ internal object CyanExportStyles : MarkdownExportStyles() {
 
     override fun headingCss(level: Int): String = heading(level)
 
-    /** Renders the leaf icon before h2 text and the h3 underline bar like their ::before. */
+    /**
+     * Renders the leaf icon before h2 text and the h3 underline bar like their ::before.
+     * The h2 icon flows inline (the WeChat editor's paste sanitizer rewrites <img> without
+     * position styles), so the icon plus its margin reproduces the upstream 32px indent. The
+     * h3 bar and circle spans keep absolute positioning and wrap their icon in an <img> to
+     * stay non-empty.
+     */
     override fun headingPrefixHtml(level: Int): String = when (level) {
-        2 -> "<span style=\"position: absolute; left: 0; top: 0; bottom: 0; margin: auto; " +
-            "width: 24px; height: 24px; background: url('data:image/png;base64,$CyanH2IconPngBase64') " +
-            "no-repeat; background-size: 24px 24px;\"></span>"
+        2 -> "<img src=\"data:image/png;base64,$CyanH2IconPngBase64\" " +
+            "style=\"display: inline-block; vertical-align: middle; width: 24px; height: 24px; " +
+            "margin-right: 8px;\">"
         3 -> "<span style=\"display: block; position: absolute; left: 0; top: 0; bottom: -2px; " +
-            "margin: auto; width: 100%; height: 28px; border-bottom: 2px solid #4dd0e1; " +
-            "background: url('data:image/png;base64,$CyanH3IconPngBase64') no-repeat; " +
-            "background-size: 28px 28px;\"></span>"
+            "margin: auto; width: 100%; height: 28px; border-bottom: 2px solid #4dd0e1;\">" +
+            "<img src=\"data:image/png;base64,$CyanH3IconPngBase64\" style=\"width: 28px; height: 28px;\"></span>"
         else -> ""
     }
 
@@ -1066,9 +1075,9 @@ internal object CyanExportStyles : MarkdownExportStyles() {
     override fun headingSuffixHtml(level: Int): String = if (level == 3) {
         "<span style=\"display: block; position: absolute; right: -15px; top: 0; bottom: 0; " +
             "margin: auto; width: 28px; height: 28px; box-sizing: border-box; " +
-            "border: 2px solid #4dd0e1; border-radius: 50%; " +
-            "background: url('data:image/png;base64,$CyanH3IconPngBase64') no-repeat center; " +
-            "background-size: 28px 28px;\"></span>"
+            "border: 2px solid #4dd0e1; border-radius: 50%;\">" +
+            "<img src=\"data:image/png;base64,$CyanH3IconPngBase64\" " +
+            "style=\"width: 24px; height: 24px;\"></span>"
     } else {
         ""
     }
