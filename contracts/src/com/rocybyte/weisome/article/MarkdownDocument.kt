@@ -73,6 +73,8 @@ data class CodeTheme(
     val multilineCommentRgb: Int,
     val punctuationRgb: Int,
     val markRgb: Int,
+    val typeNameRgb: Int,
+    val functionNameRgb: Int,
 )
 
 /** Selectable Markdown document themes affecting preview and export rendering; GITHUB is the default. */
@@ -121,6 +123,8 @@ object CodeThemes {
             multilineCommentRgb = 0x808080,
             punctuationRgb = 0xCC7832,
             markRgb = 0xA9B7C6,
+            typeNameRgb = 0x6897BB,
+            functionNameRgb = 0xBBB529,
         )
         CodeThemeId.MONOKAI -> CodeTheme(
             backgroundRgb = 0x272822,
@@ -133,6 +137,8 @@ object CodeThemes {
             multilineCommentRgb = 0x75715E,
             punctuationRgb = 0xF8F8F2,
             markRgb = 0xF8F8F2,
+            typeNameRgb = 0xAE81FF,
+            functionNameRgb = 0x66D9EF,
         )
         CodeThemeId.NOTEPAD -> CodeTheme(
             backgroundRgb = 0xFFFFFF,
@@ -145,6 +151,8 @@ object CodeThemes {
             multilineCommentRgb = 0x008000,
             punctuationRgb = 0x000000,
             markRgb = 0x000080,
+            typeNameRgb = 0xFF8000,
+            functionNameRgb = 0x000080,
         )
         CodeThemeId.MATRIX -> CodeTheme(
             backgroundRgb = 0x000000,
@@ -157,6 +165,8 @@ object CodeThemes {
             multilineCommentRgb = 0x67E667,
             punctuationRgb = 0x008500,
             markRgb = 0x008500,
+            typeNameRgb = 0x39E639,
+            functionNameRgb = 0x008500,
         )
         CodeThemeId.PASTEL -> CodeTheme(
             backgroundRgb = 0x2E3436,
@@ -169,6 +179,8 @@ object CodeThemes {
             multilineCommentRgb = 0x888A85,
             punctuationRgb = 0xCB956D,
             markRgb = 0xCB956D,
+            typeNameRgb = 0x8AE234,
+            functionNameRgb = 0x5DB895,
         )
         CodeThemeId.ATOM_ONE -> CodeTheme(
             backgroundRgb = 0xFAFAFA,
@@ -181,6 +193,8 @@ object CodeThemes {
             multilineCommentRgb = 0xA0A1A7,
             punctuationRgb = 0x383A42,
             markRgb = 0x383A42,
+            typeNameRgb = 0x986801,
+            functionNameRgb = 0xA626A4,
         )
     }
 
@@ -196,6 +210,8 @@ object CodeThemes {
         multilineCommentRgb = 0x5C6370,
         punctuationRgb = 0xABB2BF,
         markRgb = 0x56B6C2,
+        typeNameRgb = 0xE5C07B,
+        functionNameRgb = 0x61AFEF,
     )
 
     private val githubLight = CodeTheme(
@@ -209,6 +225,8 @@ object CodeThemes {
         multilineCommentRgb = 0x6E7781,
         punctuationRgb = 0x1F2328,
         markRgb = 0x1F2328,
+        typeNameRgb = 0x953800,
+        functionNameRgb = 0x8250DF,
     )
 }
 

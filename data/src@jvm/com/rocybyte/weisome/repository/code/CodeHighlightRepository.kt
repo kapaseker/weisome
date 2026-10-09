@@ -86,5 +86,7 @@ internal class CodeHighlightRepository : CodeHighlightRepo {
         multilineComment = multilineCommentRgb,
         punctuation = punctuationRgb,
         mark = markRgb,
+        typeName = typeNameRgb,
+        functionName = functionNameRgb,
     )
 }

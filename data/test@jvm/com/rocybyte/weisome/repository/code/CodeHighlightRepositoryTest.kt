@@ -56,6 +56,39 @@ class CodeHighlightRepositoryTest {
     }
 
     @Test
+    /** Verifies capitalized identifiers receive the type color and invoked ones the function color. */
+    fun `highlights type names and function calls`() {
+        val repository = CodeHighlightRepository()
+        val githubLight = CodeThemes.forId(CodeThemeId.GITHUB_LIGHT)
+        val code = """
+            class HomeSourcesController {
+                fun select() {
+                    scope.launch {
+                        store::save
+                    }
+                }
+            }
+        """.trimIndent()
+
+        assertEquals(
+            githubLight.typeNameRgb,
+            colorAt(code, "HomeSourcesController", repository, CodeLanguage.Kotlin),
+        )
+        assertEquals(
+            githubLight.functionNameRgb,
+            colorAt(code, "select", repository, CodeLanguage.Kotlin),
+        )
+        assertEquals(
+            githubLight.functionNameRgb,
+            colorAt(code, "launch", repository, CodeLanguage.Kotlin),
+        )
+        assertEquals(
+            githubLight.functionNameRgb,
+            colorAt(code, "save", repository, CodeLanguage.Kotlin),
+        )
+    }
+
+    @Test
     /** Verifies adapter output is ordered, bounded, and free of overlapping ranges. */
     fun `normalizes dependency highlights for shared renderers`() {
         val code = "// comment\nval answer = 42"
