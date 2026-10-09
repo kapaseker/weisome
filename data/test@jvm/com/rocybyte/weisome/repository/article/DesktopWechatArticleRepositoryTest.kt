@@ -33,7 +33,7 @@ class DesktopWechatArticleRepositoryTest {
     fun `preview leaves unknown code languages unhighlighted`() {
         val repository = DesktopWechatArticleRepository(CodeHighlightRepository())
 
-        val codeBlock = repository.preview("```python\nprint('hello')\n```", CodeThemeId.DARCULA)
+        val codeBlock = repository.preview("```unknownlang\nprint('hello')\n```", CodeThemeId.DARCULA)
             .blocks
             .single() as MarkdownBlock.CodeBlock
 

@@ -55,9 +55,23 @@ internal class CodeHighlightRepository : CodeHighlightRepo {
 
     /** Maps the application language model to the Highlights dependency model. */
     private fun CodeLanguage.toSyntaxLanguage(): SyntaxLanguage = when (this) {
+        CodeLanguage.C -> SyntaxLanguage.C
+        CodeLanguage.Cpp -> SyntaxLanguage.CPP
+        CodeLanguage.Dart -> SyntaxLanguage.DART
         CodeLanguage.Java -> SyntaxLanguage.JAVA
         CodeLanguage.Kotlin -> SyntaxLanguage.KOTLIN
         CodeLanguage.Rust -> SyntaxLanguage.RUST
+        CodeLanguage.CSharp -> SyntaxLanguage.CSHARP
+        CodeLanguage.CoffeeScript -> SyntaxLanguage.COFFEESCRIPT
+        CodeLanguage.JavaScript -> SyntaxLanguage.JAVASCRIPT
+        CodeLanguage.Perl -> SyntaxLanguage.PERL
+        CodeLanguage.Python -> SyntaxLanguage.PYTHON
+        CodeLanguage.Ruby -> SyntaxLanguage.RUBY
+        CodeLanguage.Shell -> SyntaxLanguage.SHELL
+        CodeLanguage.Swift -> SyntaxLanguage.SWIFT
+        CodeLanguage.TypeScript -> SyntaxLanguage.TYPESCRIPT
+        CodeLanguage.Go -> SyntaxLanguage.GO
+        CodeLanguage.Php -> SyntaxLanguage.PHP
     }
 
     /** Converts the shared application theme to the dependency's syntax theme. */

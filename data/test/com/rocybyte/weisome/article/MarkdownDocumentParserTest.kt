@@ -85,7 +85,7 @@ class MarkdownDocumentParserTest {
     }
 
     @Test
-    /** Verifies Java, Kotlin, and Rust fence labels and aliases map to supported languages. */
+    /** Verifies fence labels and aliases across all supported languages map to their language model. */
     fun `parses supported fenced code languages`() {
         val markdown = """
             ```java
@@ -97,6 +97,16 @@ class MarkdownDocumentParserTest {
             ```rs
             fn main() {}
             ```
+            ```py
+            def main():
+                pass
+            ```
+            ```ts
+            function main() {}
+            ```
+            ```c++
+            int main() { return 0; }
+            ```
         """.trimIndent()
 
         assertEquals(
@@ -104,6 +114,9 @@ class MarkdownDocumentParserTest {
                 MarkdownBlock.CodeBlock(CodeLanguage.Java, "class Example {}"),
                 MarkdownBlock.CodeBlock(CodeLanguage.Kotlin, "fun main() = Unit"),
                 MarkdownBlock.CodeBlock(CodeLanguage.Rust, "fn main() {}"),
+                MarkdownBlock.CodeBlock(CodeLanguage.Python, "def main():\n    pass"),
+                MarkdownBlock.CodeBlock(CodeLanguage.TypeScript, "function main() {}"),
+                MarkdownBlock.CodeBlock(CodeLanguage.Cpp, "int main() { return 0; }"),
             ),
             MarkdownDocumentParser.parse(markdown).blocks,
         )
@@ -113,7 +126,7 @@ class MarkdownDocumentParserTest {
     /** Verifies unsupported and unclosed fences remain readable plain code blocks. */
     fun `falls back to plain code for unknown and unclosed fences`() {
         val markdown = """
-            ```python
+            ```unknownlang
             print("hello")
         """.trimIndent()
 

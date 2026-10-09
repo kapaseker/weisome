@@ -239,9 +239,23 @@ object MarkdownDocumentParser {
 
     /** Maps supported fenced-code labels and aliases to their language model. */
     private fun codeLanguage(label: String): CodeLanguage? = when (label.lowercase()) {
+        "c" -> CodeLanguage.C
+        "c++", "cpp" -> CodeLanguage.Cpp
+        "dart" -> CodeLanguage.Dart
         "java" -> CodeLanguage.Java
         "kotlin", "kt" -> CodeLanguage.Kotlin
         "rust", "rs" -> CodeLanguage.Rust
+        "csharp", "c#", "cs" -> CodeLanguage.CSharp
+        "coffeescript", "coffee" -> CodeLanguage.CoffeeScript
+        "javascript", "js" -> CodeLanguage.JavaScript
+        "perl" -> CodeLanguage.Perl
+        "python", "py" -> CodeLanguage.Python
+        "ruby", "rb" -> CodeLanguage.Ruby
+        "shell", "sh", "bash", "zsh" -> CodeLanguage.Shell
+        "swift" -> CodeLanguage.Swift
+        "typescript", "ts" -> CodeLanguage.TypeScript
+        "go", "golang" -> CodeLanguage.Go
+        "php" -> CodeLanguage.Php
         else -> null
     }
 

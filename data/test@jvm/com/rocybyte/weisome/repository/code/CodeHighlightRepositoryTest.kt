@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 
 class CodeHighlightRepositoryTest {
     @Test
-    /** Verifies Java, Kotlin, and Rust keywords receive the shared keyword color. */
+    /** Verifies representative keywords across the supported languages receive the shared keyword color. */
     fun `highlights keywords in all supported languages`() {
         val repository = CodeHighlightRepository()
         val githubLight = CodeThemes.forId(CodeThemeId.GITHUB_LIGHT)
@@ -25,6 +25,18 @@ class CodeHighlightRepositoryTest {
         assertEquals(
             githubLight.keywordRgb,
             colorAt("fn main() {}", "fn", repository, CodeLanguage.Rust),
+        )
+        assertEquals(
+            githubLight.keywordRgb,
+            colorAt("def main():\n    pass", "def", repository, CodeLanguage.Python),
+        )
+        assertEquals(
+            githubLight.keywordRgb,
+            colorAt("func main() {}", "func", repository, CodeLanguage.Go),
+        )
+        assertEquals(
+            githubLight.keywordRgb,
+            colorAt("function main() {}", "function", repository, CodeLanguage.TypeScript),
         )
     }
 

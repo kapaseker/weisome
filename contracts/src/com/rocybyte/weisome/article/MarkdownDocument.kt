@@ -35,10 +35,25 @@ data class ListItem(
     val child: MarkdownBlock.ListBlock? = null,
 )
 
+/** Fenced-code languages supported by the highlight pipeline; mirrors the Highlights dependency's capability. */
 enum class CodeLanguage {
+    C,
+    Cpp,
+    Dart,
     Java,
     Kotlin,
     Rust,
+    CSharp,
+    CoffeeScript,
+    JavaScript,
+    Perl,
+    Python,
+    Ruby,
+    Shell,
+    Swift,
+    TypeScript,
+    Go,
+    Php,
 }
 
 data class CodeHighlightSpan(
