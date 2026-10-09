@@ -651,16 +651,18 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
 
     /** Returns the chocolate typography for a heading level from 1 to 6. */
     private fun heading(level: Int): HeadingSpec = when (level) {
-        // h1/h2 indent comes from the inline icon image plus its 5px margin.
+        // WeiSome: h1 is 24px with the shared 1.5 line height (36px, even). h1/h2 indent comes
+        // from the inline icon image plus its 6px margin.
         1 -> HeadingSpec(
-            "25px", "#664900", "35px", "17px 0 10px", "padding-bottom: 0;",
+            "24px", "#664900", "36px", "17px 0 10px", "padding-bottom: 0;",
             borderBottom = "border-bottom: 5px solid #6d4e00; text-shadow: 1px 1px 1px #8a6200;",
         )
         2 -> HeadingSpec("20px", "#614500", "1.5", "17px 0 10px", "padding: 0 0 5px;")
         3 -> HeadingSpec("18px", "#614500", "1.5", "20px 10px 0 0", "padding: 0 0 0 10px;")
         4 -> HeadingSpec("17px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
         5 -> HeadingSpec("14px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
-        else -> HeadingSpec("12px", "#a37400", "1.5", "28px 0 10px", "padding-bottom: 5px;")
+        // WeiSome floor: 14px instead of the upstream 12px.
+        else -> HeadingSpec("14px", "#a37400", "1.5", "28px 0 10px", "padding-bottom: 5px;")
     }
 
     override fun headingCss(level: Int): String {
@@ -671,17 +673,17 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
     }
 
     /**
-     * Renders the chocolate-piece icon before h1/h2 text like the ::before.
-     * The icon flows inline (vertical-align: middle) instead of absolute positioning: the
-     * WeChat editor's paste sanitizer strips empty decorative spans and rewrites <img> without
-     * position styles, so the icon plus its margin must reproduce the upstream 25px/20px indent.
+     * Renders the chocolate-piece icon before h1/h2 text like the ::before. The icon is sized to
+     * the heading font size. The icon flows inline (vertical-align: middle) instead of absolute
+     * positioning: the WeChat editor's paste sanitizer strips empty decorative spans and rewrites
+     * <img> without position styles, so the icon plus its margin must reproduce the heading indent.
      */
     override fun headingPrefixHtml(level: Int): String {
         if (level > 2) return ""
-        val size = if (level == 1) "20px" else "15px"
+        val size = heading(level).size
         return "<img src=\"data:image/png;base64,$ChocolateThemeIconPngBase64\" " +
             "style=\"display: inline-block; vertical-align: middle; width: $size; height: $size; " +
-            "margin-right: 5px;\">"
+            "margin-right: 6px;\">"
     }
 
     override val paragraphCss =
@@ -698,18 +700,20 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
     override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
     override val taskItemPrefixCss = "list-style: none; "
 
+    // WeiSome floor: absolute 14px instead of the upstream 0.87em.
     override val inlineCodeCss =
         "color: #996d00; background-color: rgba(130, 98, 0, 0.3); padding: 0.065em 0.4em; border-radius: 4px; " +
-            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+            "font-family: $monospaceFont; font-size: 14px; font-style: normal; " +
             "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
 
     // pre leaves its vertical margin to the browser default (1em); 15px is its equivalent at body size.
     override val codeBlockCss =
         "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
 
+    // WeiSome floor: 14px instead of the upstream 12px.
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
-            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
@@ -741,15 +745,16 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
         "height: 1px; border: none; margin: 32px 0; background-color: #805b00;"
 
     // The stylesheet's width: 100% !important wins over its own width: auto.
+    // WeiSome floor: 14px instead of the upstream 12px.
     override val tableCss =
-        "margin: 0; font-size: 12px; width: 100%; max-width: 100%; overflow: auto; border-collapse: collapse; border-spacing: 0;"
+        "margin: 0; font-size: 14px; width: 100%; max-width: 100%; overflow: auto; border-collapse: collapse; border-spacing: 0;"
 
     override val thCss =
         "background: #f6f6f6; color: #000000; text-align: center; padding: 12px 7px; line-height: 24px; " +
-            "font-size: 12px; border: 1px solid rgba(72, 42, 10, 0.1);"
+            "font-size: 14px; border: 1px solid rgba(72, 42, 10, 0.1);"
 
     override val tdCss =
-        "padding: 12px 7px; line-height: 24px; font-size: 12px; color: $fontColor; border: 1px solid rgba(72, 42, 10, 0.1);"
+        "padding: 12px 7px; line-height: 24px; font-size: 14px; color: $fontColor; border: 1px solid rgba(72, 42, 10, 0.1);"
 
     override val stripedTdCss = tdCss
 

@@ -691,15 +691,17 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     quoteNestedVerticalMargin = 20,
     inlineCodeColor = Color(0xFF996D00),
     inlineCodeBackground = Color(0x4D826200),
-    inlineCodeFontScale = 0.87f,
+    // WeiSome floor: absolute 14sp (14/15 of the 15sp body), not the upstream 0.87em scale.
+    inlineCodeFontScale = 14f / 15f,
     inlineCodeCornerRadius = 4.dp,
     codeBlockTopMargin = 15,
     codeBlockBottomMargin = 15,
     codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
     codeBlockPaddingVertical = 15,
     codeBlockPaddingHorizontal = 12,
-    codeBlockFontSize = 12.sp,
-    codeBlockLineHeight = 21.sp,
+    // WeiSome floor: 14sp instead of the upstream 12px; line height evened to 22sp.
+    codeBlockFontSize = 14.sp,
+    codeBlockLineHeight = 22.sp,
     strikethroughColor = Color(0xFFC28A00),
     tableBorderColor = Color(0x1A482A0A),
     tableBorderWidth = 1.dp,
@@ -710,7 +712,8 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     tableStripeBackground = Color.Transparent,
     tableCellPaddingHorizontal = 7,
     tableCellPaddingVertical = 12,
-    tableFontSize = 12.sp,
+    // WeiSome floor: 14sp instead of the upstream 12px.
+    tableFontSize = 14.sp,
     tableLineHeight = 24.sp,
     ruleIsGradient = false,
     ruleGradient = emptyList(),
@@ -725,13 +728,15 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 28,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        // h1 keeps the shared 10px bottom margin and drops the shared 5px padding-bottom.
-        HeadingSpec(25f, FontWeight.Bold, 17, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.4f, borderBottomWidth = 5.dp),
+        // WeiSome: h1 is 24sp with the shared 1.5 line height (36sp, even); keeps the 10px bottom
+        // margin and drops the shared 5px padding-bottom.
+        HeadingSpec(24f, FontWeight.Bold, 17, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, borderBottomWidth = 5.dp),
         HeadingSpec(20f, FontWeight.Bold, 17, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(18f, FontWeight.Bold, 20, 0, borderLeft = true, borderWidth = 5.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(17f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(14f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(12f, FontWeight.Bold, 28, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        // WeiSome floor: 14sp instead of the upstream 12px.
+        HeadingSpec(14f, FontWeight.Bold, 28, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
     ),
     h1Icon = chocolateIcon,
     h2Icon = chocolateIcon,

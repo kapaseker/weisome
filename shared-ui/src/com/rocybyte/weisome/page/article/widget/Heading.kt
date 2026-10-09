@@ -69,16 +69,16 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                         .offset(x = spec.prefixEmojiLeft.dp),
                 )
             }
-            // Chocolate renders its piece icon before h1/h2 text, vertically centered.
+            // Chocolate renders its piece icon before h1/h2 text, sized to the heading font.
             styles.iconFor(level)?.let { icon ->
                 Image(
                     bitmap = icon,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(if (level == 1) 20.dp else 15.dp)
+                        .size(spec.size.dp)
                         .align(Alignment.CenterVertically),
                 )
-                Spacer(Modifier.width(5.dp))
+                Spacer(Modifier.width(6.dp))
             }
             if (level == 1 && styles.h1HasPrefix) {
                 WeiSomeText(

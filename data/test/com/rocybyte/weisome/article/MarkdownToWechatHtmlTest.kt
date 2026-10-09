@@ -2,6 +2,7 @@ package com.rocybyte.weisome.article
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class MarkdownToWechatHtmlTest {
@@ -171,5 +172,25 @@ class MarkdownToWechatHtmlTest {
         assertTrue(html.contains("border: solid 1px #3eaf7c;"))
         assertTrue(html.contains("background: #3eaf7c; color: #fff;"))
         assertTrue(html.contains("border-top: 1px solid #3eaf7c;"))
+    }
+
+    @Test
+    /** Verifies the Chocolate theme floors every ≤14px font size at 14px (h6, code, table, inline code). */
+    fun `renders chocolate theme through the public entry point`() {
+        val html = MarkdownToWechatHtml.render(
+            "# Title\n\n###### Tiny\n\nBody with `code`.\n\n```kotlin\nval ok = true\n```\n\n| A | B |\n| - | - |\n| 1 | 2 |\n",
+            MarkdownThemeId.CHOCOLATE,
+            CodeThemeId.GITHUB_LIGHT,
+        )
+
+        assertTrue(html.contains("font-size: 24px; font-weight: bold; line-height: 36px;"))
+        assertTrue(html.contains("width: 24px; height: 24px; margin-right: 6px;"))
+        assertTrue(html.contains("font-size: 14px; font-weight: bold; line-height: 1.5; margin: 28px 0 10px;"))
+        assertTrue(html.contains("font-size: 14px; font-style: normal;"))
+        assertTrue(html.contains("font-weight: 400; font-size: 14px; padding: 15px 12px;"))
+        assertTrue(html.contains("margin: 0; font-size: 14px; width: 100%;"))
+        assertTrue(html.contains("line-height: 24px; font-size: 14px;"))
+        assertFalse(html.contains("font-size: 12px"))
+        assertFalse(html.contains("font-size: 0.87em"))
     }
 }
