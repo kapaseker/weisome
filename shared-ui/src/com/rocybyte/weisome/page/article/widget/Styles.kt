@@ -26,6 +26,8 @@ internal data class HeadingSpec(
     val borderBottom: Boolean,
     val muted: Boolean,
     val lineHeightMultiplier: Float,
+    /** Absolute line height overriding [lineHeightMultiplier] × size (yu's even-valued px line-heights). */
+    val lineHeight: androidx.compose.ui.unit.TextUnit? = null,
     val borderBottomWidth: Dp = 1.dp,
     val prefixEmoji: String = "",
     val prefixEmojiSize: Float = 0f,
@@ -758,6 +760,9 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
  * body wrapper. The strong `·` dashes have no preview equivalent. Headings keep the body color;
  * list markers use the widget's default tone although the stylesheet tints them (#ee69a9); the
  * export carries the tint. The h2 font-size falls back to the browser default (1.5em).
+ * Deliberate deviations from the upstream stylesheet: h1 is sized 28px, the smallest font is
+ * clamped to 14px (h6, inline code, code blocks, and table cells), emoji prefixes match their
+ * heading size, and heading line-heights are absolute even-valued sp.
  */
 internal val YuPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xFF5F6368),
@@ -795,15 +800,16 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     quoteNestedVerticalMargin = 22,
     inlineCodeColor = Color(0xFFFF502C),
     inlineCodeBackground = Color(0xFFFFF5F5),
-    inlineCodeFontScale = 0.87f,
+    // 14px at the 15px body (upstream 0.87em ≈ 13px is below the WeiSome 14px floor).
+    inlineCodeFontScale = 14f / 15f,
     inlineCodeCornerRadius = 2.dp,
     codeBlockTopMargin = 15,
     codeBlockBottomMargin = 15,
     codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
     codeBlockPaddingVertical = 15,
     codeBlockPaddingHorizontal = 12,
-    codeBlockFontSize = 12.sp,
-    codeBlockLineHeight = 21.sp,
+    codeBlockFontSize = 14.sp,
+    codeBlockLineHeight = 24.sp,
     strikethroughColor = Color(0xFF5F6368),
     tableBorderColor = Color(0xFFF6F6F6),
     tableBorderWidth = 1.dp,
@@ -813,7 +819,7 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     tableStripeBackground = Color(0xFFFCFCFC),
     tableCellPaddingHorizontal = 7,
     tableCellPaddingVertical = 12,
-    tableFontSize = 12.sp,
+    tableFontSize = 14.sp,
     tableLineHeight = 24.sp,
     ruleIsGradient = false,
     ruleGradient = emptyList(),
@@ -828,12 +834,12 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 28,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        HeadingSpec(32f, FontWeight.Bold, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 32f, prefixEmojiLeft = 0),
-        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 24f, prefixEmojiLeft = 8),
-        HeadingSpec(18f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 20f, prefixEmojiLeft = 8),
-        HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
-        HeadingSpec(14f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 16f, prefixEmojiLeft = 9),
-        HeadingSpec(12f, FontWeight.Bold, 5, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, prefixEmoji = "\uD83D\uDC27", prefixEmojiSize = 14f, prefixEmojiLeft = 10),
+        HeadingSpec(28f, FontWeight.Bold, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 42.sp, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 28f, prefixEmojiLeft = 0),
+        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 34.sp, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 22.5f, prefixEmojiLeft = 8),
+        HeadingSpec(18f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 28.sp, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
+        HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 24.sp, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 16f, prefixEmojiLeft = 8),
+        HeadingSpec(14f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 14f, prefixEmojiLeft = 9),
+        HeadingSpec(14f, FontWeight.Bold, 5, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83D\uDC27", prefixEmojiSize = 14f, prefixEmojiLeft = 10),
     ),
     quoteBorderWidth = 4.dp,
     quoteMarkColor = Color(0xCCFD79A8),

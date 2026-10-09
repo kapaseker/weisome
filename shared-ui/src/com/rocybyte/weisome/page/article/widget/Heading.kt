@@ -86,7 +86,7 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                     color = styles.themeColor,
                     fontSize = spec.size.sp,
                     fontWeight = spec.weight,
-                    lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+                    lineHeight = spec.lineHeight ?: (spec.size.sp * spec.lineHeightMultiplier),
                 )
                 Spacer(Modifier.width(10.dp))
             }
@@ -105,7 +105,7 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                 lines = listOf(content),
                 fontSize = spec.size.sp,
                 fontWeight = spec.weight,
-                lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+                lineHeight = spec.lineHeight ?: (spec.size.sp * spec.lineHeightMultiplier),
                 color = if (spec.muted) styles.mutedColor else styles.headingColor,
                 textAlign = if (level == 1 && styles.h1Centered) TextAlign.Center else null,
                 modifier = Modifier.weight(1f),
@@ -149,7 +149,7 @@ private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: M
         lines = listOf(content),
         fontSize = spec.size.sp,
         fontWeight = spec.weight,
-        lineHeight = spec.size.sp * spec.lineHeightMultiplier,
+        lineHeight = spec.lineHeight ?: (spec.size.sp * spec.lineHeightMultiplier),
         color = styles.headingColor,
         modifier = Modifier
             .hoverable(interactionSource)

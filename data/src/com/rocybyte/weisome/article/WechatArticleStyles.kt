@@ -769,7 +769,10 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
  * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
  * body wrapper. The strong `·` dashes and the blockquote/table hover styles are pseudo-element
  * or interactive effects the inline-CSS model cannot express. The h2 font-size falls back to
- * the browser default (1.5em) the stylesheet leaves in place.
+ * the browser default (1.5em) the stylesheet leaves in place. Deliberate deviations from the
+ * upstream stylesheet: h1 is sized 28px, the smallest font is clamped to 14px (h6, inline code,
+ * code blocks, and table cells), emoji prefixes match their heading size, and all line-heights
+ * are absolute even-valued px instead of unitless/em-relative values.
  */
 internal object YuExportStyles : MarkdownExportStyles() {
     override val fontColor = "#5f6368"
@@ -778,18 +781,19 @@ internal object YuExportStyles : MarkdownExportStyles() {
         val size: String,
         val margin: String,
         val paddingBottom: String,
+        val lineHeight: String,
         val borderBottom: String = "",
     )
 
     /** Returns the yu typography for a heading level from 1 to 6. */
     private fun heading(level: Int): HeadingSpec = when (level) {
-        1 -> HeadingSpec("32px", "35px 0 5px", "5px")
+        1 -> HeadingSpec("28px", "35px 0 5px", "5px", "42px")
         // The stylesheet defines no h2 font-size; the browser's 1.5em default at body size applies.
-        2 -> HeadingSpec("22.5px", "35px 0 10px", "24px", borderBottom = "border-bottom: 1px solid #ececec;")
-        3 -> HeadingSpec("18px", "35px 0 10px", "0")
-        4 -> HeadingSpec("16px", "35px 0 10px", "5px")
-        5 -> HeadingSpec("14px", "35px 0 10px", "5px")
-        else -> HeadingSpec("12px", "5px 0 10px", "5px")
+        2 -> HeadingSpec("22.5px", "35px 0 10px", "24px", "34px", borderBottom = "border-bottom: 1px solid #ececec;")
+        3 -> HeadingSpec("18px", "35px 0 10px", "0", "28px")
+        4 -> HeadingSpec("16px", "35px 0 10px", "5px", "24px")
+        5 -> HeadingSpec("14px", "35px 0 10px", "5px", "22px")
+        else -> HeadingSpec("14px", "5px 0 10px", "5px", "22px")
     }
 
     /** Returns the animal emoji, its left offset, and its top offset for a heading level. */
@@ -803,19 +807,19 @@ internal object YuExportStyles : MarkdownExportStyles() {
         else -> null
     }
 
-    /** Returns the emoji glyph size for a heading level from 1 to 6. */
-    private fun prefixSize(level: Int): Int = when (level) {
-        1 -> 32
-        2 -> 24
-        3 -> 20
-        4 -> 18
-        5 -> 16
-        else -> 14
+    /** Returns the emoji glyph size for a heading level from 1 to 6, matching the heading size. */
+    private fun prefixSize(level: Int): Float = when (level) {
+        1 -> 28f
+        2 -> 22.5f
+        3 -> 18f
+        4 -> 16f
+        5 -> 14f
+        else -> 14f
     }
 
     override fun headingCss(level: Int): String {
         val spec = heading(level)
-        return "font-size: ${spec.size}; font-weight: bold; line-height: 1.5; " +
+        return "font-size: ${spec.size}; font-weight: bold; line-height: ${spec.lineHeight}; " +
             "margin: ${spec.margin}; padding: 0 0 ${spec.paddingBottom} 50px; color: $fontColor; " +
             "position: relative;${spec.borderBottom}"
     }
@@ -828,34 +832,35 @@ internal object YuExportStyles : MarkdownExportStyles() {
     }
 
     override val paragraphCss =
-        "font-size: 15px; line-height: 1.9; margin: 22px 0; color: $fontColor; " +
+        "font-size: 15px; line-height: 28px; margin: 22px 0; color: $fontColor; " +
             "letter-spacing: 1px; word-spacing: 1px; word-break: break-word;"
 
     /** Paragraph override applied to paragraphs nested inside a blockquote (margin: 10px 0). */
     override val quoteParagraphCss =
-        "font-size: 15px; line-height: 1.9; margin: 10px 0; color: #666666; " +
+        "font-size: 15px; line-height: 28px; margin: 10px 0; color: #666666; " +
             "letter-spacing: 1px; word-spacing: 1px; word-break: break-word;"
 
     // The stylesheet keeps the browser's 1em ul/ol vertical margin; 15px is its equivalent at body size.
     override val listCss = "padding-left: 28px; margin: 15px 0;"
     override val listItemCss =
-        "font-size: 15px; line-height: 1.75; margin-bottom: 0; color: #fd79a8; letter-spacing: 1px; word-spacing: 1px;"
+        "font-size: 15px; line-height: 26px; margin-bottom: 0; color: #fd79a8; letter-spacing: 1px; word-spacing: 1px;"
     override val orderedListItemCss = "$listItemCss padding-left: 6px;"
     override val nestedListCss = "padding-left: 28px; margin: 3px 0 0;"
     override val taskItemPrefixCss = "list-style: none; "
 
+    // WeiSome floor: absolute 14px and px padding instead of the upstream 0.87em (≈13px) and em padding.
     override val inlineCodeCss =
-        "color: #ff502c; background-color: #fff5f5; padding: 0.065em 0.4em; border-radius: 2px; " +
-            "font-family: $monospaceFont; font-size: 0.87em; font-style: normal; " +
+        "color: #ff502c; background-color: #fff5f5; padding: 1px 6px; border-radius: 2px; " +
+            "font-family: $monospaceFont; font-size: 14px; font-style: normal; " +
             "word-break: break-word; box-decoration-break: clone; -webkit-box-decoration-break: clone; overflow-wrap: anywhere;"
 
     // pre leaves its vertical margin to the browser default (1em); 15px is its equivalent at body size.
     override val codeBlockCss =
-        "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
+        "font-family: $monospaceFont; line-height: 24px; margin: 15px 0; white-space: pre; overflow: auto;"
 
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
-            "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
+            "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 8px;"
 
@@ -886,14 +891,14 @@ internal object YuExportStyles : MarkdownExportStyles() {
         "height: 1px; border: none; margin: 32px 0; background-color: rgba(253, 121, 168, 0.5);"
 
     override val tableCss =
-        "display: inline-block; font-size: 12px; width: auto; max-width: 100%; overflow: auto; " +
+        "display: inline-block; font-size: 14px; width: auto; max-width: 100%; overflow: auto; " +
             "border: solid 1px #f6f6f6; border-spacing: 0;"
 
     override val thCss =
         "background: rgba(253, 121, 168, 0.1); color: #fd79a8; text-align: left; padding: 12px 7px; " +
-            "line-height: 24px; font-size: 12px;"
+            "line-height: 24px; font-size: 14px;"
 
-    override val tdCss = "padding: 12px 7px; line-height: 24px; font-size: 12px; min-width: 120px; color: $fontColor;"
+    override val tdCss = "padding: 12px 7px; line-height: 24px; font-size: 14px; min-width: 120px; color: $fontColor;"
 
     override val stripedTdCss = "$tdCss background: #fcfcfc;"
 
