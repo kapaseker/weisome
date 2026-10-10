@@ -11,10 +11,18 @@ object MarkdownToWechatHtml {
     internal fun render(document: MarkdownDocument, theme: MarkdownThemeId, codeTheme: CodeThemeId): String {
         val styles = exportStylesFor(theme)
         val palette = CodeThemes.forId(codeTheme)
-        // prev feeds the sibling-sensitive rules (claudette's h1 + p lead paragraph).
+        // prev feeds the sibling-sensitive rules (claudette's h1 + p lead paragraph);
+        // atDocumentStart drops the leading block's top margin for themes with a `:first-child` rule.
         return document.blocks
             .mapIndexed { index, block ->
-                renderBlock(block, inQuote = false, styles, palette, prev = document.blocks.getOrNull(index - 1))
+                renderBlock(
+                    block = block,
+                    inQuote = false,
+                    styles = styles,
+                    codeTheme = palette,
+                    prev = document.blocks.getOrNull(index - 1),
+                    atDocumentStart = index == 0,
+                )
             }
             .joinToString("\n")
     }

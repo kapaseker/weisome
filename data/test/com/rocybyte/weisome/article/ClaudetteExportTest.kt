@@ -14,11 +14,20 @@ class ClaudetteExportTest {
     )
 
     @Test
-    /** Verifies h1 carries the serif stack and the short 40px clay underline after its text. */
+    /** Verifies the leading h1 carries the serif stack, keeps a 0 top margin, and draws the short clay underline. */
     fun `renders h1 with serif stack and short clay underline`() {
         val html = renderClaudette()
-        assertTrue(html.contains("<h1 style=\"font-size: 36px; font-weight: 400; line-height: 40px; margin: 0 0 32px; font-family: Georgia"))
+        assertTrue(html.contains("<h1 style=\"font-size: 28px; font-weight: 460; line-height: 32px; margin: 0 0 32px; font-family: Georgia"))
         assertTrue(html.contains("width: 40px; height: 2px; border-radius: 1px; background: #d97757; margin-top: 16px;"))
+    }
+
+    @Test
+    /** Verifies only the document's first block loses its top margin. */
+    fun `drops top margin only for the leading block`() {
+        val leadingH2 = MarkdownToWechatHtml.render("## Only\n\nBody.", MarkdownThemeId.CLAUDETTE, CodeThemeId.GITHUB_LIGHT)
+        assertTrue(leadingH2.contains("margin: 0 0 18px; padding-bottom: 10px;"))
+        val laterH2 = MarkdownToWechatHtml.render("Body.\n\n## Later", MarkdownThemeId.CLAUDETTE, CodeThemeId.GITHUB_LIGHT)
+        assertTrue(laterH2.contains("margin: 18px 0 18px; padding-bottom: 10px;"))
     }
 
     @Test
@@ -35,7 +44,7 @@ class ClaudetteExportTest {
         val html = renderClaudette()
         assertTrue(html.contains("font-size: 20px; line-height: 30px; margin: 0 0 18px; color: #52514e;"))
         assertTrue(html.contains("font-size: 17px; line-height: 28px; margin: 0 0 18px; color: #141413;"))
-        assertFalse(html.contains("<h2 style=\"font-size: 28px; font-weight: 400; line-height: 34px; margin: 56px 0 18px; padding-bottom: 10px; border-bottom: 1px solid rgba(31, 30, 29, 0.12); font-family: Georgia, 'Source Serif 4', serif;\">Section</h2>\n<p style=\"font-size: 20px"))
+        assertFalse(html.contains("<h2 style=\"font-size: 26px; font-weight: 460; line-height: 32px; margin: 18px 0 18px; padding-bottom: 10px; border-bottom: 1px solid rgba(31, 30, 29, 0.12); font-family: Georgia, 'Source Serif 4', serif;\">Section</h2>\n<p style=\"font-size: 20px"))
     }
 
     @Test

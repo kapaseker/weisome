@@ -59,9 +59,11 @@ internal fun RenderBlocks(
             block is MarkdownBlock.Paragraph &&
             prev is MarkdownBlock.Heading &&
             prev.level == 1
+        // Only the document's first top-level block loses its top margin (claudette's `:first-child` rule).
+        val atDocumentStart = index == 0 && !inQuote
         val content: @Composable () -> Unit = {
             when (block) {
-                is MarkdownBlock.Heading -> Heading(block)
+                is MarkdownBlock.Heading -> Heading(block, atDocumentStart)
                 is MarkdownBlock.Paragraph -> Paragraph(block, inQuote, isLead)
                 is MarkdownBlock.ListBlock -> ListBlock(block)
                 is MarkdownBlock.CodeBlock -> CodeBlock(block)

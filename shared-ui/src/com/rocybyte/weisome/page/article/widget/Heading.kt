@@ -34,27 +34,36 @@ import com.rocybyte.weisome.article.MarkdownBlock
 import com.rocybyte.weisome.article.MarkdownInline
 import com.rocybyte.weisome.widget.WeiSomeText
 
-/** Renders a heading block with the active theme's typography, prefix, and borders. */
+/**
+ * Renders a heading block with the active theme's typography, prefix, and borders.
+ *
+ * @param atDocumentStart true when this heading opens the document, which drops its top margin.
+ */
 @Composable
-internal fun Heading(block: MarkdownBlock.Heading) {
+internal fun Heading(block: MarkdownBlock.Heading, atDocumentStart: Boolean = false) {
     val styles = LocalMarkdownPreviewStyles.current
     val spec = styles.headingSpec(block.level)
     var content =
         if (styles.firstLetterCapitalized && block.level in 2..3) capitalizeFirstLetter(block.content) else block.content
     if (spec.uppercase) content = uppercaseInlines(content)
     if (spec.borderLeft) {
-        BorderedHeading(block.level, content, styles)
+        BorderedHeading(block.level, content, styles, atDocumentStart)
     } else {
-        PlainHeading(block.level, content, styles)
+        PlainHeading(block.level, content, styles, atDocumentStart)
     }
 }
 
 /** Renders a heading without a left border, with the theme's "#" prefix and bottom border when enabled. */
 @Composable
-private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
+private fun PlainHeading(
+    level: Int,
+    content: List<MarkdownInline>,
+    styles: MarkdownPreviewStyles,
+    atDocumentStart: Boolean = false,
+) {
     val spec = styles.headingSpec(level)
     Column(
-        Modifier.padding(top = spec.top.dp, bottom = spec.bottom.dp),
+        Modifier.padding(top = if (atDocumentStart) 0.dp else spec.top.dp, bottom = spec.bottom.dp),
     ) {
         Row(verticalAlignment = Alignment.Top) {
             // Yu renders an animal emoji before each heading, inside the 50px icon gutter.
@@ -183,7 +192,12 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
 
 /** Renders a heading with the theme's left border, which turns blue on hover. */
 @Composable
-private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
+private fun BorderedHeading(
+    level: Int,
+    content: List<MarkdownInline>,
+    styles: MarkdownPreviewStyles,
+    atDocumentStart: Boolean = false,
+) {
     val spec = styles.headingSpec(level)
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
@@ -210,7 +224,7 @@ private fun BorderedHeading(level: Int, content: List<MarkdownInline>, styles: M
             // puts its 2px-bar-to-text distance at the export's 8px, others keep 10dp.
             .padding(start = spec.borderWidth + spec.borderLeftTextGap)
             .padding(
-                top = spec.top.dp,
+                top = if (atDocumentStart) 0.dp else spec.top.dp,
                 bottom = spec.bottom.dp,
             ),
     )

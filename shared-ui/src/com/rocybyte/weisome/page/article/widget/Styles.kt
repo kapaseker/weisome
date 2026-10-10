@@ -1172,6 +1172,8 @@ internal val CyanPreviewStyles = MarkdownPreviewStyles(
 /**
  * Claudette preview styles; values mirror docs/theme/claudette/claudette.css (light variant),
  * with em/rem converted to px and non-integers rounded to the nearest even integer.
+ * Heading sizes are retuned to an even 28-18 ladder (h1-h4 at weight 460, h5-h6 at weight 400)
+ * with line heights scaled proportionally to the upstream ratios.
  * Known platform gaps: link underline ink follows the text color (no separate decoration
  * color), h6 letter-spacing is not applied, and images carry no hairline ring.
  */
@@ -1275,38 +1277,38 @@ internal val ClaudettePreviewStyles = MarkdownPreviewStyles(
     headingSpecs = listOf(
         // h1: short 40px clay underline sits 16px below the text (padding-bottom 0.45em).
         HeadingSpec(
-            36f, FontWeight.Normal, 0, 32,
+            28f, FontWeight(460), 32, 32,
             borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false,
-            lineHeightMultiplier = 1.1f, lineHeight = 40.sp,
+            lineHeightMultiplier = 1.1f, lineHeight = 32.sp,
             borderBottomWidth = 2.dp, borderBottomGap = 16.dp,
             shortRuleWidth = 40.dp, borderBottomColor = Color(0xFFD97757),
         ),
         HeadingSpec(
-            28f, FontWeight.Normal, 56, 18,
+            26f, FontWeight(460), 18, 18,
             borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false,
-            lineHeightMultiplier = 1.2f, lineHeight = 34.sp,
+            lineHeightMultiplier = 1.2f, lineHeight = 32.sp,
             borderBottomWidth = 1.dp, borderBottomGap = 10.dp, borderBottomColor = Color(0x1F1F1E1D),
         ),
         HeadingSpec(
-            22f, FontWeight.Normal, 44, 14,
+            24f, FontWeight(460), 14, 14,
             borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
-            lineHeightMultiplier = 1.3f, lineHeight = 28.sp, prefixDot = true,
+            lineHeightMultiplier = 1.3f, lineHeight = 30.sp, prefixDot = true,
         ),
         HeadingSpec(
-            18f, FontWeight.Normal, 36, 12,
+            22f, FontWeight(460), 12, 12,
             borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
-            lineHeightMultiplier = 1.3f, lineHeight = 24.sp,
+            lineHeightMultiplier = 1.3f, lineHeight = 30.sp,
         ),
         HeadingSpec(
-            16f, FontWeight(460), 28, 8,
+            20f, FontWeight(400), 8, 8,
             borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
-            lineHeightMultiplier = 1.4f, lineHeight = 22.sp,
+            lineHeightMultiplier = 1.4f, lineHeight = 28.sp,
         ),
         // h6: small uppercase label behind a 2px clay bar; 6dp text gap makes the ink start 8px from the edge.
         HeadingSpec(
-            12f, FontWeight(460), 22, 6,
+            18f, FontWeight(400), 6, 6,
             borderLeft = true, borderWidth = 2.dp, borderBottom = false, muted = true,
-            lineHeightMultiplier = 1.4f, lineHeight = 16.sp,
+            lineHeightMultiplier = 1.4f, lineHeight = 24.sp,
             uppercase = true, borderLeftTextGap = 6.dp,
         ),
     ),

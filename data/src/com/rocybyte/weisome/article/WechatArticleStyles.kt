@@ -26,6 +26,14 @@ internal abstract class MarkdownExportStyles {
     /** Builds the inline CSS used to render a heading at the requested level. */
     abstract fun headingCss(level: Int): String
 
+    /**
+     * Builds the heading CSS with the document-start override applied. When [atDocumentStart] is
+     * true the heading opens the document and its top margin is dropped, mirroring the canonical
+     * stylesheet's `:first-child { margin-top: 0 }` rule. The default ignores the flag; only themes
+     * whose stylesheet carries that rule override this form.
+     */
+    open fun headingCss(level: Int, atDocumentStart: Boolean): String = headingCss(level)
+
     /** Inline CSS for the decorative prefix rendered before level-one headings (h1HasPrefix only). */
     open val h1PrefixCss: String get() = ""
 
@@ -1319,6 +1327,9 @@ internal object VGreenExportStyles : MarkdownExportStyles() {
  * the hr star masks the hairline with a white chip (the preview surface is assumed white), and
  * h6's upstream `padding-left 0.6em` is reduced by the 2px border so the ink starts 8px from the edge
  * exactly like the preview. Headings h1-h4 carry the serif stack; body text stays sans-serif.
+ * Heading sizes are retuned to an even 28-18 ladder (h1-h4 at weight 460, h5-h6 at weight 400),
+ * a deliberate departure from upstream's 36-12 scale. Headings use equal top and bottom margins,
+ * and the document's first block drops its top margin per upstream's `:first-child` rule.
  */
 internal object ClaudetteExportStyles : MarkdownExportStyles() {
     private const val serifFont = "Georgia, 'Source Serif 4', serif"
@@ -1327,21 +1338,40 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
     override val fontColor = "#141413"
 
     /** Returns the claudette typography for a heading level from 1 to 6. */
-    override fun headingCss(level: Int): String {
+    override fun headingCss(level: Int): String = headingCss(level, atDocumentStart = false)
+
+    /**
+     * Builds the claudette heading CSS; [atDocumentStart] drops the top margin so a heading that
+     * opens the document sits flush with the top edge, mirroring the stylesheet's
+     * `#write > *:first-child { margin-top: 0 }` rule.
+     */
+    override fun headingCss(level: Int, atDocumentStart: Boolean): String {
         val serif = if (level <= 4) " font-family: $serifFont;" else ""
+        val spacing = "${headingSpacing(level)}px"
+        val top = if (atDocumentStart) "0" else spacing
         return when (level) {
             // The short 40px clay underline is drawn by headingSuffixHtml, so no padding-bottom here.
-            1 -> "font-size: 36px; font-weight: 400; line-height: 40px; margin: 0 0 32px;$serif"
-            2 -> "font-size: 28px; font-weight: 400; line-height: 34px; margin: 56px 0 18px; " +
+            1 -> "font-size: 28px; font-weight: 460; line-height: 32px; margin: $top 0 $spacing;$serif"
+            2 -> "font-size: 26px; font-weight: 460; line-height: 32px; margin: $top 0 $spacing; " +
                 "padding-bottom: 10px; border-bottom: 1px solid $hairline;$serif"
-            3 -> "font-size: 22px; font-weight: 400; line-height: 28px; margin: 44px 0 14px;$serif"
-            4 -> "font-size: 18px; font-weight: 400; line-height: 24px; margin: 36px 0 12px;$serif"
-            5 -> "font-size: 16px; font-weight: 460; line-height: 22px; margin: 28px 0 8px;"
+            3 -> "font-size: 24px; font-weight: 460; line-height: 30px; margin: $top 0 $spacing;$serif"
+            4 -> "font-size: 22px; font-weight: 460; line-height: 30px; margin: $top 0 $spacing;$serif"
+            5 -> "font-size: 20px; font-weight: 400; line-height: 28px; margin: $top 0 $spacing;"
             // The 6px padding plus the 2px bar puts the ink 8px from the edge, matching the preview.
-            else -> "font-size: 12px; font-weight: 460; line-height: 16px; margin: 22px 0 6px; " +
+            else -> "font-size: 18px; font-weight: 400; line-height: 24px; margin: $top 0 $spacing; " +
                 "color: #73726c; text-transform: uppercase; letter-spacing: 1px; " +
                 "border-left: 2px solid #d97757; padding-left: 6px;"
         }
+    }
+
+    /** Returns the vertical margin claudette applies above and below a heading level. */
+    private fun headingSpacing(level: Int): Int = when (level) {
+        1 -> 32
+        2 -> 18
+        3 -> 14
+        4 -> 12
+        5 -> 8
+        else -> 6
     }
 
     /** Renders the clay accent dot claudette places before level-three headings. */
