@@ -32,11 +32,11 @@ internal fun ArticleDeleteDialog(
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .clip(WeiSomeShapes.lg)
+                .clip(WeiSomeShapes.large)
                 .background(WeiSomeColors.surfaceContainerLowest)
-                .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.lg)
-                .padding(WeiSomeSpacing.stackMd),
-            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+                .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.large)
+                .padding(WeiSomeSpacing.stackMedium),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
         ) {
             WeiSomeText(text = stringResource(Res.string.article_delete_hint, title), style = WeiSomeTypography.h3)
             WeiSomeText(
@@ -44,7 +44,7 @@ internal fun ArticleDeleteDialog(
                 style = WeiSomeTypography.bodyMd,
                 color = WeiSomeColors.onSurfaceVariant,
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall)) {
                 Spacer(Modifier.weight(1f))
                 WeiSomeSecondaryButton(text = stringResource(Res.string.dialog_cancel), onClick = onDismiss)
                 ErrorConfirmButton(text = stringResource(Res.string.dialog_confirm), onClick = onConfirm)
@@ -62,11 +62,11 @@ private fun ErrorConfirmButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .heightIn(min = 40.dp)
+            .heightIn(min = WeiSomeSizes.controlHeight)
             .clip(WeiSomeShapes.default)
             .background(WeiSomeColors.error)
             .clickable(onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = WeiSomeSpacing.stackSmall),
     ) {
         WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = WeiSomeColors.onError)
     }

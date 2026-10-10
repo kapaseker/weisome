@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSizes
 
 /** Renders a consistently sized icon-only action button with a hover highlight. */
 @Composable
@@ -37,7 +38,7 @@ internal fun MediumIconButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(52.dp)
+            .size(WeiSomeSizes.fabSize)
             .clip(WeiSomeShapes.default)
             .background(if (hovered) WeiSomeColors.surfaceContainerHigh else WeiSomeColors.surface.copy(alpha = 0f))
             .hoverable(interactionSource)

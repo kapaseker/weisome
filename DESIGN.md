@@ -48,6 +48,7 @@ colors:
   background: '#f9f9f9'
   on-background: '#1a1c1c'
   surface-variant: '#e2e2e2'
+  input-bg: '#f9f9fb'
 typography:
   display:
     fontFamily: Plus Jakarta Sans
@@ -92,22 +93,30 @@ typography:
     lineHeight: '1.2'
     letterSpacing: 0.02em
 rounded:
-  sm: 0.25rem
+  small: 0.25rem
   DEFAULT: 0.5rem
-  md: 0.75rem
-  lg: 1rem
-  xl: 1.5rem
+  medium: 0.75rem
+  large: 1rem
+  extra-large: 1.5rem
   full: 9999px
+sizes:
+  icon-small: 16px
+  icon-medium: 20px
+  control-height: 40px
+  fab: 52px
+elevation:
+  glow: 8px
 spacing:
   unit: 8px
   container-max: 1280px
   gutter: 24px
   margin: 32px
-  stack-xs: 4px
-  stack-sm: 12px
-  stack-md: 24px
-  stack-lg: 48px
-  stack-xl: 80px
+  control-padding: 16px
+  stack-extra-small: 4px
+  stack-small: 12px
+  stack-medium: 24px
+  stack-large: 48px
+  stack-extra-large: 80px
 ---
 
 ## Brand & Style

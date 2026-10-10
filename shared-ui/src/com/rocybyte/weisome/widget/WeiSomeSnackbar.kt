@@ -103,14 +103,14 @@ internal fun WeiSomeSnackbarHost(
             modifier = Modifier
                 .shadow(
                     elevation = 32.dp,
-                    shape = WeiSomeShapes.lg,
+                    shape = WeiSomeShapes.large,
                     spotColor = Color.Black.copy(alpha = 0.05f),
                     ambientColor = Color.Black.copy(alpha = 0.05f),
                 )
-                .clip(WeiSomeShapes.lg)
+                .clip(WeiSomeShapes.large)
                 .background(Color.White.copy(alpha = 0.85f))
-                .border(WeiSomeBorders.thin, WeiSomeColors.cardBorder, WeiSomeShapes.lg)
-                .padding(horizontal = 20.dp, vertical = 12.dp),
+                .border(WeiSomeBorders.thin, WeiSomeColors.cardBorder, WeiSomeShapes.large)
+                .padding(horizontal = 20.dp, vertical = WeiSomeSpacing.stackSmall),
         ) {
             WeiSomeText(
                 text = current.message,

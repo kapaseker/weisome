@@ -61,6 +61,7 @@ import com.rocybyte.weisome.page.article.widget.WechatArticlePreview
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSizes
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.LocalWeiSomeSnackbar
@@ -82,7 +83,7 @@ private fun Modifier.codeToolbarContainer(): Modifier = this
     .clip(WeiSomeShapes.default)
     .background(WeiSomeColors.surfaceContainerLowest)
     .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.default)
-    .padding(horizontal = WeiSomeSpacing.stackSm, vertical = WeiSomeSpacing.stackXs)
+    .padding(horizontal = WeiSomeSpacing.stackSmall, vertical = WeiSomeSpacing.stackExtraSmall)
 
 /** Renders the editor, preview, and copy controls for the article workflow. */
 @Composable
@@ -104,7 +105,7 @@ internal fun WechatArticleEditorScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
         ) {
             Box(Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -142,8 +143,8 @@ internal fun WechatArticleEditorScreen(
                         modifier = Modifier.align(Alignment.Center),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Spacer(Modifier.size(52.dp))
-                        Spacer(Modifier.size(width = WeiSomeSpacing.stackSm, height = 1.dp))
+                        Spacer(Modifier.size(WeiSomeSizes.fabSize))
+                        Spacer(Modifier.size(width = WeiSomeSpacing.stackSmall, height = WeiSomeBorders.thin))
                         ArticleLayoutSelector(
                             selectedMode = layoutState.mode,
                             onModeSelected = onLayoutModeSelected,
@@ -259,7 +260,7 @@ private fun ArticleWorkspace(
 ) {
     val editorScroll = rememberScrollState()
     val previewScroll = rememberScrollState()
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackXs)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackExtraSmall)) {
         if (mode != ArticleLayoutMode.EDITOR_ONLY) {
             Row(Modifier.fillMaxWidth()) {
                 if (mode == ArticleLayoutMode.SPLIT) {
@@ -273,7 +274,7 @@ private fun ArticleWorkspace(
                         .weight(1f)
                         .then(
                             if (mode == ArticleLayoutMode.SPLIT) {
-                                Modifier.padding(start = WeiSomeSpacing.stackSm)
+                                Modifier.padding(start = WeiSomeSpacing.stackSmall)
                             } else {
                                 Modifier
                             },
@@ -371,7 +372,7 @@ private fun ArticlePreviewPane(
 ) {
     Box(
         modifier.verticalScroll(scrollState)
-            .padding(start = WeiSomeSpacing.stackSm)
+            .padding(start = WeiSomeSpacing.stackSmall)
             .alpha(if (state.markdown.isBlank()) 0.42f else 1f),
     ) {
         WechatArticlePreview(

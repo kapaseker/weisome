@@ -62,7 +62,7 @@ internal fun WeiSomeSegmentedControl(
             modifier = Modifier
                 .offset(x = pillOffset)
                 .size(width = itemWidth, height = trackHeight)
-                .padding(WeiSomeSpacing.stackXs)
+                .padding(WeiSomeSpacing.stackExtraSmall)
                 .clip(trackShape)
                 .background(WeiSomeColors.surfaceContainerLowest, trackShape),
         )

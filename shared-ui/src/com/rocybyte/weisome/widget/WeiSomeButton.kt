@@ -29,7 +29,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeElevation
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSizes
+import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.ui.weiSomeRipple
 
@@ -54,10 +57,10 @@ internal fun WeiSomePrimaryButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .alpha(if (enabled) 1f else 0.4f)
-            .heightIn(min = 40.dp)
+            .heightIn(min = WeiSomeSizes.controlHeight)
             .then(
                 if (hovered && enabled) {
-                    Modifier.shadow(8.dp, shape, spotColor = WeiSomeColors.primary.copy(alpha = 0.2f))
+                    Modifier.shadow(WeiSomeElevation.glow, shape, spotColor = WeiSomeColors.primary.copy(alpha = 0.2f))
                 } else {
                     Modifier
                 },
@@ -72,14 +75,14 @@ internal fun WeiSomePrimaryButton(
                 indication = weiSomeRipple(WeiSomeColors.onPrimary),
                 onClick = onClick,
             )
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = WeiSomeSpacing.stackSmall),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
                 Image(
                     painter = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(WeiSomeSizes.iconSmall),
                     colorFilter = ColorFilter.tint(Color.White),
                 )
                 Spacer(Modifier.width(6.dp))
@@ -107,19 +110,19 @@ internal fun WeiSomeSecondaryButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .alpha(if (enabled) 1f else 0.4f)
-            .heightIn(min = 40.dp)
+            .heightIn(min = WeiSomeSizes.controlHeight)
             .clip(shape)
             .background(WeiSomeColors.surfaceContainerLowest)
             .border(WeiSomeBorders.thin, WeiSomeColors.outline, shape)
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = WeiSomeSpacing.stackSmall),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (icon != null) {
                 Image(
                     painter = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(WeiSomeSizes.iconSmall),
                     colorFilter = ColorFilter.tint(WeiSomeColors.primary),
                 )
                 Spacer(Modifier.width(6.dp))

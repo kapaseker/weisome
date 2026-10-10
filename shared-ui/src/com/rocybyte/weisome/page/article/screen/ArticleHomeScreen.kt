@@ -50,7 +50,9 @@ import com.rocybyte.weisome.page.article.widget.ArticleDeleteDialog
 import com.rocybyte.weisome.page.article.widget.ArticleTitleDialog
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeElevation
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSizes
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.ui.weiSomeRipple
@@ -78,7 +80,7 @@ internal fun ArticleHomeScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize().padding(WeiSomeSpacing.margin),
-            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -116,7 +118,7 @@ internal fun ArticleHomeScreen(
 
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+                    verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
                 ) {
                     items(state.articles, key = Article::id) { article ->
                         ArticleCard(
@@ -176,10 +178,10 @@ private fun ArticleCreateFab(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .size(52.dp)
+            .size(WeiSomeSizes.fabSize)
             .then(
                 if (hovered) {
-                    Modifier.shadow(8.dp, shape, spotColor = WeiSomeColors.primary.copy(alpha = 0.2f))
+                    Modifier.shadow(WeiSomeElevation.glow, shape, spotColor = WeiSomeColors.primary.copy(alpha = 0.2f))
                 } else {
                     Modifier
                 },
@@ -197,7 +199,7 @@ private fun ArticleCreateFab(
         Image(
             painter = painterResource(Res.drawable.ic_add),
             contentDescription = stringResource(Res.string.article_create),
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(WeiSomeSizes.iconMedium),
             colorFilter = ColorFilter.tint(Color.White),
         )
     }
@@ -215,7 +217,7 @@ private fun ArticleCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val hovered by interactionSource.collectIsHoveredAsState()
-    val shape = WeiSomeShapes.md
+    val shape = WeiSomeShapes.medium
 
     Row(
         modifier = Modifier
@@ -240,15 +242,15 @@ private fun ArticleCard(
                 indication = null,
                 onClick = { onOpenArticle(article.id) },
             )
-            .padding(horizontal = WeiSomeSpacing.stackMd, vertical = WeiSomeSpacing.stackSm),
+            .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = WeiSomeSpacing.stackSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackXs),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackExtraSmall),
         ) {
             WeiSomeText(text = article.title, style = WeiSomeTypography.h3)
-            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackMd)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackMedium)) {
                 WeiSomeText(
                     text = stringResource(Res.string.article_created_at, formatTimestamp(article.createdAt)),
                     style = WeiSomeTypography.labelSm,
@@ -269,7 +271,7 @@ private fun ArticleCard(
             )
         } else {
             // 占位保持标题与删除按钮区域等宽,避免 hover 时布局跳动。
-            Spacer(Modifier.size(52.dp))
+            Spacer(Modifier.size(WeiSomeSizes.fabSize))
         }
     }
 }

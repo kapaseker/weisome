@@ -54,4 +54,7 @@ internal object WeiSomeColors {
 
     /** Card edge color from the DESIGN.md component specs. */
     val cardBorder = Color(0xFFF2F2F7)
+
+    /** Input field resting background from the DESIGN.md component specs; turns white on focus. */
+    val inputBg = Color(0xFFF9F9FB)
 }

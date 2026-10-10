@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
@@ -115,7 +116,7 @@ internal fun WeiSomeTextField(
             .onFocusChanged { focused = it.isFocused }
             .then(
                 if (focused) {
-                    Modifier.border(2.dp, WeiSomeColors.primary, shape)
+                    Modifier.border(WeiSomeBorders.focusBorder, WeiSomeColors.primary, shape)
                 } else {
                     Modifier.border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, shape)
                 },
@@ -124,7 +125,7 @@ internal fun WeiSomeTextField(
                 if (focused) WeiSomeColors.surfaceContainerLowest else WeiSomeColors.surfaceContainerLow,
                 shape,
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = WeiSomeSpacing.controlPadding, vertical = WeiSomeSpacing.stackSmall)
             .then(
                 if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier,
             ),

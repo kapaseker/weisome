@@ -51,7 +51,9 @@ import com.rocybyte.weisome.generated.resources.code_theme_selector
 import com.rocybyte.weisome.generated.resources.ic_code_pen
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
+import com.rocybyte.weisome.ui.WeiSomeElevation
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSizes
 import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.WeiSomeText
@@ -106,21 +108,21 @@ internal fun CodeThemeMenuButton(
                 .hoverable(interactionSource)
                 .clickable(interactionSource = interactionSource, indication = null, onClick = { expanded = true })
                 .background(if (hovered) WeiSomeColors.surfaceContainerLow else Color.Transparent)
-                .padding(horizontal = WeiSomeSpacing.stackSm, vertical = WeiSomeSpacing.stackXs),
+                .padding(horizontal = WeiSomeSpacing.stackSmall, vertical = WeiSomeSpacing.stackExtraSmall),
         ) {
             Image(
                 painter = painterResource(Res.drawable.ic_code_pen),
                 contentDescription = stringResource(Res.string.code_theme_selector),
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(WeiSomeSizes.iconSmall),
                 colorFilter = ColorFilter.tint(WeiSomeColors.onSurfaceVariant),
             )
-            Spacer(Modifier.width(WeiSomeSpacing.stackXs))
+            Spacer(Modifier.width(WeiSomeSpacing.stackExtraSmall))
             WeiSomeText(
                 text = selectedTheme.displayName(),
                 style = WeiSomeTypography.labelSm,
                 color = WeiSomeColors.onSurface,
             )
-            Spacer(Modifier.width(WeiSomeSpacing.stackXs))
+            Spacer(Modifier.width(WeiSomeSpacing.stackExtraSmall))
             ChevronDown()
         }
         if (expanded) {
@@ -134,11 +136,11 @@ internal fun CodeThemeMenuButton(
                     // 避免 Popup 无界约束下 fillMaxWidth 撑到屏幕宽。
                     modifier = Modifier
                         .width(IntrinsicSize.Max)
-                        .shadow(8.dp, WeiSomeShapes.default, spotColor = WeiSomeColors.primary.copy(alpha = 0.08f))
+                        .shadow(WeiSomeElevation.glow, WeiSomeShapes.default, spotColor = WeiSomeColors.primary.copy(alpha = 0.08f))
                         .clip(WeiSomeShapes.default)
                         .background(WeiSomeColors.surfaceContainerLowest)
                         .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.default)
-                        .padding(vertical = WeiSomeSpacing.stackXs),
+                        .padding(vertical = WeiSomeSpacing.stackExtraSmall),
                 ) {
                     CodeThemeEntries.forEach { theme ->
                         CodeThemeOption(
@@ -171,7 +173,7 @@ private fun CodeThemeOption(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 40.dp)
+            .heightIn(min = WeiSomeSizes.controlHeight)
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .hoverable(interactionSource)
             .background(
@@ -180,7 +182,7 @@ private fun CodeThemeOption(
                     else -> WeiSomeColors.surfaceContainerLowest
                 },
             )
-            .padding(horizontal = WeiSomeSpacing.stackSm),
+            .padding(horizontal = WeiSomeSpacing.stackSmall),
     ) {
         WeiSomeText(
             text = label,
@@ -190,7 +192,7 @@ private fun CodeThemeOption(
         Spacer(Modifier.weight(1f))
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(WeiSomeSizes.iconSmall),
         ) {
             Box(
                 modifier = Modifier

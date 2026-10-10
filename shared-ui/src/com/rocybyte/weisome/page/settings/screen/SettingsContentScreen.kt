@@ -52,6 +52,7 @@ import com.rocybyte.weisome.settings.MinimumDisplayScale
 import com.rocybyte.weisome.ui.WeiSomeBorders
 import com.rocybyte.weisome.ui.WeiSomeColors
 import com.rocybyte.weisome.ui.WeiSomeShapes
+import com.rocybyte.weisome.ui.WeiSomeSpacing
 import com.rocybyte.weisome.ui.WeiSomeTypography
 import com.rocybyte.weisome.widget.MediumIconButton
 import com.rocybyte.weisome.widget.WeiSomePrimaryButton
@@ -83,8 +84,8 @@ internal fun SettingsContentScreen(
         SettingsDivider()
         Column(
             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.controlPadding),
         ) {
             TextScaleSettings(
                 state = textState,
@@ -215,14 +216,14 @@ private fun UiScaleButtonPreview(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(WeiSomeShapes.lg)
+            .clip(WeiSomeShapes.large)
             .background(WeiSomeColors.surfaceContainerLowest)
-            .border(WeiSomeBorders.thin, WeiSomeColors.cardBorder, WeiSomeShapes.lg),
+            .border(WeiSomeBorders.thin, WeiSomeColors.cardBorder, WeiSomeShapes.large),
     ) {
         CompositionLocalProvider(LocalDensity provides scaledDensity(systemDensity, textScale, uiScale)) {
             Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.padding(WeiSomeSpacing.controlPadding),
+                horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 WeiSomePrimaryButton(text = stringResource(Res.string.preview_button), onClick = {})
@@ -240,9 +241,9 @@ private fun UiScaleButtonPreview(
 @Composable
 private fun SettingsHeader(onBack: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = WeiSomeSpacing.stackSmall, vertical = WeiSomeSpacing.unit),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.unit),
     ) {
         MediumIconButton(
             onClick = onBack,
