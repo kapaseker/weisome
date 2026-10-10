@@ -25,7 +25,7 @@ class CodeBlockTest {
         assertTrue(html.startsWith("<pre style=\"font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; line-height: 1.75;"))
         assertTrue(
             html.contains(
-                "<code style=\"display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+                "<code style=\"display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
                     "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
                     "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">val tag = &quot;&lt;code&gt;&quot;</code>",
             ),
@@ -42,7 +42,7 @@ class CodeBlockTest {
 
         assertTrue(preStyle.contains("white-space: pre;"))
         assertTrue(codeStyle.contains("overflow-x: auto;"))
-        assertTrue(codeStyle.contains("display: -webkit-box;"))
+        assertTrue(codeStyle.contains("display: block;"))
         assertTrue(codeStyle.contains("word-break: normal;"))
         assertFalse(html.contains("white-space: pre-wrap;"))
         assertFalse(html.contains("word-break: break-word;"))

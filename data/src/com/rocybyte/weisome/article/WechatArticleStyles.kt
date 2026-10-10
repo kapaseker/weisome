@@ -64,6 +64,13 @@ internal abstract class MarkdownExportStyles {
     abstract val inlineCodeCss: String
     abstract val codeBlockCss: String
 
+    /**
+     * Inline CSS for the preformatted frame given the active code theme. Defaults to [codeBlockCss];
+     * themes whose frame color follows the code palette override this to paint the frame with the
+     * code background, covering frameless regions such as the language-pill spacer.
+     */
+    open fun codeBlockFrameCss(codeTheme: CodeTheme): String = codeBlockCss
+
     /** Real-element decoration inserted before code content inside the preformatted frame. */
     open fun codeBlockHeaderHtml(language: CodeLanguage?): String = ""
 
@@ -203,7 +210,7 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
             "white-space: pre; overflow: auto;"
 
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 0 4px;"
@@ -320,7 +327,7 @@ internal object GitHubExportStyles : MarkdownExportStyles() {
             "white-space: pre; overflow: auto;"
 
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 0.85em; padding: 16px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 6px;"
@@ -424,7 +431,7 @@ internal object SmartBlueExportStyles : MarkdownExportStyles() {
         "font-family: $monospaceFont; line-height: 1.75; margin: 15px 0; white-space: pre; overflow: auto;"
 
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
@@ -551,7 +558,7 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
 
     /** Keeps the active code palette while applying Paper's inner spacing and line rhythm. */
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
             "font-size: 14.08px; line-height: 1.68; padding: 20px 19.2px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()};"
 
@@ -640,7 +647,7 @@ internal object RimExportStyles : MarkdownExportStyles() {
 
     /** Keeps the active code palette while applying Rim's compact type and spacing. */
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
             "font-size: 14.4px; line-height: 1.4; padding: 8px; margin: 0; word-break: normal; white-space: pre; " +
             "color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 3px;"
 
@@ -745,7 +752,7 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
 
     // WeiSome floor: 14px instead of the upstream 12px.
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
@@ -892,7 +899,7 @@ internal object YuExportStyles : MarkdownExportStyles() {
         "font-family: $monospaceFont; line-height: 24px; margin: 15px 0; white-space: pre; overflow: auto;"
 
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 8px;"
@@ -1018,7 +1025,7 @@ internal object CyanosisExportStyles : MarkdownExportStyles() {
 
     /** Keeps the active code palette while applying cyanosis's compact code type. */
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 16px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
@@ -1161,7 +1168,7 @@ internal object CyanExportStyles : MarkdownExportStyles() {
 
     /** Keeps the active code palette while applying cyan's compact code type. */
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
@@ -1273,7 +1280,7 @@ internal object VGreenExportStyles : MarkdownExportStyles() {
 
     /** Keeps the active code palette while applying v-green's compact code type. */
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
             "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
@@ -1333,6 +1340,9 @@ internal object VGreenExportStyles : MarkdownExportStyles() {
  */
 internal object ClaudetteExportStyles : MarkdownExportStyles() {
     private const val serifFont = "Georgia, 'Source Serif 4', serif"
+
+    /** System sans stack the preview's language pill resolves to via the ambient body font. */
+    private const val sansFont = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
     private const val hairline = "rgba(31, 30, 29, 0.12)"
 
     override val fontColor = "#141413"
@@ -1419,17 +1429,26 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
         "position: relative; font-family: $monospaceFont; margin: 24px 0; " +
             "border: 1px solid $hairline; border-radius: 12px; overflow: hidden;"
 
-    /** Renders the uppercase language pill claudette badges fenced code with; empty without a language. */
+    /** Paints the frame with the code background so the language-pill spacer band is not left transparent. */
+    override fun codeBlockFrameCss(codeTheme: CodeTheme) =
+        "$codeBlockCss background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    /**
+     * Renders the uppercase language pill claudette badges fenced code with; empty without a language.
+     * The pill mirrors the preview's label metrics: the body sans stack plus the preview's body line
+     * height (25.6px) vertically centres the text, instead of inheriting the frame's monospace font.
+     */
     override fun codeBlockHeaderHtml(language: CodeLanguage?): String = if (language != null) {
         "<span style=\"display: block; height: 12px;\"><span style=\"position: absolute; top: 8px; " +
             "right: 12px; padding: 2px 6px; border-radius: 999px; background: #ece9df; color: #73726c; " +
-            "font-size: 12px; letter-spacing: 1px; text-transform: uppercase;\">${language.displayLabel()}</span></span>"
+            "font-family: $sansFont; font-size: 12px; line-height: 25.6px; letter-spacing: -0.01em; " +
+            "text-transform: uppercase;\">${language.displayLabel()}</span></span>"
     } else {
         ""
     }
 
     override fun codeElementCss(codeTheme: CodeTheme) =
-        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; line-height: 22px; padding: 16px 20px; margin: 0; " +
             "word-break: normal; white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"

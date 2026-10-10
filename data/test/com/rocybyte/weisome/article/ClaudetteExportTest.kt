@@ -69,8 +69,21 @@ class ClaudetteExportTest {
     fun `renders language pill on fenced code`() {
         val html = renderClaudette()
         assertTrue(html.contains("top: 8px; right: 12px; padding: 2px 6px; border-radius: 999px; background: #ece9df;"))
+        assertTrue(
+            html.contains(
+                "font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; " +
+                    "font-size: 12px; line-height: 25.6px; letter-spacing: -0.01em;",
+            ),
+        )
         assertTrue(html.contains("text-transform: uppercase;\">KOTLIN</span>"))
         val bare = MarkdownToWechatHtml.render("```\nplain\n```", MarkdownThemeId.CLAUDETTE, CodeThemeId.GITHUB_LIGHT)
         assertFalse(bare.contains("border-radius: 999px"))
+    }
+
+    @Test
+    /** Verifies the frame paints the code background so the language-pill spacer band is not left transparent. */
+    fun `fills code frame with the code theme background`() {
+        val html = renderClaudette()
+        assertTrue(html.contains("border-radius: 12px; overflow: hidden; background: #f6f8fa;\">"))
     }
 }
