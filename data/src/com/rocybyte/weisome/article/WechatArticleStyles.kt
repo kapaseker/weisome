@@ -15,7 +15,8 @@ import kotlin.math.roundToInt
  * docs/theme/yu/yu.scss at jianghurong/juejin-markdown-theme-yu@1e3096f, and CYANOSIS follows
  * docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea, and CYAN
  * follows docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f,
- * and V_GREEN follows docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b.
+ * and V_GREEN follows docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b,
+ * and CLAUDETTE follows docs/theme/claudette/claudette.css at CookPiu/typora-theme-claudette@0a6c75a (light variant).
  * Keep the shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -40,6 +41,10 @@ internal abstract class MarkdownExportStyles {
 
     abstract val paragraphCss: String
     abstract val quoteParagraphCss: String
+
+    /** Paragraph CSS override for the lead paragraph directly after a level-one heading; null disables the rule. */
+    open val leadParagraphCss: String? get() = null
+
     abstract val listCss: String
     abstract val listItemCss: String
     abstract val orderedListItemCss: String
@@ -52,7 +57,7 @@ internal abstract class MarkdownExportStyles {
     abstract val codeBlockCss: String
 
     /** Real-element decoration inserted before code content inside the preformatted frame. */
-    open val codeBlockHeaderHtml: String get() = ""
+    open fun codeBlockHeaderHtml(language: CodeLanguage?): String = ""
 
     /** Inline CSS for the code element, colored with the active code theme's base text color and background. */
     abstract fun codeElementCss(codeTheme: CodeTheme): String
@@ -85,6 +90,9 @@ internal abstract class MarkdownExportStyles {
     open val quoteHasClosingMark: Boolean get() = true
 
     abstract val hrCss: String
+
+    /** Real-element markup rendered inside the horizontal-rule div (claudette's centered star). */
+    open val hrInnerHtml: String get() = ""
 
     abstract val tableCss: String
     abstract val thCss: String
@@ -122,6 +130,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.CYANOSIS -> CyanosisExportStyles
     MarkdownThemeId.CYAN -> CyanExportStyles
     MarkdownThemeId.V_GREEN -> VGreenExportStyles
+    MarkdownThemeId.CLAUDETTE -> ClaudetteExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -525,7 +534,7 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
     override val codeBlockCss =
         "font-family: $monospaceFont; margin: 24px 0; border: 1px solid #d9dde5; border-radius: 15px; " +
             "background: #eef0f4; box-shadow: 0 12px 30px rgba(62, 48, 22, 0.10); overflow: hidden;"
-    override val codeBlockHeaderHtml =
+    override fun codeBlockHeaderHtml(language: CodeLanguage?): String =
         "<span style=\"display: block; height: 38.4px; box-sizing: border-box; padding: 13px 19.2px; " +
             "border-bottom: 1px solid #d9dde5;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
             "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; width: 10px; height: 10px; " +
@@ -1134,7 +1143,7 @@ internal object CyanExportStyles : MarkdownExportStyles() {
             "box-shadow: 0 0 8px rgba(110, 110, 110, 0.45); overflow: auto; position: relative;"
 
     /** Renders the mac-style dots bar the stylesheet draws via pre::before. */
-    override val codeBlockHeaderHtml =
+    override fun codeBlockHeaderHtml(language: CodeLanguage?): String =
         "<span style=\"display: block; height: 30px; margin-bottom: -7px; box-sizing: border-box; " +
             "padding: 10px 0 0 10px;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
             "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; " +
@@ -1299,5 +1308,166 @@ internal object VGreenExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = true
     override val quoteHasMarks = false
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * Claudette export styles adapted from CookPiu/typora-theme-claudette at commit 0a6c75a (light variant).
+ * Known divergences from the upstream stylesheet, kept to stay aligned with the Compose preview:
+ * `strong` renders at the browser-default 700 instead of the variable 540 (no weight hook in the model),
+ * list `::marker` colors (clay bullets, tertiary numbers) cannot be expressed by inline CSS on the `li`,
+ * the hr star masks the hairline with a white chip (the preview surface is assumed white), and
+ * h6's upstream `padding-left 0.6em` is reduced by the 2px border so the ink starts 8px from the edge
+ * exactly like the preview. Headings h1-h4 carry the serif stack; body text stays sans-serif.
+ */
+internal object ClaudetteExportStyles : MarkdownExportStyles() {
+    private const val serifFont = "Georgia, 'Source Serif 4', serif"
+    private const val hairline = "rgba(31, 30, 29, 0.12)"
+
+    override val fontColor = "#141413"
+
+    /** Returns the claudette typography for a heading level from 1 to 6. */
+    override fun headingCss(level: Int): String {
+        val serif = if (level <= 4) " font-family: $serifFont;" else ""
+        return when (level) {
+            // The short 40px clay underline is drawn by headingSuffixHtml, so no padding-bottom here.
+            1 -> "font-size: 36px; font-weight: 400; line-height: 40px; margin: 0 0 32px;$serif"
+            2 -> "font-size: 28px; font-weight: 400; line-height: 34px; margin: 56px 0 18px; " +
+                "padding-bottom: 10px; border-bottom: 1px solid $hairline;$serif"
+            3 -> "font-size: 22px; font-weight: 400; line-height: 28px; margin: 44px 0 14px;$serif"
+            4 -> "font-size: 18px; font-weight: 400; line-height: 24px; margin: 36px 0 12px;$serif"
+            5 -> "font-size: 16px; font-weight: 460; line-height: 22px; margin: 28px 0 8px;"
+            // The 6px padding plus the 2px bar puts the ink 8px from the edge, matching the preview.
+            else -> "font-size: 12px; font-weight: 460; line-height: 16px; margin: 22px 0 6px; " +
+                "color: #73726c; text-transform: uppercase; letter-spacing: 1px; " +
+                "border-left: 2px solid #d97757; padding-left: 6px;"
+        }
+    }
+
+    /** Renders the clay accent dot claudette places before level-three headings. */
+    override fun headingPrefixHtml(level: Int): String = if (level == 3) {
+        "<span style=\"display: inline-block; width: 8px; height: 8px; border-radius: 50%; " +
+            "background: #d97757; margin-right: 12px; vertical-align: middle;\"></span>"
+    } else {
+        ""
+    }
+
+    /** Renders the short rounded clay underline claudette draws after level-one headings. */
+    override fun headingSuffixHtml(level: Int): String = if (level == 1) {
+        "<span style=\"display: block; width: 40px; height: 2px; border-radius: 1px; " +
+            "background: #d97757; margin-top: 16px;\"></span>"
+    } else {
+        ""
+    }
+
+    override val paragraphCss =
+        "font-size: 17px; line-height: 28px; margin: 0 0 18px; color: $fontColor; word-break: break-word;"
+
+    /** The lead paragraph directly after h1 (upstream `h1 + p`), rendered larger and secondary-colored. */
+    override val leadParagraphCss =
+        "font-size: 20px; line-height: 30px; margin: 0 0 18px; color: #52514e; word-break: break-word;"
+
+    override val quoteParagraphCss =
+        "font-family: $serifFont; font-size: 18px; line-height: 28px; margin: 0 0 18px; " +
+            "color: #52514e; word-break: break-word;"
+
+    override val listCss = "padding-left: 26px; margin: 0 0 18px;"
+    override val listItemCss = "font-size: 17px; line-height: 28px; margin: 6px 0 0; color: $fontColor;"
+
+    // ponytail: inline CSS cannot target ::marker, so the clay bullets and tertiary numbers stay default.
+    override val orderedListItemCss = listItemCss
+    override val nestedListCss = "padding-left: 26px; margin: 4px 0 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "color: #9c4a21; background: rgba(217, 119, 87, 0.10); padding: 2px 6px; border-radius: 4px; " +
+            "font-family: $monospaceFont; font-size: 14px; font-style: normal; word-break: break-word; " +
+            "overflow-wrap: anywhere; box-decoration-break: clone; -webkit-box-decoration-break: clone;"
+
+    // position: relative anchors the language pill; the pill's 12px spacer raises the code top padding to 28px.
+    override val codeBlockCss =
+        "position: relative; font-family: $monospaceFont; margin: 24px 0; " +
+            "border: 1px solid $hairline; border-radius: 12px; overflow: hidden;"
+
+    /** Renders the uppercase language pill claudette badges fenced code with; empty without a language. */
+    override fun codeBlockHeaderHtml(language: CodeLanguage?): String = if (language != null) {
+        "<span style=\"display: block; height: 12px;\"><span style=\"position: absolute; top: 8px; " +
+            "right: 12px; padding: 2px 6px; border-radius: 999px; background: #ece9df; color: #73726c; " +
+            "font-size: 12px; letter-spacing: 1px; text-transform: uppercase;\">${language.displayLabel()}</span></span>"
+    } else {
+        ""
+    }
+
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: -webkit-box; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-weight: 400; font-size: 14px; line-height: 22px; padding: 16px 20px; margin: 0; " +
+            "word-break: normal; white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic;"
+
+    override val strikethroughCss = "color: #87867f;"
+
+    override val linkCss =
+        "color: #141413; text-decoration-line: underline; text-decoration-color: rgba(217, 119, 87, 0.45);"
+
+    /** Real-element replacement of claudette's a::after north-east arrow glyph. */
+    override val linkIconSpan =
+        "<span style=\"color: #87867f; font-size: 12px; margin-left: 2px; vertical-align: 6px;\">\u2197</span>"
+
+    /** The stylesheet's 1px ring is drawn as a box-shadow; the preview has no ring equivalent. */
+    override val imgCss =
+        "display: block; margin: 18px auto; max-width: 100%; border-radius: 8px; " +
+            "box-shadow: 0 0 0 1px $hairline;"
+
+    override val tableImgCss = "display: block; margin: 0 auto; max-width: 100%; border-radius: 8px;"
+
+    override val blockquoteCss =
+        "position: relative; font-family: $serifFont; font-size: 18px; line-height: 28px; " +
+            "color: #52514e; padding: 4px 0 4px 32px; margin: 26px 0; " +
+            "border-left: 2px solid rgba(217, 119, 87, 0.55);"
+
+    /** Nested quotes only relax the vertical margin; the clay bar stays (the preview model has no per-level border). */
+    override val nestedBlockquoteCss =
+        "position: relative; font-family: $serifFont; font-size: 18px; line-height: 28px; " +
+            "color: #52514e; padding: 4px 0 4px 32px; margin: 14px 0; " +
+            "border-left: 2px solid rgba(217, 119, 87, 0.55);"
+
+    /** Typography of the decorative serif opening quote claudette pins to the quote's corner. */
+    override val quoteOpenCss =
+        "position: absolute; left: 10px; top: -2px; font-family: $serifFont; font-size: 36px; " +
+            "line-height: 1; color: rgba(217, 119, 87, 0.35);"
+
+    override val quoteHasClosingMark = false
+    override val quoteOpenMark = "\u201C"
+
+    /** Centered-star rule: the hairline is a full-width span masked by the white-backed glyph span. */
+    override val hrCss =
+        "position: relative; height: 14px; line-height: 14px; font-size: 12px; margin: 40px 0; " +
+            "border: none; text-align: center; overflow: visible;"
+
+    override val hrInnerHtml =
+        "<span style=\"position: absolute; left: 0; right: 0; top: 6px; height: 1px; " +
+            "background: $hairline;\"></span>" +
+            "<span style=\"position: relative; padding: 0 10px; background: #ffffff; color: #d97757;\">\u2733</span>"
+
+    // ponytail: th's upstream 8px bottom padding is flattened to the 10px the preview uses on every side.
+    override val tableCss =
+        "width: 100%; margin: 18px 0; font-size: 15px; line-height: 24px; border: 1px solid $hairline; " +
+            "border-spacing: 0; border-collapse: separate; border-radius: 8px; overflow: hidden;"
+
+    override val thCss =
+        "text-align: left; background: #f5f4ed; color: #73726c; font-size: 12px; font-weight: 460; " +
+            "text-transform: uppercase; padding: 10px 12px; border-bottom: 1px solid $hairline;"
+
+    // ponytail: :last-child is not expressible inline, so the final row keeps its hairline bottom border.
+    override val tdCss =
+        "text-align: left; padding: 10px 12px; color: $fontColor; border-bottom: 1px solid $hairline;"
+
+    override val stripedTdCss = tdCss
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = true
+    override val quoteHasMarks = true
     override val firstLetterCapitalized = false
 }

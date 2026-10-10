@@ -36,6 +36,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -62,6 +63,7 @@ internal fun InlineMarkdownText(
     fontWeight: FontWeight? = null,
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
+    fontFamily: FontFamily? = null,
 ) {
     val alignmentModifier = if (textAlign != null) modifier.fillMaxWidth() else modifier
     BoxWithConstraints(alignmentModifier) {
@@ -190,14 +192,34 @@ internal fun InlineMarkdownText(
                             }
                             if (styles.linkHasIcon) {
                                 val id = "link-icon-${codeIndex++}"
-                                inlineContent[id] = InlineTextContent(
-                                    placeholder = Placeholder(
-                                        width = 18.sp,
-                                        height = 18.sp,
-                                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
-                                    ),
-                                ) {
-                                    LinkIcon(Modifier.fillMaxSize(), styles.linkColor)
+                                val iconText = styles.linkIconText
+                                if (iconText != null) {
+                                    // Claudette's ↗ arrow: a text glyph sized to its own style,
+                                    // centered on the line like the SVG icon it replaces.
+                                    inlineContent[id] = InlineTextContent(
+                                        placeholder = Placeholder(
+                                            width = styles.linkIconTextSize,
+                                            height = styles.linkIconTextSize,
+                                            placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                        ),
+                                    ) {
+                                        WeiSomeText(
+                                            text = iconText,
+                                            fontSize = styles.linkIconTextSize,
+                                            lineHeight = styles.linkIconTextSize,
+                                            color = styles.linkIconTextColor,
+                                        )
+                                    }
+                                } else {
+                                    inlineContent[id] = InlineTextContent(
+                                        placeholder = Placeholder(
+                                            width = 18.sp,
+                                            height = 18.sp,
+                                            placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter,
+                                        ),
+                                    ) {
+                                        LinkIcon(Modifier.fillMaxSize(), styles.linkColor)
+                                    }
                                 }
                                 append(' ')
                                 appendInlineContent(id, " ")
@@ -258,6 +280,7 @@ internal fun InlineMarkdownText(
             lineHeight = lineHeight,
             fontWeight = fontWeight,
             color = color,
+            fontFamily = fontFamily,
             // The text box must span the container before textAlign can move the glyphs off the
             // start edge; BoxWithConstraints places a narrow child at TopStart regardless.
             modifier = if (textAlign != null) Modifier.fillMaxWidth() else Modifier,

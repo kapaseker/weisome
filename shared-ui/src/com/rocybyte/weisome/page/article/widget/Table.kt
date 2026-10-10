@@ -44,8 +44,9 @@ internal fun Table(block: MarkdownBlock.Table) {
                         ),
                 ) {
                     InlineMarkdownText(
-                        lines = listOf(cell),
-                        fontSize = styles.tableFontSize,
+                        // Claudette renders its column headers uppercased.
+                        lines = listOf(if (styles.tableHeaderUppercase) uppercaseInlines(cell) else cell),
+                        fontSize = styles.tableHeaderFontSize ?: styles.tableFontSize,
                         lineHeight = styles.tableLineHeight,
                         fontWeight = styles.tableHeaderFontWeight,
                         color = styles.tableHeaderColor,

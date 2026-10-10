@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.ChocolateThemeIconPngBase64
 import com.rocybyte.weisome.article.CodeTheme
 import com.rocybyte.weisome.article.MarkdownThemeId
+import com.rocybyte.weisome.article.MarkdownInline
 import java.util.Base64
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image
@@ -34,6 +35,16 @@ internal data class HeadingSpec(
     val prefixEmoji: String = "",
     val prefixEmojiSize: Float = 0f,
     val prefixEmojiLeft: Int = 0,
+    /** Renders the text uppercased (claudette's small uppercase labels). */
+    val uppercase: Boolean = false,
+    /** Renders a clay-sized accent dot before the text (claudette's h3 marker). */
+    val prefixDot: Boolean = false,
+    /** Width of the heading's bottom rule; 0 paints a full-width border, >0 paints a short rounded rule (claudette's h1 underline). */
+    val shortRuleWidth: Dp = 0.dp,
+    /** Color of the heading's bottom rule; [androidx.compose.ui.graphics.Color.Unspecified] falls back to the theme's shared border color. */
+    val borderBottomColor: Color = Color.Unspecified,
+    /** Gap between the painted left border and the text; defaults to the 10dp every pre-existing bordered theme uses. */
+    val borderLeftTextGap: Dp = 10.dp,
 )
 
 /**
@@ -48,6 +59,7 @@ internal data class HeadingSpec(
  * CYANOSIS mirrors docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea.
  * CYAN mirrors docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f.
  * V_GREEN mirrors docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b.
+ * CLAUDETTE mirrors docs/theme/claudette/claudette.css at CookPiu/typora-theme-claudette@0a6c75a (light variant).
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -157,6 +169,34 @@ internal data class MarkdownPreviewStyles(
     val imageShadowElevation: Dp = 0.dp,
     val tableCornerRadius: Dp = 0.dp,
     val tableShadowElevation: Dp = 0.dp,
+    /** Renders h1–h4 headings with [androidx.compose.ui.text.font.FontFamily.Serif] (claudette's serif headings). */
+    val headingFontSerif: Boolean = false,
+    /** Renders blockquote text with a serif font family (claudette's serif quote). */
+    val quoteFontSerif: Boolean = false,
+    /** Lead-paragraph font size applied to the paragraph directly after an h1; null disables the lead style. */
+    val leadFontSize: androidx.compose.ui.unit.TextUnit? = null,
+    /** Lead-paragraph line height; unused without [leadFontSize]. */
+    val leadLineHeight: androidx.compose.ui.unit.TextUnit? = null,
+    /** Lead-paragraph text color; unused without [leadFontSize]. */
+    val leadColor: Color = Color.Unspecified,
+    /** Text glyph appended after links instead of the hydrogen SVG icon (claudette's ↗ arrow); null keeps the SVG icon. */
+    val linkIconText: String? = null,
+    /** Ink color of [linkIconText]. */
+    val linkIconTextColor: Color = Color.Unspecified,
+    /** Font size of [linkIconText]. */
+    val linkIconTextSize: androidx.compose.ui.unit.TextUnit = 12.sp,
+    /** Renders a centered glyph over the rule line (claudette's hr asterisk); null keeps a plain rule. */
+    val ruleCenterGlyph: String? = null,
+    /** Renders table header text uppercased (claudette's uppercase column headers). */
+    val tableHeaderUppercase: Boolean = false,
+    /** Header-cell font size; null reuses [tableFontSize] (claudette's 12px headers over 15px cells). */
+    val tableHeaderFontSize: androidx.compose.ui.unit.TextUnit? = null,
+    /** Renders the code block's language as a corner pill label when the block declares one. */
+    val codeBlockHasLangLabel: Boolean = false,
+    /** Pill background of the code-block language label. */
+    val codeBlockLangLabelBackground: Color = Color.Unspecified,
+    /** Pill text color of the code-block language label. */
+    val codeBlockLangLabelTextColor: Color = Color.Unspecified,
 ) {
     /** Returns the heading spec for a level from 1 to 6. */
     fun headingSpec(level: Int): HeadingSpec = headingSpecs[(level - 1).coerceIn(0, headingSpecs.lastIndex)]
@@ -193,6 +233,7 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.CYANOSIS -> CyanosisPreviewStyles
     MarkdownThemeId.CYAN -> CyanPreviewStyles
     MarkdownThemeId.V_GREEN -> VGreenPreviewStyles
+    MarkdownThemeId.CLAUDETTE -> ClaudettePreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -1127,6 +1168,165 @@ internal val CyanPreviewStyles = MarkdownPreviewStyles(
     ),
     quoteBorderWidth = 4.dp,
 )
+
+/**
+ * Claudette preview styles; values mirror docs/theme/claudette/claudette.css (light variant),
+ * with em/rem converted to px and non-integers rounded to the nearest even integer.
+ * Known platform gaps: link underline ink follows the text color (no separate decoration
+ * color), h6 letter-spacing is not applied, and images carry no hairline ring.
+ */
+internal val ClaudettePreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF141413),
+    mutedColor = Color(0xFF73726C),
+    headingColor = Color(0xFF141413),
+    themeColor = Color(0xFFD97757),
+    linkColor = Color(0xFF141413),
+    boldColor = null,
+    linkUnderlined = true,
+    linkHasIcon = true,
+    linkIconText = "\u2197",
+    linkIconTextColor = Color(0xFF87867F),
+    linkIconTextSize = 12.sp,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color(0xFFD97757),
+    headingBottomBorderColor = Color(0x1F1F1E1D),
+    bodyFontSize = 17.sp,
+    bodyLineHeight = 28.sp,
+    paragraphTopMargin = 0,
+    paragraphBottomMargin = 18,
+    quoteParagraphTopMargin = 0,
+    quoteParagraphBottomMargin = 18,
+    quoteColor = Color(0xFF52514E),
+    quoteBackground = Color.Transparent,
+    quoteBorder = Color(0x8CD97757),
+    quoteHasBackground = false,
+    quoteHasMarks = true,
+    quoteHasHover = false,
+    quoteMarkColor = Color(0x59D97757),
+    quoteMarkFontSize = 36.sp,
+    quoteMarkWeight = FontWeight.Normal,
+    quoteOpenMark = "\u201C",
+    quoteHasClosingMark = false,
+    // Anchors the opening mark's ink at 10px from the card corner; the export CSS places it
+    // at left 10px / top -2px, so the mark sits slightly lower here (faint decoration only).
+    quoteMarkInkTop = 10.dp,
+    quotePaddingStart = 32,
+    quotePaddingEnd = 0,
+    quotePaddingTop = 4,
+    quotePaddingBottom = 4,
+    quoteVerticalMargin = 26,
+    quoteNestedVerticalMargin = 14,
+    quoteBorderWidth = 2.dp,
+    quoteFontSerif = true,
+    inlineCodeColor = Color(0xFF9C4A21),
+    inlineCodeBackground = Color(0x1AD97757),
+    // 14sp inline-code text against the 17sp body, the 0.875em ratio converted to even px.
+    inlineCodeFontScale = 14f / 17f,
+    inlineCodeCornerRadius = 4.dp,
+    codeBlockTopMargin = 24,
+    codeBlockBottomMargin = 24,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+    codeBlockPaddingVertical = 16,
+    codeBlockPaddingHorizontal = 20,
+    codeBlockFontSize = 14.sp,
+    codeBlockLineHeight = 22.sp,
+    codeBlockBorderColor = Color(0x1F1F1E1D),
+    codeBlockBorderWidth = 1.dp,
+    codeBlockHasLangLabel = true,
+    codeBlockLangLabelBackground = Color(0xFFECE9DF),
+    codeBlockLangLabelTextColor = Color(0xFF73726C),
+    strikethroughColor = Color(0xFF87867F),
+    tableBorderColor = Color(0x1F1F1E1D),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color(0xFFF5F4ED),
+    tableHeaderColor = Color(0xFF73726C),
+    tableHeaderFontWeight = FontWeight(460),
+    tableStripeBackground = Color.Transparent,
+    tableCellPaddingHorizontal = 12,
+    tableCellPaddingVertical = 10,
+    tableFontSize = 15.sp,
+    tableLineHeight = 24.sp,
+    tableCornerRadius = 8.dp,
+    tableHeaderUppercase = true,
+    tableHeaderFontSize = 12.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0x1F1F1E1D),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 40,
+    ruleWidthFraction = 1.0f,
+    ruleCenterGlyph = "\u2733",
+    listPaddingStart = 26,
+    listTopMargin = 0,
+    listBottomMargin = 18,
+    listItemTopMargin = 6,
+    orderedItemExtraPaddingStart = 0,
+    nestedListPaddingStart = 26,
+    nestedListTopMargin = 4,
+    unorderedMarkerColor = Color(0xFFD97757),
+    orderedMarkerColor = Color(0xFF73726C),
+    imageCornerRadius = 8.dp,
+    headingFontSerif = true,
+    leadFontSize = 20.sp,
+    leadLineHeight = 30.sp,
+    leadColor = Color(0xFF52514E),
+    headingSpecs = listOf(
+        // h1: short 40px clay underline sits 16px below the text (padding-bottom 0.45em).
+        HeadingSpec(
+            36f, FontWeight.Normal, 0, 32,
+            borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false,
+            lineHeightMultiplier = 1.1f, lineHeight = 40.sp,
+            borderBottomWidth = 2.dp, borderBottomGap = 16.dp,
+            shortRuleWidth = 40.dp, borderBottomColor = Color(0xFFD97757),
+        ),
+        HeadingSpec(
+            28f, FontWeight.Normal, 56, 18,
+            borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false,
+            lineHeightMultiplier = 1.2f, lineHeight = 34.sp,
+            borderBottomWidth = 1.dp, borderBottomGap = 10.dp, borderBottomColor = Color(0x1F1F1E1D),
+        ),
+        HeadingSpec(
+            22f, FontWeight.Normal, 44, 14,
+            borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
+            lineHeightMultiplier = 1.3f, lineHeight = 28.sp, prefixDot = true,
+        ),
+        HeadingSpec(
+            18f, FontWeight.Normal, 36, 12,
+            borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
+            lineHeightMultiplier = 1.3f, lineHeight = 24.sp,
+        ),
+        HeadingSpec(
+            16f, FontWeight(460), 28, 8,
+            borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false,
+            lineHeightMultiplier = 1.4f, lineHeight = 22.sp,
+        ),
+        // h6: small uppercase label behind a 2px clay bar; 6dp text gap makes the ink start 8px from the edge.
+        HeadingSpec(
+            12f, FontWeight(460), 22, 6,
+            borderLeft = true, borderWidth = 2.dp, borderBottom = false, muted = true,
+            lineHeightMultiplier = 1.4f, lineHeight = 16.sp,
+            uppercase = true, borderLeftTextGap = 6.dp,
+        ),
+    ),
+)
+
+/**
+ * Uppercases every character of the text-bearing inlines, reproducing claudette's
+ * `text-transform: uppercase` labels. Code and image inlines are skipped because
+ * their content is not plain flowing text.
+ */
+internal fun uppercaseInlines(inlines: List<MarkdownInline>): List<MarkdownInline> = inlines.map { inline ->
+    when (inline) {
+        is MarkdownInline.Text -> inline.copy(value = inline.value.uppercase())
+        is MarkdownInline.Bold -> inline.copy(value = inline.value.uppercase())
+        is MarkdownInline.Italic -> inline.copy(value = inline.value.uppercase())
+        is MarkdownInline.Strikethrough -> inline.copy(value = inline.value.uppercase())
+        is MarkdownInline.Link -> inline.copy(text = inline.text.uppercase())
+        is MarkdownInline.Code, is MarkdownInline.Image -> inline
+    }
+}
 
 /** Converts a packed RGB value to an opaque Compose color. */
 internal fun Int.toComposeColor(): Color = Color(0xFF000000L or (toLong() and 0xFFFFFFL))

@@ -53,10 +53,16 @@ internal fun RenderBlocks(
     onBlockPositioned: ((blockIndex: Int, topPx: Float) -> Unit)? = null,
 ) {
     blocks.forEachIndexed { index, block ->
+        // Claudette's prose-lead: the paragraph directly after a top-level h1 renders larger.
+        val prev = blocks.getOrNull(index - 1)
+        val isLead = !inQuote &&
+            block is MarkdownBlock.Paragraph &&
+            prev is MarkdownBlock.Heading &&
+            prev.level == 1
         val content: @Composable () -> Unit = {
             when (block) {
                 is MarkdownBlock.Heading -> Heading(block)
-                is MarkdownBlock.Paragraph -> Paragraph(block, inQuote)
+                is MarkdownBlock.Paragraph -> Paragraph(block, inQuote, isLead)
                 is MarkdownBlock.ListBlock -> ListBlock(block)
                 is MarkdownBlock.CodeBlock -> CodeBlock(block)
                 is MarkdownBlock.BlockQuote -> BlockQuote(block, nested = inQuote)

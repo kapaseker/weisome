@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -29,7 +30,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.rocybyte.weisome.article.MarkdownBlock
+import com.rocybyte.weisome.article.displayLabel
 import com.rocybyte.weisome.widget.WeiSomeText
 
 /** Renders authored code lines without soft wrapping and exposes overflow through a local scrollbar. */
@@ -57,13 +60,15 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
                 maxWidth -
                     (styles.codeBlockPaddingHorizontal * 2).dp
                 ).coerceAtLeast(0.dp)
+            val langLabel = block.language?.displayLabel()?.takeIf { styles.codeBlockHasLangLabel }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(codeTheme.backgroundRgb.toComposeColor())
                     .horizontalScroll(horizontalScrollState)
                     .padding(
-                        top = styles.codeBlockPaddingVertical.dp,
+                        // The language pill overlays the first rows, so give them room to clear it.
+                        top = (if (langLabel != null) 28 else styles.codeBlockPaddingVertical).dp,
                         bottom = styles.codeBlockPaddingVertical.dp,
                         start = styles.codeBlockPaddingHorizontal.dp,
                         end = styles.codeBlockPaddingHorizontal.dp,
@@ -78,6 +83,24 @@ internal fun CodeBlock(block: MarkdownBlock.CodeBlock) {
                     softWrap = false,
                     modifier = Modifier.widthIn(min = minimumTextWidth),
                 )
+            }
+            if (langLabel != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 8.dp, end = 12.dp)
+                        .background(
+                            styles.codeBlockLangLabelBackground,
+                            RoundedCornerShape(99.dp),
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                ) {
+                    WeiSomeText(
+                        text = langLabel,
+                        fontSize = 12.sp,
+                        color = styles.codeBlockLangLabelTextColor,
+                    )
+                }
             }
         }
         if (horizontalScrollState.maxValue > 0) {

@@ -36,6 +36,7 @@ import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.ic_palette
 import com.rocybyte.weisome.generated.resources.markdown_theme_chocolate
+import com.rocybyte.weisome.generated.resources.markdown_theme_claudette
 import com.rocybyte.weisome.generated.resources.markdown_theme_cyan
 import com.rocybyte.weisome.generated.resources.markdown_theme_cyanosis
 import com.rocybyte.weisome.generated.resources.markdown_theme_github
@@ -69,6 +70,7 @@ private val MarkdownThemeEntries = listOf(
     MarkdownThemeId.CYANOSIS,
     MarkdownThemeId.CYAN,
     MarkdownThemeId.V_GREEN,
+    MarkdownThemeId.CLAUDETTE,
 )
 
 /** Returns the localized display name for a Markdown theme id. */
@@ -84,6 +86,7 @@ private fun MarkdownThemeId.displayName(): String = when (this) {
     MarkdownThemeId.CYANOSIS -> stringResource(Res.string.markdown_theme_cyanosis)
     MarkdownThemeId.CYAN -> stringResource(Res.string.markdown_theme_cyan)
     MarkdownThemeId.V_GREEN -> stringResource(Res.string.markdown_theme_v_green)
+    MarkdownThemeId.CLAUDETTE -> stringResource(Res.string.markdown_theme_claudette)
 }
 
 /**

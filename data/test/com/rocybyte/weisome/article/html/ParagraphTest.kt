@@ -20,6 +20,7 @@ class ParagraphTest {
                     ),
                 ),
                 inQuote = false,
+                isLead = false,
                 styles = HydrogenExportStyles,
             ),
         )
@@ -33,6 +34,7 @@ class ParagraphTest {
             renderParagraph(
                     MarkdownBlock.Paragraph(listOf(listOf(MarkdownInline.Text("Quoted")))),
                     inQuote = true,
+                    isLead = false,
                     styles = HydrogenExportStyles,
                 ),
         )

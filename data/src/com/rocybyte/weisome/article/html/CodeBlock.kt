@@ -20,6 +20,6 @@ internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExp
         }
         append(escapeHtml(block.code.substring(cursor)))
     }
-    return "<pre style=\"${styles.codeBlockCss}\">${styles.codeBlockHeaderHtml}" +
+    return "<pre style=\"${styles.codeBlockCss}\">${styles.codeBlockHeaderHtml(block.language)}" +
         "<code style=\"${styles.codeElementCss(codeTheme)}\">$code</code></pre>"
 }

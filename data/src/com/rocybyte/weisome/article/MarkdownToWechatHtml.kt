@@ -11,6 +11,11 @@ object MarkdownToWechatHtml {
     internal fun render(document: MarkdownDocument, theme: MarkdownThemeId, codeTheme: CodeThemeId): String {
         val styles = exportStylesFor(theme)
         val palette = CodeThemes.forId(codeTheme)
-        return document.blocks.joinToString("\n") { renderBlock(it, inQuote = false, styles, palette) }
+        // prev feeds the sibling-sensitive rules (claudette's h1 + p lead paragraph).
+        return document.blocks
+            .mapIndexed { index, block ->
+                renderBlock(block, inQuote = false, styles, palette, prev = document.blocks.getOrNull(index - 1))
+            }
+            .joinToString("\n")
     }
 }

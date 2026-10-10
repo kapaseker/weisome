@@ -10,10 +10,13 @@ internal fun renderBlock(
     inQuote: Boolean,
     styles: MarkdownExportStyles,
     codeTheme: CodeTheme,
+    prev: MarkdownBlock? = null,
 ): String =
     when (block) {
         is MarkdownBlock.Heading -> renderHeading(block, styles)
-        is MarkdownBlock.Paragraph -> renderParagraph(block, inQuote, styles)
+        // The lead rule only fires for a paragraph directly after a top-level h1 (claudette's `h1 + p`).
+        is MarkdownBlock.Paragraph ->
+            renderParagraph(block, inQuote, isLead = !inQuote && prev is MarkdownBlock.Heading && prev.level == 1, styles = styles)
         is MarkdownBlock.ListBlock -> renderListBlock(block, styles)
         is MarkdownBlock.CodeBlock -> renderCodeBlock(block, styles, codeTheme)
         is MarkdownBlock.BlockQuote -> renderBlockQuote(block, inQuote, styles, codeTheme)

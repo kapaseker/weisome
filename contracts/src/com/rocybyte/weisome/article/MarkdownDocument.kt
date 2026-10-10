@@ -56,6 +56,14 @@ enum class CodeLanguage {
     Php,
 }
 
+/** Uppercase display label for a code block's language pill (claudette's top-right badge). */
+fun CodeLanguage.displayLabel(): String = when (this) {
+    CodeLanguage.Cpp -> "C++"
+    CodeLanguage.CSharp -> "C#"
+    CodeLanguage.Php -> "PHP"
+    else -> name.uppercase()
+}
+
 data class CodeHighlightSpan(
     val start: Int,
     val endExclusive: Int,
@@ -89,6 +97,7 @@ enum class MarkdownThemeId {
     CYANOSIS,
     CYAN,
     V_GREEN,
+    CLAUDETTE,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */
