@@ -1,5 +1,8 @@
 package com.rocybyte.weisome.article
 
+import java.util.Locale
+import kotlin.math.roundToInt
+
 /**
  * Per-theme inline CSS for the WeChat HTML export.
  * Each theme mirrors its canonical stylesheet in docs/theme/: HYDROGEN follows docs/theme/hydrogen/hydrogen.scss
@@ -271,7 +274,9 @@ internal object GitHubExportStyles : MarkdownExportStyles() {
     override fun headingCss(level: Int): String {
         val spec = heading(level)
         val color = spec.color?.let { " color: $it;" } ?: ""
-        val border = if (spec.borderBottom) " padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;" else ""
+        // Upstream padding-bottom: 0.3em (h1 9.6px, h2 7.2px), rounded to the nearest even px.
+        val borderPadding = if (level == 1) "10px" else "8px"
+        val border = if (spec.borderBottom) " padding-bottom: $borderPadding; border-bottom: 1px solid #d1d9e0;" else ""
         return "font-size: ${spec.size}; font-weight: 600; line-height: 1.25; margin: 24px 0 16px;$color$border"
     }
 
@@ -469,17 +474,28 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
     /** Builds the Paper heading style without changing the application's selected font. */
     override fun headingCss(level: Int): String {
         val spec = heading(level)
-        val border = if (spec.borderBottom) " padding-bottom: 13.44px; border-bottom: 1px solid #e8e0cf;" else ""
+        // Upstream padding-bottom: 0.42em at h2's 28px = 11.76px, rounded to the nearest even 12px.
+        val border = if (spec.borderBottom) " padding-bottom: 12px; border-bottom: 1px solid #e8e0cf;" else ""
         return "font-size: ${spec.size}; font-weight: 800; line-height: ${spec.lineHeight}; " +
             "margin: ${spec.top} 0 ${spec.bottom}; color: ${spec.color}; letter-spacing: ${spec.letterSpacing};$border"
     }
 
-    /** Renders Paper's paired blue and yellow dots before level-two headings. */
+    /** Renders Paper's paired blue and yellow dots before level-two headings, scaled to the h2 font size. */
     override fun headingPrefixHtml(level: Int): String = if (level == 2) {
-        "<span style=\"position: relative; display: inline-block; width: 23px; height: 23px; margin-right: 7px; " +
-            "vertical-align: -5px;\"><span style=\"position: absolute; left: 8px; top: 7px; width: 15px; height: 15px; " +
-            "border-radius: 50%; background: #f4d758;\"></span><span style=\"position: absolute; left: 0; top: 0; " +
-            "width: 15px; height: 15px; border-radius: 50%; background: #2b7fd8;\"></span></span>"
+        // The dot pair keeps its 23px reference geometry, scaled to the h2 font size so the icon
+        // matches the text; every derived px value rounds to the nearest even integer, and
+        // vertical-align: middle mirrors the preview's CenterVertically.
+        val unit = heading(level).size.removeSuffix("px").toFloat() / 23f
+        fun evenPx(value: Float): String = "%dpx".format(Locale.ROOT, (value / 2f).roundToInt() * 2)
+        val box = evenPx(23f * unit)
+        val dot = evenPx(15f * unit)
+        val yellowLeft = evenPx(8f * unit)
+        val yellowTop = evenPx(7f * unit)
+        "<span style=\"position: relative; display: inline-block; width: $box; height: $box; margin-right: 8px; " +
+            "vertical-align: middle;\"><span style=\"position: absolute; left: $yellowLeft; top: $yellowTop; " +
+            "width: $dot; height: $dot; border-radius: 50%; background: #f4d758;\"></span>" +
+            "<span style=\"position: absolute; left: 0; top: 0; width: $dot; height: $dot; " +
+            "border-radius: 50%; background: #2b7fd8;\"></span></span>"
     } else {
         ""
     }

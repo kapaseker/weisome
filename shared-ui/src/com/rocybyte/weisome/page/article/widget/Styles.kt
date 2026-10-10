@@ -29,6 +29,8 @@ internal data class HeadingSpec(
     /** Absolute line height overriding [lineHeightMultiplier] × size (yu's even-valued px line-heights). */
     val lineHeight: androidx.compose.ui.unit.TextUnit? = null,
     val borderBottomWidth: Dp = 1.dp,
+    /** Gap between the text row and the bottom border, mirroring the export's padding-bottom; unused without [borderBottom]. */
+    val borderBottomGap: Dp = 0.dp,
     val prefixEmoji: String = "",
     val prefixEmojiSize: Float = 0f,
     val prefixEmojiLeft: Int = 0,
@@ -351,8 +353,8 @@ internal val GitHubPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 32,
     nestedListTopMargin = 0,
     headingSpecs = listOf(
-        HeadingSpec(32f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
-        HeadingSpec(24f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f),
+        HeadingSpec(32f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f, borderBottomGap = 10.dp),
+        HeadingSpec(24f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.25f, borderBottomGap = 8.dp),
         HeadingSpec(20f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
         HeadingSpec(16f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
         HeadingSpec(14f, FontWeight.SemiBold, 24, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.25f),
@@ -524,7 +526,7 @@ internal val TyporaPaperPreviewStyles = MarkdownPreviewStyles(
     nestedListTopMargin = 3,
     headingSpecs = listOf(
         HeadingSpec(30f, FontWeight.ExtraBold, 28, 36, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.18f),
-        HeadingSpec(28f, FontWeight.ExtraBold, 67, 23, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.35f),
+        HeadingSpec(28f, FontWeight.ExtraBold, 67, 23, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.35f, borderBottomGap = 12.dp),
         HeadingSpec(24f, FontWeight.ExtraBold, 45, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
         HeadingSpec(20f, FontWeight.ExtraBold, 38, 13, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
         HeadingSpec(16f, FontWeight.ExtraBold, 33, 11, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
@@ -835,7 +837,7 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     nestedListTopMargin = 3,
     headingSpecs = listOf(
         HeadingSpec(28f, FontWeight.Bold, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 42.sp, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 28f, prefixEmojiLeft = 0),
-        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 34.sp, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 22.5f, prefixEmojiLeft = 8),
+        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 34.sp, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 22.5f, prefixEmojiLeft = 8, borderBottomGap = 24.dp),
         HeadingSpec(18f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 28.sp, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
         HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 24.sp, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 16f, prefixEmojiLeft = 8),
         HeadingSpec(14f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 14f, prefixEmojiLeft = 9),
@@ -852,8 +854,8 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
 /** Cyanosis preview styles adapted from juejin-markdown-theme-cyanosis at commit 6b814ea.
  * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
  * body wrapper. The h2 「」 marks and the h3 » prefix have no preview equivalent; the export
- * renders them as real elements. The heading widget's 0.3em border gap approximates h2's 10px
- * padding-bottom. The export sizes the table header at the thead's 14px while the preview shares
+ * renders them as real elements. The h2 border gap mirrors the export's 10px padding-bottom.
+ * The export sizes the table header at the thead's 14px while the preview shares
  * the 12sp cell size. The hr's scissors ornament and the row hover are not rendered. The
  * stylesheet underlines links with a 1px bottom border; approximated as an underline.
  */
@@ -934,7 +936,7 @@ internal val CyanosisPreviewStyles = MarkdownPreviewStyles(
     nestedListTopMargin = 4,
     headingSpecs = listOf(
         HeadingSpec(30f, FontWeight.Bold, 36, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(24f, FontWeight.Bold, 36, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(24f, FontWeight.Bold, 36, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, borderBottomGap = 10.dp),
         HeadingSpec(20f, FontWeight.Bold, 30, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(16f, FontWeight.Bold, 24, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(14f, FontWeight.Bold, 18, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
@@ -1023,7 +1025,7 @@ internal val VGreenPreviewStyles = MarkdownPreviewStyles(
     nestedListTopMargin = 3,
     headingSpecs = listOf(
         HeadingSpec(32f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(28f, FontWeight.Bold, 35, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(28f, FontWeight.Bold, 35, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, borderBottomGap = 8.dp),
         HeadingSpec(24f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(20f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
@@ -1038,7 +1040,7 @@ internal val VGreenPreviewStyles = MarkdownPreviewStyles(
  * h3 underline bar and circle have no preview equivalent; the export renders them as real
  * elements. The `strong` 「」 marks and `figcaption` rules have no model element. Paragraphs use a
  * 14px size with 2px letter/word spacing in the export; the preview shares the 15sp body type.
- * The heading widget's 0.3em border gap approximates h2's 12px vertical padding. Code-block colors
+ * The h2 border gap mirrors the export's 12px padding-bottom. Code-block colors
  * continue to come from the selected code theme.
  */
 internal val CyanPreviewStyles = MarkdownPreviewStyles(
@@ -1117,7 +1119,7 @@ internal val CyanPreviewStyles = MarkdownPreviewStyles(
     nestedListTopMargin = 3,
     headingSpecs = listOf(
         HeadingSpec(30f, FontWeight.Bold, 30, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
-        HeadingSpec(24f, FontWeight.Bold, 42, 42, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.2f),
+        HeadingSpec(24f, FontWeight.Bold, 42, 42, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.2f, borderBottomGap = 12.dp),
         HeadingSpec(18f, FontWeight.Bold, 39, 14, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
         HeadingSpec(16f, FontWeight.Bold, 65, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),
         HeadingSpec(15f, FontWeight.Bold, 65, 40, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.2f),

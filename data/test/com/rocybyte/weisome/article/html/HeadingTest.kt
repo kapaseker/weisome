@@ -44,12 +44,12 @@ class HeadingTest {
     fun `renders github heading without prefix or capitalization`() {
         assertEquals(
             "<h1 style=\"font-size: 2em; font-weight: 600; line-height: 1.25; margin: 24px 0 16px; " +
-                "padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;\">Hello</h1>",
+                "padding-bottom: 10px; border-bottom: 1px solid #d1d9e0;\">Hello</h1>",
             renderHeading(MarkdownBlock.Heading(1, listOf(MarkdownInline.Text("Hello"))), GitHubExportStyles),
         )
         assertEquals(
             "<h2 style=\"font-size: 1.5em; font-weight: 600; line-height: 1.25; margin: 24px 0 16px; " +
-                "padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;\">title text</h2>",
+                "padding-bottom: 8px; border-bottom: 1px solid #d1d9e0;\">title text</h2>",
             renderHeading(MarkdownBlock.Heading(2, listOf(MarkdownInline.Text("title text"))), GitHubExportStyles),
         )
     }

@@ -48,7 +48,7 @@ class MarkdownToWechatHtmlTest {
     fun `renders github theme through the public entry point`() {
         assertEquals(
             "<h1 style=\"font-size: 2em; font-weight: 600; line-height: 1.25; margin: 24px 0 16px; " +
-                "padding-bottom: 0.3em; border-bottom: 1px solid #d1d9e0;\">Title</h1>\n" +
+                "padding-bottom: 10px; border-bottom: 1px solid #d1d9e0;\">Title</h1>\n" +
                 "<p style=\"font-size: 16px; line-height: 1.5; margin: 0 0 16px; color: #1f2328; word-break: break-word;\">Body</p>",
             MarkdownToWechatHtml.render("# Title\n\nBody", MarkdownThemeId.GITHUB, CodeThemeId.GITHUB_LIGHT),
         )

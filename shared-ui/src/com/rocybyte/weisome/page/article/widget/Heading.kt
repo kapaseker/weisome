@@ -52,9 +52,7 @@ internal fun Heading(block: MarkdownBlock.Heading) {
 private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: MarkdownPreviewStyles) {
     val spec = styles.headingSpec(level)
     Column(
-        Modifier
-            .padding(top = spec.top.dp, bottom = spec.bottom.dp)
-            .padding(bottom = if (spec.borderBottom) (spec.size * 0.3f).dp else 0.dp),
+        Modifier.padding(top = spec.top.dp, bottom = spec.bottom.dp),
     ) {
         Row(verticalAlignment = Alignment.Top) {
             // Yu renders an animal emoji before each heading, inside the 50px icon gutter.
@@ -91,15 +89,28 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
                 Spacer(Modifier.width(10.dp))
             }
             if (level == 2 && styles.h2AccentDots) {
+                // Paper's dot pair keeps its 23px reference geometry, scaled to the heading font size
+                // so the icon matches the text; CenterVertically lifts it off the Row's top edge to
+                // sit against the glyphs inside the taller line box.
                 Box(
                     Modifier
-                        .size(23.dp)
+                        .align(Alignment.CenterVertically)
+                        .size(spec.size.dp)
                         .drawBehind {
-                            drawCircle(styles.ruleSolidColor, radius = 7.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(15.5.dp.toPx(), 14.5.dp.toPx()))
-                            drawCircle(styles.themeColor, radius = 7.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(7.5.dp.toPx(), 7.5.dp.toPx()))
+                            val unit = size.width / 23f
+                            drawCircle(
+                                color = styles.ruleSolidColor,
+                                radius = 7.5f * unit,
+                                center = androidx.compose.ui.geometry.Offset(15.5f * unit, 14.5f * unit),
+                            )
+                            drawCircle(
+                                color = styles.themeColor,
+                                radius = 7.5f * unit,
+                                center = androidx.compose.ui.geometry.Offset(7.5f * unit, 7.5f * unit),
+                            )
                         },
                 )
-                Spacer(Modifier.width(7.dp))
+                Spacer(Modifier.width(8.dp))
             }
             InlineMarkdownText(
                 lines = listOf(content),
@@ -122,6 +133,8 @@ private fun PlainHeading(level: Int, content: List<MarkdownInline>, styles: Mark
             )
         }
         if (spec.borderBottom) {
+            // The export paints the border below its padding-bottom, so the gap precedes the line.
+            Spacer(Modifier.height(spec.borderBottomGap))
             Box(
                 Modifier
                     .fillMaxWidth()
