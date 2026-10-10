@@ -40,6 +40,8 @@
 - If verification fails because of the command/runtime/tooling itself, record the failure and skip further command-based verification for that task.
 - For documentation-only changes, review the diff for correctness and formatting; a project check is not required.
 - For UI changes with meaningful interaction risk, validate the affected flow in the desktop application or Compose Preview when available.
+- `kotlin run` launches the desktop app and blocks until it exits. Run it in the background: inspect the captured output for compile errors/warnings, then stop the process. Never wait on the running app in the foreground.
+- Use `kotlin check` instead of `kotlin run` when only compilation errors/warnings need to be inspected.
 - Add focused tests for new behavior and keep build output out of version control.
 
 ## Agent skills
