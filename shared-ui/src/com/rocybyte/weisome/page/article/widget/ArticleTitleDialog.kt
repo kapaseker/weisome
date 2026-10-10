@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +24,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.generated.resources.Res
@@ -39,7 +44,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * 文章标题输入弹窗,新建与改名共用。按 DESIGN.md Modals 规格绘制:
- * 白色表面、thin 边框、lg 圆角;输入框自动获得焦点,标题为空白时禁用确认。
+ * 白色表面、thin 边框、lg 圆角;输入框自动获得焦点且光标定位在已有文字末尾,
+ * 标题为空白时确认按钮禁用、按 Enter 也不生效。
  *
  * @param title 弹窗的标题文案。
  * @param initialValue 输入框的初始值,新建时为空串。
@@ -55,32 +61,38 @@ internal fun ArticleTitleDialog(
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var value by remember { mutableStateOf(initialValue) }
+    // selection 初始定位到末尾,聚焦后光标落在已有文字后面而非开头。
+    var value by remember {
+        mutableStateOf(TextFieldValue(initialValue, selection = TextRange(initialValue.length)))
+    }
     val focusRequester = remember { FocusRequester() }
+    // 确认动作:空白标题不生效,与确认按钮的禁用态共用同一校验。
+    val confirm: () -> Unit = { if (value.text.isNotBlank()) onConfirm(value.text.trim()) }
 
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .clip(WeiSomeShapes.lg)
+                .clip(WeiSomeShapes.large)
                 .background(WeiSomeColors.surfaceContainerLowest)
-                .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.lg)
-                .padding(WeiSomeSpacing.stackMd),
-            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm),
+                .border(WeiSomeBorders.thin, WeiSomeColors.outlineVariant, WeiSomeShapes.large)
+                .padding(WeiSomeSpacing.stackMedium),
+            verticalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall),
         ) {
             WeiSomeText(text = title, style = WeiSomeTypography.h3)
             TitleTextField(
                 value = value,
                 onValueChange = { value = it },
                 placeholder = placeholder,
+                onDone = confirm,
                 modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSm)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall)) {
                 Spacer(Modifier.weight(1f))
                 WeiSomeSecondaryButton(text = stringResource(Res.string.dialog_cancel), onClick = onDismiss)
                 WeiSomePrimaryButton(
                     text = stringResource(Res.string.dialog_confirm),
-                    onClick = { onConfirm(value.trim()) },
-                    enabled = value.isNotBlank(),
+                    onClick = confirm,
+                    enabled = value.text.isNotBlank(),
                 )
             }
         }
@@ -92,18 +104,21 @@ internal fun ArticleTitleDialog(
 
 /**
  * 弹窗专用的单行标题输入框,按 DESIGN.md Input Fields 规格:浅灰底(#F9F9FB)聚焦变白,
- * 聚焦时 2px 主色描边,默认 8px 圆角。无滚动、无外部滚动接管等编辑器专属能力。
+ * 聚焦时 2px 主色描边,默认 8px 圆角。按下 Enter 触发 [onDone],与点击确认按钮等效。
+ * 无滚动、无外部滚动接管等编辑器专属能力。
  *
- * @param value 输入内容。
+ * @param value 输入内容,含光标选区状态。
  * @param onValueChange 内容变化回调。
  * @param placeholder 内容为空时的占位文案。
+ * @param onDone 按下 Enter(IME Done)时回调。
  * @param modifier 应用于输入框的修饰符。
  */
 @Composable
 private fun TitleTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     placeholder: String,
+    onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var focused by remember { mutableStateOf(false) }
@@ -113,23 +128,25 @@ private fun TitleTextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone() }),
         textStyle = WeiSomeTypography.bodyMd.copy(color = WeiSomeColors.onSurface),
         cursorBrush = SolidColor(WeiSomeColors.primary),
         modifier = modifier
             .onFocusChanged { focused = it.isFocused }
             .border(
-                if (focused) 2.dp else WeiSomeBorders.thin,
+                if (focused) WeiSomeBorders.focusBorder else WeiSomeBorders.thin,
                 if (focused) WeiSomeColors.primary else WeiSomeColors.outlineVariant,
                 shape,
             )
             .background(
-                if (focused) WeiSomeColors.surfaceContainerLowest else WeiSomeColors.surfaceContainerLow,
+                if (focused) WeiSomeColors.surfaceContainerLowest else WeiSomeColors.inputBg,
                 shape,
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = WeiSomeSpacing.controlPadding, vertical = WeiSomeSpacing.stackSmall),
         decorationBox = { innerTextField ->
             Box {
-                if (value.isEmpty()) {
+                if (value.text.isEmpty()) {
                     WeiSomeText(
                         text = placeholder,
                         style = WeiSomeTypography.bodyMd,
