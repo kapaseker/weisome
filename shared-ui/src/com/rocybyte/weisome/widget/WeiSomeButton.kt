@@ -87,7 +87,7 @@ internal fun WeiSomePrimaryButton(
                 )
                 Spacer(Modifier.width(6.dp))
             }
-            WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = Color.White)
+            WeiSomeText(text = text, style = WeiSomeTypography.labelSmall, color = Color.White)
         }
     }
 }
@@ -127,7 +127,7 @@ internal fun WeiSomeSecondaryButton(
                 )
                 Spacer(Modifier.width(6.dp))
             }
-            WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = WeiSomeColors.primary)
+            WeiSomeText(text = text, style = WeiSomeTypography.labelSmall, color = WeiSomeColors.primary)
         }
     }
 }

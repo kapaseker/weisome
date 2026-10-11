@@ -135,7 +135,7 @@ private fun TextScaleSettings(
         } else {
             stringResource(Res.string.custom_scale, displayScaleLabel(displayScale))
         },
-        style = WeiSomeTypography.bodyMd,
+        style = WeiSomeTypography.bodyMedium,
         color = WeiSomeColors.onSurfaceVariant,
     )
     WeiSomeSlider(
@@ -155,10 +155,10 @@ private fun TextScaleSettings(
     if (state.saveFailed) ErrorText(stringResource(Res.string.text_scale_save_failed))
     WeiSomeText(stringResource(Res.string.preview), style = WeiSomeTypography.h3)
     WeiSomeText(stringResource(Res.string.preview_title), style = WeiSomeTypography.h3)
-    WeiSomeText(stringResource(Res.string.preview_body), style = WeiSomeTypography.bodyLg)
+    WeiSomeText(stringResource(Res.string.preview_body), style = WeiSomeTypography.bodyLarge)
     WeiSomeText(
         stringResource(Res.string.preview_label),
-        style = WeiSomeTypography.labelSm,
+        style = WeiSomeTypography.labelSmall,
         color = WeiSomeColors.onSurfaceVariant,
     )
 }
@@ -180,7 +180,7 @@ private fun UiScaleSettings(
         } else {
             stringResource(Res.string.custom_scale, displayScaleLabel(state.previewScale))
         },
-        style = WeiSomeTypography.bodyMd,
+        style = WeiSomeTypography.bodyMedium,
         color = WeiSomeColors.onSurfaceVariant,
     )
     WeiSomeSlider(
@@ -257,5 +257,5 @@ private fun SettingsHeader(onBack: () -> Unit) {
 /** Displays a settings error using the error color role. */
 @Composable
 private fun ErrorText(text: String) {
-    WeiSomeText(text, style = WeiSomeTypography.bodyMd, color = WeiSomeColors.error)
+    WeiSomeText(text, style = WeiSomeTypography.bodyMedium, color = WeiSomeColors.error)
 }

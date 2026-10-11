@@ -41,7 +41,7 @@ internal fun ArticleDeleteDialog(
             WeiSomeText(text = stringResource(Res.string.article_delete_hint, title), style = WeiSomeTypography.h3)
             WeiSomeText(
                 text = stringResource(Res.string.article_delete_irreversible),
-                style = WeiSomeTypography.bodyMd,
+                style = WeiSomeTypography.bodyMedium,
                 color = WeiSomeColors.onSurfaceVariant,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackSmall)) {
@@ -68,6 +68,6 @@ private fun ErrorConfirmButton(
             .clickable(onClick = onClick)
             .padding(horizontal = WeiSomeSpacing.stackMedium, vertical = WeiSomeSpacing.stackSmall),
     ) {
-        WeiSomeText(text = text, style = WeiSomeTypography.labelSm, color = WeiSomeColors.onError)
+        WeiSomeText(text = text, style = WeiSomeTypography.labelSmall, color = WeiSomeColors.onError)
     }
 }

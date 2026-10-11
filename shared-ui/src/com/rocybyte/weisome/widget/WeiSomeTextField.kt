@@ -129,7 +129,7 @@ internal fun WeiSomeTextField(
             .then(
                 if (scrollState != null) Modifier.verticalScroll(scrollState) else Modifier,
             ),
-        textStyle = WeiSomeTypography.bodyMd.copy(color = WeiSomeColors.onSurface),
+        textStyle = WeiSomeTypography.bodyMedium.copy(color = WeiSomeColors.onSurface),
         cursorBrush = SolidColor(WeiSomeColors.primary),
         minLines = minLines,
         onTextLayout = {
@@ -141,7 +141,7 @@ internal fun WeiSomeTextField(
                 if (value.isEmpty() && placeholder != null) {
                     WeiSomeText(
                         text = placeholder,
-                        style = WeiSomeTypography.bodyMd,
+                        style = WeiSomeTypography.bodyMedium,
                         color = WeiSomeColors.onSurfaceVariant.copy(alpha = 0.6f),
                     )
                 }

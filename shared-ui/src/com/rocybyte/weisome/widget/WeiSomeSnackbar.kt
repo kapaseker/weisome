@@ -114,7 +114,7 @@ internal fun WeiSomeSnackbarHost(
         ) {
             WeiSomeText(
                 text = current.message,
-                style = WeiSomeTypography.bodyMd,
+                style = WeiSomeTypography.bodyMedium,
                 color = if (current.isError) WeiSomeColors.error else WeiSomeColors.onSurface,
             )
         }

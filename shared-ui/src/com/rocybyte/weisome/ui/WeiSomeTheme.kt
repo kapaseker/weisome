@@ -16,7 +16,7 @@ internal fun WeiSomeTheme(
     val systemDensity = LocalDensity.current
     CompositionLocalProvider(
         LocalDensity provides scaledDensity(systemDensity, textScale, uiScale),
-        LocalWeiSomeTextStyle provides WeiSomeTypography.bodyMd,
+        LocalWeiSomeTextStyle provides WeiSomeTypography.bodyMedium,
         // 全局按压反馈默认值：任何 clickable 不显式传 indication 时也能有 ripple。
         // 深色底组件（如主按钮）仍需显式传 weiSomeRipple(onPrimary) 覆盖。
         LocalIndication provides weiSomeRipple(WeiSomeColors.onSurface),

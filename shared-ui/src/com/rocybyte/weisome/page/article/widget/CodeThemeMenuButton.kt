@@ -119,7 +119,7 @@ internal fun CodeThemeMenuButton(
             Spacer(Modifier.width(WeiSomeSpacing.stackExtraSmall))
             WeiSomeText(
                 text = selectedTheme.displayName(),
-                style = WeiSomeTypography.labelSm,
+                style = WeiSomeTypography.labelSmall,
                 color = WeiSomeColors.onSurface,
             )
             Spacer(Modifier.width(WeiSomeSpacing.stackExtraSmall))
@@ -186,7 +186,7 @@ private fun CodeThemeOption(
     ) {
         WeiSomeText(
             text = label,
-            style = WeiSomeTypography.labelSm,
+            style = WeiSomeTypography.labelSmall,
             color = if (selected) WeiSomeColors.primary else WeiSomeColors.onSurface,
         )
         Spacer(Modifier.weight(1f))

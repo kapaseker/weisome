@@ -46,7 +46,7 @@ internal object WeiSomeTypography {
         letterSpacing = (-0.02).em,
     )
 
-    val bodyLg = TextStyle(
+    val bodyLarge = TextStyle(
         fontFamily = fontFamily,
         fontSize = 18.sp,
         fontWeight = FontWeight.Normal,
@@ -54,7 +54,7 @@ internal object WeiSomeTypography {
         letterSpacing = (-0.01).em,
     )
 
-    val bodyMd = TextStyle(
+    val bodyMedium = TextStyle(
         fontFamily = fontFamily,
         fontSize = 16.sp,
         fontWeight = FontWeight.Normal,
@@ -62,7 +62,7 @@ internal object WeiSomeTypography {
         letterSpacing = (-0.01).em,
     )
 
-    val labelSm = TextStyle(
+    val labelSmall = TextStyle(
         fontFamily = fontFamily,
         fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold,
@@ -72,4 +72,4 @@ internal object WeiSomeTypography {
 }
 
 /** Ambient text style inherited by WeiSomeText when no explicit style is given. */
-internal val LocalWeiSomeTextStyle = staticCompositionLocalOf { WeiSomeTypography.bodyMd }
+internal val LocalWeiSomeTextStyle = staticCompositionLocalOf { WeiSomeTypography.bodyMedium }

@@ -130,7 +130,7 @@ private fun TitleTextField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
-        textStyle = WeiSomeTypography.bodyMd.copy(color = WeiSomeColors.onSurface),
+        textStyle = WeiSomeTypography.bodyMedium.copy(color = WeiSomeColors.onSurface),
         cursorBrush = SolidColor(WeiSomeColors.primary),
         modifier = modifier
             .onFocusChanged { focused = it.isFocused }
@@ -149,7 +149,7 @@ private fun TitleTextField(
                 if (value.text.isEmpty()) {
                     WeiSomeText(
                         text = placeholder,
-                        style = WeiSomeTypography.bodyMd,
+                        style = WeiSomeTypography.bodyMedium,
                         color = WeiSomeColors.onSurfaceVariant.copy(alpha = 0.6f),
                     )
                 }

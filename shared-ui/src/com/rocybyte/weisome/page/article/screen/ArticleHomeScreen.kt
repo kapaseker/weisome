@@ -111,7 +111,7 @@ internal fun ArticleHomeScreen(
                 ) {
                     WeiSomeText(
                         text = stringResource(Res.string.article_empty_hint),
-                        style = WeiSomeTypography.bodyLg,
+                        style = WeiSomeTypography.bodyLarge,
                         color = WeiSomeColors.onSurfaceVariant,
                     )
                 }
@@ -253,12 +253,12 @@ private fun ArticleCard(
             Row(horizontalArrangement = Arrangement.spacedBy(WeiSomeSpacing.stackMedium)) {
                 WeiSomeText(
                     text = stringResource(Res.string.article_created_at, formatTimestamp(article.createdAt)),
-                    style = WeiSomeTypography.labelSm,
+                    style = WeiSomeTypography.labelSmall,
                     color = WeiSomeColors.onSurfaceVariant,
                 )
                 WeiSomeText(
                     text = stringResource(Res.string.article_updated_at, formatTimestamp(article.updatedAt)),
-                    style = WeiSomeTypography.labelSm,
+                    style = WeiSomeTypography.labelSmall,
                     color = WeiSomeColors.onSurfaceVariant,
                 )
             }
