@@ -18,8 +18,8 @@ private val githubLightCode = CodeThemes.forId(CodeThemeId.GITHUB_LIGHT)
 
 class CodeBlockTest {
     @Test
-    /** Verifies fenced code is escaped inside the scrollable pre and code hierarchy. */
-    fun `renders escaped fenced code in the scrollable structure`() {
+    /** Verifies fenced code is escaped inside the pre and code hierarchy with entity-encoded whitespace. */
+    fun `renders escaped fenced code in the pre structure`() {
         val html = renderCodeBlock(codeBlock("val tag = \"<code>\""), HydrogenExportStyles, githubLightCode)
 
         assertTrue(html.startsWith("<pre style=\"font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; line-height: 1.75;"))
@@ -27,7 +27,8 @@ class CodeBlockTest {
             html.contains(
                 "<code style=\"display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
                     "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-                    "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">val&nbsp;tag&nbsp;=&nbsp;&quot;&lt;code&gt;&quot;</code>",
+                    "white-space: nowrap; font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">" +
+                    "val&nbsp;tag&nbsp;=&nbsp;&quot;&lt;code&gt;&quot;</code>",
             ),
         )
         assertTrue(html.endsWith("</code></pre>"))
@@ -37,16 +38,13 @@ class CodeBlockTest {
     /** Verifies exported fenced code preserves authored lines and scrolls instead of wrapping. */
     fun `exports fenced code without automatic wrapping`() {
         val html = renderCodeBlock(codeBlock("val longValue = someVeryLongExpression()"), HydrogenExportStyles, githubLightCode)
-        val codeStyle = html.substringAfter("<code style=\"").substringBefore("\"")
-        val preStyle = html.substringAfter("<pre style=\"").substringBefore("\"")
 
-        assertTrue(preStyle.contains("white-space: pre;"))
-        assertTrue(codeStyle.contains("overflow-x: auto;"))
-        assertTrue(codeStyle.contains("display: block;"))
-        assertTrue(codeStyle.contains("word-break: normal;"))
+        assertTrue(html.contains("white-space: pre;"))
+        assertTrue(html.contains("overflow-x: auto;"))
+        assertTrue(html.contains("display: block;"))
+        assertTrue(html.contains("word-break: normal;"))
         assertFalse(html.contains("white-space: pre-wrap;"))
         assertFalse(html.contains("word-break: break-word;"))
-        assertFalse(preStyle.contains("overflow-x"))
     }
 
     @Test
@@ -145,9 +143,17 @@ class CodeBlockTest {
         )
 
         assertTrue(html.contains("<span style=\"color: #cf222e;\">enum</span>&nbsp;Result&lt;T,&nbsp;E&gt;&nbsp;{"))
-        assertTrue(html.contains("{<br>&nbsp;&nbsp;&nbsp;&nbsp;Ok(T),<br>}"))
+        assertTrue(html.contains("{<br/>&nbsp;&nbsp;&nbsp;&nbsp;Ok(T),<br/>}"))
         assertFalse(html.contains("</span> <"))
-        assertFalse(html.contains("<br> "))
+        assertFalse(html.contains("<br/> "))
+    }
+
+    @Test
+    /** Verifies empty code lines render as a br separator between code text. */
+    fun `renders empty code lines as br separators`() {
+        val html = renderCodeBlock(codeBlock("first\n\nlast"), HydrogenExportStyles, githubLightCode)
+
+        assertTrue(html.contains("first<br/><br/>last"))
     }
 
     /** Builds an unhighlighted Kotlin code block for renderer tests. */

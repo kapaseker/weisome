@@ -212,7 +212,7 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 0 4px;"
 
     /** Emphasis rendered as dot text-emphasis per hydrogen; italic kept from the default em semantics. */
@@ -329,7 +329,7 @@ internal object GitHubExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 0.85em; padding: 16px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 6px;"
 
     override val emCss = "font-style: italic;"
@@ -433,7 +433,7 @@ internal object SmartBlueExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic;"
@@ -560,7 +560,7 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; font-weight: 400; " +
             "font-size: 14.08px; line-height: 1.68; padding: 20px 19.2px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()};"
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic; color: #555568;"
     override val boldColor = "#17172a"
@@ -754,7 +754,7 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic; color: #c28a00;"
@@ -901,7 +901,7 @@ internal object YuExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()}; border-radius: 8px;"
 
     override val emCss = "font-style: italic;"
@@ -1027,7 +1027,7 @@ internal object CyanosisExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 16px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic; color: #4fc3f7;"
@@ -1170,7 +1170,7 @@ internal object CyanExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: normal; color: #4dd0e1; font-weight: bold;"
@@ -1282,7 +1282,7 @@ internal object VGreenExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-            "white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic;"
@@ -1450,7 +1450,7 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
     override fun codeElementCss(codeTheme: CodeTheme) =
         "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
             "font-weight: 400; font-size: 14px; line-height: 22px; padding: 16px 20px; margin: 0; " +
-            "word-break: normal; white-space: pre; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "word-break: normal; white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
             "background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     override val emCss = "font-style: italic;"

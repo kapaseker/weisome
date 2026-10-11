@@ -28,7 +28,7 @@ class ExportedCodeTextTest {
         val html = MarkdownToWechatHtml.render(enriched, MarkdownThemeId.CLAUDETTE, CodeThemeId.GITHUB_LIGHT)
         val inner = html.substringAfter("<code style=\"").substringAfter("\">").substringBefore("</code>")
         return inner
-            .replace("<br>", "\n")
+            .replace("<br/>", "\n")
             .replace(Regex("<[^>]+>"), "")
             .replace("&nbsp;", " ")
             .replace("&quot;", "\"")

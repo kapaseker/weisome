@@ -35,7 +35,7 @@
 
 - Exported HTML is consumed by paste targets — currently the WeChat MP (公众号) editor — not rendered directly in a browser; paste targets re-sanitize pasted HTML instead of rendering it as-is. Design each export feature against its target editor's constraints, not browser rendering. When adding a new export target (another blog platform), treat its sanitization rules as a separate contract to investigate, not a copy of WeChat's.
 - Only inline styles survive pasting. Do not rely on `<style>` blocks, classes, pseudo-elements, or combinator-dependent rules; express all styling with per-element inline CSS (see `WechatArticleStyles.kt`).
-- Do not rely on literal whitespace or `white-space` CSS in exported content: the editor drops whitespace-only text nodes between tags and collapses indentation. Whitespace-significant text (code blocks) must entity-encode whitespace during serialization (`\n` -> `<br>`, space -> `&nbsp;`, tab -> 4x`&nbsp;`).
+- Code blocks must follow the doocs/md serialization proven to survive the WeChat editor: keep the `<pre>` frame, encode spaces as `&nbsp;`, newlines as `<br/>`, and tabs as four `&nbsp;`. The `pre` tag triggers the editor's code-block handling (preserving `white-space: pre` and monospace font), while entity-encoded whitespace prevents the paste sanitizer from dropping edge whitespace. Do not switch to `<section>` per line — that loses the code-block treatment and causes spaces to collapse or render in the wrong font.
 - The renderer produces byte-exact text by construction. When the paste target shows lost or mangled characters, first decode and inspect the exported HTML string before suspecting the renderer; pasted-output defects usually come from the editor's sanitization.
 
 ## Verification
