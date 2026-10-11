@@ -31,6 +31,13 @@
 - Keep UI state focused and cohesive. Do not put unrelated state into one large `UiState` class. When fields change for different reasons, split state by responsibility, feature area, or update flow to avoid unnecessary full-state copies and broad recomposition.
 - Any UI/visual change (colors, typography, spacing, shapes, components) must first read `DESIGN.md` at the repo root and follow its tokens and component specs.
 
+## WeChat Article Export
+
+- Exported HTML is consumed by paste targets — currently the WeChat MP (公众号) editor — not rendered directly in a browser; paste targets re-sanitize pasted HTML instead of rendering it as-is. Design each export feature against its target editor's constraints, not browser rendering. When adding a new export target (another blog platform), treat its sanitization rules as a separate contract to investigate, not a copy of WeChat's.
+- Only inline styles survive pasting. Do not rely on `<style>` blocks, classes, pseudo-elements, or combinator-dependent rules; express all styling with per-element inline CSS (see `WechatArticleStyles.kt`).
+- Do not rely on literal whitespace or `white-space` CSS in exported content: the editor drops whitespace-only text nodes between tags and collapses indentation. Whitespace-significant text (code blocks) must entity-encode whitespace during serialization (`\n` -> `<br>`, space -> `&nbsp;`, tab -> 4x`&nbsp;`).
+- The renderer produces byte-exact text by construction. When the paste target shows lost or mangled characters, first decode and inspect the exported HTML string before suspecting the renderer; pasted-output defects usually come from the editor's sanitization.
+
 ## Verification
 
 - After changing code, run the platform-appropriate check command:

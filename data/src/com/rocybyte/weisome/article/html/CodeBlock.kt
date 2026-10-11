@@ -12,14 +12,24 @@ internal fun renderCodeBlock(block: MarkdownBlock.CodeBlock, styles: MarkdownExp
         block.highlights.forEach { span ->
             val start = span.start.coerceIn(cursor, block.code.length)
             val endExclusive = span.endExclusive.coerceIn(start, block.code.length)
-            append(escapeHtml(block.code.substring(cursor, start)))
+            append(escapeCodeText(block.code.substring(cursor, start)))
             append("<span style=\"color: ${span.foregroundRgb.toCssColor()};\">")
-            append(escapeHtml(block.code.substring(start, endExclusive)))
+            append(escapeCodeText(block.code.substring(start, endExclusive)))
             append("</span>")
             cursor = endExclusive
         }
-        append(escapeHtml(block.code.substring(cursor)))
+        append(escapeCodeText(block.code.substring(cursor)))
     }
     return "<pre style=\"${styles.codeBlockFrameCss(codeTheme)}\">${styles.codeBlockHeaderHtml(block.language)}" +
         "<code style=\"${styles.codeElementCss(codeTheme)}\">$code</code></pre>"
 }
+
+/**
+ * Escapes code text and encodes its whitespace with entities: the WeChat editor's paste
+ * sanitization drops whitespace-only text nodes between tags and collapses leading indentation
+ * when `white-space: pre` is stripped, so plain spaces and newlines cannot survive.
+ */
+private fun escapeCodeText(value: String): String = escapeHtml(value)
+    .replace("\n", "<br>")
+    .replace(" ", "&nbsp;")
+    .replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;")

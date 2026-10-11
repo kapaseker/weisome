@@ -34,7 +34,7 @@ class MarkdownToWechatHtmlTest {
         assertTrue(paragraphIndex > headingIndex)
         assertTrue(listIndex > paragraphIndex)
         assertTrue(codeIndex > listIndex)
-        assertTrue(html.contains("val tag = &quot;&lt;code&gt;&quot;"))
+        assertTrue(html.contains("val&nbsp;tag&nbsp;=&nbsp;&quot;&lt;code&gt;&quot;"))
     }
 
     @Test

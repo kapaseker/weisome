@@ -27,7 +27,7 @@ class CodeBlockTest {
             html.contains(
                 "<code style=\"display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
                     "font-weight: 400; font-size: 12px; padding: 15px 12px; margin: 0; word-break: normal; " +
-                    "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">val tag = &quot;&lt;code&gt;&quot;</code>",
+                    "white-space: pre; color: #1f2328; background: #f6f8fa; border-radius: 0 4px;\">val&nbsp;tag&nbsp;=&nbsp;&quot;&lt;code&gt;&quot;</code>",
             ),
         )
         assertTrue(html.endsWith("</code></pre>"))
@@ -62,7 +62,7 @@ class CodeBlockTest {
             githubLightCode,
         )
 
-        assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span> main()"))
+        assertEquals(true, html.contains("<span style=\"color: #cf222e;\">fun</span>&nbsp;main()"))
     }
 
     @Test
@@ -129,6 +129,25 @@ class CodeBlockTest {
         assertTrue(html.contains("font-size: 14.4px;"))
         assertTrue(html.contains("color: #008500;"))
         assertTrue(html.contains("background: #000000;"))
+    }
+
+    @Test
+    /** Verifies code whitespace is entity-encoded so the WeChat editor paste cannot drop or collapse it. */
+    fun `encodes code whitespace as entities that survive paste sanitization`() {
+        val html = renderCodeBlock(
+            MarkdownBlock.CodeBlock(
+                language = CodeLanguage.Rust,
+                code = "enum Result<T, E> {\n    Ok(T),\n}",
+                highlights = listOf(CodeHighlightSpan(0, 4, 0xCF222E)),
+            ),
+            HydrogenExportStyles,
+            githubLightCode,
+        )
+
+        assertTrue(html.contains("<span style=\"color: #cf222e;\">enum</span>&nbsp;Result&lt;T,&nbsp;E&gt;&nbsp;{"))
+        assertTrue(html.contains("{<br>&nbsp;&nbsp;&nbsp;&nbsp;Ok(T),<br>}"))
+        assertFalse(html.contains("</span> <"))
+        assertFalse(html.contains("<br> "))
     }
 
     /** Builds an unhighlighted Kotlin code block for renderer tests. */
