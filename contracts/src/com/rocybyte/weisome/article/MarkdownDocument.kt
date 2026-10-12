@@ -98,6 +98,7 @@ enum class MarkdownThemeId {
     CYAN,
     V_GREEN,
     CLAUDETTE,
+    AYU,
 }
 
 /** Selectable code-block highlight themes; GITHUB_LIGHT is the default. */

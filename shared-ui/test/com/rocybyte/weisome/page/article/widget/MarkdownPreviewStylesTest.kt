@@ -138,4 +138,34 @@ class MarkdownPreviewStylesTest {
         assertEquals(false, styles.ruleIsGradient)
         assertEquals(3.dp, styles.inlineCodeCornerRadius)
     }
+
+    @Test
+    /** Verifies the Ayu selector resolves its core typography and color tokens. */
+    fun `selects ayu preview styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.AYU)
+
+        assertEquals(Color(0xFF6B6884), styles.bodyColor)
+        assertEquals(Color(0xFF4D5255), styles.headingColor)
+        assertEquals(Color(0xFFE66700), styles.linkColor)
+        assertEquals(16.sp, styles.bodyFontSize)
+        assertEquals(25.6.sp, styles.bodyLineHeight)
+        assertEquals(24.sp, styles.headingFontSize(1))
+        assertEquals(FontWeight.Medium, styles.headingFontWeight(1))
+    }
+
+    @Test
+    /** Verifies the Ayu preview keeps the Bear quote bar, code frame, and table treatment. */
+    fun `maps ayu structural styles`() {
+        val styles = previewStylesFor(MarkdownThemeId.AYU)
+
+        assertEquals(Color(0xFFFF6A00), styles.quoteBorder)
+        assertEquals(3.2.dp, styles.quoteBorderWidth)
+        assertEquals(Color(0xFFBFC1C4), styles.inlineCodeBorderColor)
+        assertEquals(4.8.dp, styles.inlineCodeCornerRadius)
+        assertEquals(Color(0xFFBFC1C4), styles.codeBlockBorderColor)
+        assertEquals(1.dp, styles.codeBlockBorderWidth)
+        assertEquals(Color(0xFF272D38), styles.tableHeaderColor)
+        assertEquals(FontWeight.Normal, styles.tableHeaderFontWeight)
+        assertEquals(Color(0xFFBFC1C4), styles.ruleSolidColor)
+    }
 }
