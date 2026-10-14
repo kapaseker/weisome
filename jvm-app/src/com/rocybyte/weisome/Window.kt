@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.app_name
+import com.rocybyte.weisome.generated.resources.ic_app
 import com.rocybyte.weisome.ui.WeiSomeApp
 import com.rocybyte.weisome.window.SavedWindowState
 import com.rocybyte.weisome.window.biz.WindowMode
@@ -32,6 +33,7 @@ import com.rocybyte.weisome.window.biz.WindowStateViewModel
 import java.awt.Dimension
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -107,6 +109,7 @@ private fun ApplicationScope.WeiSomeWindow(
             }
         },
         state = windowState,
+        icon = painterResource(Res.drawable.ic_app),
         title = stringResource(Res.string.app_name),
     ) {
         DisposableEffect(window) {
