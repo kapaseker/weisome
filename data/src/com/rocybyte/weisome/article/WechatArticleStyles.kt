@@ -827,11 +827,13 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
  * Yu export styles adapted from juejin-markdown-theme-yu at commit 1e3096f.
  * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
  * body wrapper. The strong `·` dashes and the blockquote/table hover styles are pseudo-element
- * or interactive effects the inline-CSS model cannot express. The h2 font-size falls back to
- * the browser default (1.5em) the stylesheet leaves in place. Deliberate deviations from the
- * upstream stylesheet: h1 is sized 28px, the smallest font is clamped to 14px (h6, inline code,
- * code blocks, and table cells), emoji prefixes match their heading size, and all line-heights
- * are absolute even-valued px instead of unitless/em-relative values.
+ * or interactive effects the inline-CSS model cannot express. Deliberate deviations from the
+ * upstream stylesheet: h1 is sized 28px, h2 24px (the stylesheet leaves h2 to the browser's
+ * 1.5em default, 22.5px), the smallest font is clamped to 14px (h6, inline code,
+ * code blocks, and table cells), emoji prefixes match their heading size, all line-heights
+ * are absolute even-valued px instead of unitless/em-relative values, and heading margins follow
+ * the heading size (the top margin equals the size, the bottom margin is half of it rounded up to
+ * an even px: 28/14, 24/12, 18/10, 16/8, 14/8, 14/8), with h2 keeping its 24px padding above the border.
  */
 internal object YuExportStyles : MarkdownExportStyles() {
     override val fontColor = "#5f6368"
@@ -846,13 +848,12 @@ internal object YuExportStyles : MarkdownExportStyles() {
 
     /** Returns the yu typography for a heading level from 1 to 6. */
     private fun heading(level: Int): HeadingSpec = when (level) {
-        1 -> HeadingSpec("28px", "35px 0 5px", "5px", "42px")
-        // The stylesheet defines no h2 font-size; the browser's 1.5em default at body size applies.
-        2 -> HeadingSpec("22.5px", "35px 0 10px", "24px", "34px", borderBottom = "border-bottom: 1px solid #ececec;")
-        3 -> HeadingSpec("18px", "35px 0 10px", "0", "28px")
-        4 -> HeadingSpec("16px", "35px 0 10px", "5px", "24px")
-        5 -> HeadingSpec("14px", "35px 0 10px", "5px", "22px")
-        else -> HeadingSpec("14px", "5px 0 10px", "5px", "22px")
+        1 -> HeadingSpec("28px", "28px 0 14px", "0", "42px")
+        2 -> HeadingSpec("24px", "24px 0 12px", "24px", "36px", borderBottom = "border-bottom: 1px solid #ececec;")
+        3 -> HeadingSpec("18px", "18px 0 10px", "0", "28px")
+        4 -> HeadingSpec("16px", "16px 0 8px", "0", "24px")
+        5 -> HeadingSpec("14px", "14px 0 8px", "0", "22px")
+        else -> HeadingSpec("14px", "14px 0 8px", "0", "22px")
     }
 
     /** Returns the animal emoji, its left offset, and its top offset for a heading level. */
@@ -869,7 +870,7 @@ internal object YuExportStyles : MarkdownExportStyles() {
     /** Returns the emoji glyph size for a heading level from 1 to 6, matching the heading size. */
     private fun prefixSize(level: Int): Float = when (level) {
         1 -> 28f
-        2 -> 22.5f
+        2 -> 24f
         3 -> 18f
         4 -> 16f
         5 -> 14f

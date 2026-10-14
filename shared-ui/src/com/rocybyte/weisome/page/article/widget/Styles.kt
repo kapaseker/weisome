@@ -807,10 +807,13 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
  * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
  * body wrapper. The strong `·` dashes have no preview equivalent. Headings keep the body color;
  * list markers use the widget's default tone although the stylesheet tints them (#ee69a9); the
- * export carries the tint. The h2 font-size falls back to the browser default (1.5em).
- * Deliberate deviations from the upstream stylesheet: h1 is sized 28px, the smallest font is
+ * export carries the tint.
+ * Deliberate deviations from the upstream stylesheet: h1 is sized 28px, h2 24px (the stylesheet
+ * leaves h2 to the browser's 1.5em default, 22.5px), the smallest font is
  * clamped to 14px (h6, inline code, code blocks, and table cells), emoji prefixes match their
- * heading size, and heading line-heights are absolute even-valued sp.
+ * heading size, heading line-heights are absolute even-valued sp, and heading margins follow the
+ * heading size (the top margin equals the size, the bottom margin is half of it rounded up to an
+ * even px: 28/14, 24/12, 18/10, 16/8, 14/8, 14/8), with h2 holding its 24px padding as the border gap.
  */
 internal val YuPreviewStyles = MarkdownPreviewStyles(
     bodyColor = Color(0xFF5F6368),
@@ -882,12 +885,12 @@ internal val YuPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 28,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        HeadingSpec(28f, FontWeight.Bold, 35, 5, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 42.sp, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 28f, prefixEmojiLeft = 0),
-        HeadingSpec(22.5f, FontWeight.Bold, 35, 34, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 34.sp, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 22.5f, prefixEmojiLeft = 8, borderBottomGap = 24.dp),
-        HeadingSpec(18f, FontWeight.Bold, 35, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 28.sp, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
-        HeadingSpec(16f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 24.sp, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 16f, prefixEmojiLeft = 8),
-        HeadingSpec(14f, FontWeight.Bold, 35, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 14f, prefixEmojiLeft = 9),
-        HeadingSpec(14f, FontWeight.Bold, 5, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83D\uDC27", prefixEmojiSize = 14f, prefixEmojiLeft = 10),
+        HeadingSpec(28f, FontWeight.Bold, 28, 14, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 42.sp, prefixEmoji = "\uD83E\uDD84", prefixEmojiSize = 28f, prefixEmojiLeft = 0),
+        HeadingSpec(24f, FontWeight.Bold, 24, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 36.sp, prefixEmoji = "\uD83D\uDC33", prefixEmojiSize = 24f, prefixEmojiLeft = 8, borderBottomGap = 24.dp),
+        HeadingSpec(18f, FontWeight.Bold, 18, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 28.sp, prefixEmoji = "\uD83D\uDC04", prefixEmojiSize = 18f, prefixEmojiLeft = 8),
+        HeadingSpec(16f, FontWeight.Bold, 16, 8, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 24.sp, prefixEmoji = "\uD83E\uDDA5", prefixEmojiSize = 16f, prefixEmojiLeft = 8),
+        HeadingSpec(14f, FontWeight.Bold, 14, 8, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83E\uDDA9", prefixEmojiSize = 14f, prefixEmojiLeft = 9),
+        HeadingSpec(14f, FontWeight.Bold, 14, 8, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f, lineHeight = 22.sp, prefixEmoji = "\uD83D\uDC27", prefixEmojiSize = 14f, prefixEmojiLeft = 10),
     ),
     quoteBorderWidth = 4.dp,
     quoteMarkColor = Color(0xCCFD79A8),
