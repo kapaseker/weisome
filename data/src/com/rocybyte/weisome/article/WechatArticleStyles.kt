@@ -16,7 +16,8 @@ import kotlin.math.roundToInt
  * docs/theme/cyanosis/cyanosis.scss at linxsbox/juejin-markdown-theme-cyanosis@6b814ea, and CYAN
  * follows docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f,
  * and V_GREEN follows docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b,
- * and CLAUDETTE follows docs/theme/claudette/claudette.css at CookPiu/typora-theme-claudette@0a6c75a (light variant).
+ * and CLAUDETTE follows docs/theme/claudette/claudette.css at CookPiu/typora-theme-claudette@0a6c75a (light variant),
+ * and AYU follows docs/theme/ayu at imageslr/mweb-themes (mweb-ayu.scss, ayu light variant).
  * Keep the shared-ui Compose preview (MarkdownPreviewStyles) aligned with these values.
  */
 internal abstract class MarkdownExportStyles {
@@ -146,6 +147,7 @@ internal fun exportStylesFor(theme: MarkdownThemeId): MarkdownExportStyles = whe
     MarkdownThemeId.CYAN -> CyanExportStyles
     MarkdownThemeId.V_GREEN -> VGreenExportStyles
     MarkdownThemeId.CLAUDETTE -> ClaudetteExportStyles
+    MarkdownThemeId.AYU -> AyuExportStyles
 }
 
 /** Formats a packed RGB value as a six-digit CSS hexadecimal color. */
@@ -1518,5 +1520,85 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
     override val h1HasPrefix = false
     override val linkHasIcon = true
     override val quoteHasMarks = true
+    override val firstLetterCapitalized = false
+}
+
+/**
+ * ayu export styles; values mirror docs/theme/ayu (imageslr/mweb-themes mweb-ayu.scss, ayu light variant).
+ * Bear's ::before accent list markers use standard markers instead (inline CSS cannot express
+ * pseudo-elements), and code-block colors come from the selected code theme.
+ */
+internal object AyuExportStyles : MarkdownExportStyles() {
+    override val fontColor = "#6b6884"
+
+    /** Returns the Bear heading size for a level from 1 to 6. */
+    private fun headingSize(level: Int): String = when (level) {
+        1 -> "1.5em"
+        2 -> "1.3em"
+        3 -> "1.1em"
+        else -> "1em"
+    }
+
+    override fun headingCss(level: Int): String =
+        "font-size: ${headingSize(level)}; font-weight: 500; line-height: 1.5em; " +
+            "margin: 1.5em 0 0.75em; color: #4d5255; font-family: AvenirNext-Medium;"
+
+    override val paragraphCss =
+        "font-size: 16px; line-height: 1.6em; margin: 0.75em 0 0.45em; color: $fontColor;"
+    override val quoteParagraphCss = paragraphCss
+
+    override val listCss = "padding-left: 1.3em; margin: 0.75em 0 0.45em;"
+    override val listItemCss = "font-size: 16px; line-height: 1.6em; margin-top: 0.25em; color: $fontColor;"
+    override val orderedListItemCss = listItemCss
+    override val nestedListCss = "padding-left: 2em; margin: 0;"
+    override val taskItemPrefixCss = "list-style: none; "
+
+    override val inlineCodeCss =
+        "border: solid 1px #bfc1c4; border-radius: 0.3em; padding: 0.2em 0.5em; font-size: 0.9em; " +
+            "color: #272d38; background-color: #ffffff; font-family: $monospaceFont; font-style: normal; " +
+            "white-space: break-spaces; word-break: break-word; overflow-wrap: anywhere;"
+
+    override val codeBlockCss =
+        "font-family: $monospaceFont; margin: 0.75em 0 0.45em; white-space: pre; overflow: hidden;"
+
+    /** The frame carries the border and paints the code background so no transparent edge leaks. */
+    override fun codeBlockFrameCss(codeTheme: CodeTheme) =
+        "font-family: $monospaceFont; margin: 0.75em 0 0.45em; border: 1px solid #bfc1c4; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()}; white-space: pre; overflow: hidden;"
+
+    override fun codeElementCss(codeTheme: CodeTheme) =
+        "display: block; min-width: 100%; box-sizing: border-box; overflow-x: auto; " +
+            "font-size: 0.9em; line-height: 24px; padding: 0.7em 1em; word-break: normal; " +
+            "white-space: nowrap; font-family: $monospaceFont; color: ${codeTheme.codeRgb.toCssColor()}; " +
+            "background: ${codeTheme.backgroundRgb.toCssColor()};"
+
+    override val emCss = "font-style: italic;"
+    override val strikethroughCss = "color: #8d8f95;"
+    override val linkCss = "color: #e66700; text-decoration: none;"
+    override val imgCss = "max-width: 100%; height: auto;"
+
+    override val blockquoteCss =
+        "display: block; padding-left: 0.8em; border-left: 0.2em solid #ff6a00; margin: 0.75em 0 0.45em;"
+
+    override val hrCss =
+        "height: 1px; border: 0; background-color: #bfc1c4; margin: 0.75em auto;"
+
+    override val tableCss =
+        "border-collapse: collapse; margin: 0.75em 0 0.45em; font-size: 0.9em; color: #272d38; " +
+            "background-color: #ffffff; width: auto; max-width: 100%; overflow: auto;"
+
+    override val thCss =
+        "padding: 0.7em 1em; border: 1px solid #bfc1c4; text-align: left; font-weight: normal; " +
+            "font-size: 0.9em; line-height: 1.6em; color: #272d38;"
+
+    override val tdCss =
+        "padding: 0.7em 1em; border: 1px solid #bfc1c4; text-align: left; " +
+            "font-size: 0.9em; line-height: 1.6em; color: #272d38;"
+
+    override val stripedTdCss = tdCss
+
+    override val h1HasPrefix = false
+    override val linkHasIcon = false
+    override val quoteHasMarks = false
     override val firstLetterCapitalized = false
 }

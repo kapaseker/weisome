@@ -60,6 +60,7 @@ internal data class HeadingSpec(
  * CYAN mirrors docs/theme/cyan/channing-cyan.scss at ChanningHan/juejin-markdown-theme-channing-cyan@c843c2f.
  * V_GREEN mirrors docs/theme/v-green/v-green.scss at DawnLck/juejin-markdown-theme-v-green@015f88b.
  * CLAUDETTE mirrors docs/theme/claudette/claudette.css at CookPiu/typora-theme-claudette@0a6c75a (light variant).
+ * AYU mirrors docs/theme/ayu at imageslr/mweb-themes (mweb-ayu.scss, ayu light variant).
  * Keep the data module HTML export (MarkdownExportStyles) aligned with these values.
  */
 internal data class MarkdownPreviewStyles(
@@ -234,6 +235,7 @@ internal fun previewStylesFor(theme: MarkdownThemeId): MarkdownPreviewStyles = w
     MarkdownThemeId.CYAN -> CyanPreviewStyles
     MarkdownThemeId.V_GREEN -> VGreenPreviewStyles
     MarkdownThemeId.CLAUDETTE -> ClaudettePreviewStyles
+    MarkdownThemeId.AYU -> AyuPreviewStyles
 }
 
 /** Provides the active Markdown preview styles to the block widgets. */
@@ -1311,6 +1313,92 @@ internal val ClaudettePreviewStyles = MarkdownPreviewStyles(
             lineHeightMultiplier = 1.4f, lineHeight = 24.sp,
             uppercase = true, borderLeftTextGap = 6.dp,
         ),
+    ),
+)
+
+/**
+ * ayu preview styles; values mirror docs/theme/ayu (imageslr/mweb-themes mweb-ayu.scss, ayu light
+ * variant). Bear's ::before accent list markers render as standard markers, and code-block colors
+ * keep coming from the selected code theme; the frame carries the 1px gray border.
+ */
+internal val AyuPreviewStyles = MarkdownPreviewStyles(
+    bodyColor = Color(0xFF6B6884),
+    mutedColor = Color(0xFF8D8F95),
+    headingColor = Color(0xFF4D5255),
+    themeColor = Color(0xFFFF6A00),
+    linkColor = Color(0xFFE66700),
+    boldColor = null,
+    linkUnderlined = false,
+    linkHasIcon = false,
+    firstLetterCapitalized = false,
+    h1HasPrefix = false,
+    h1Centered = false,
+    headingBorderColor = Color(0xFFBFC1C4),
+    headingBottomBorderColor = Color(0xFFBFC1C4),
+    bodyFontSize = 16.sp,
+    bodyLineHeight = 25.6.sp,
+    paragraphTopMargin = 12,
+    paragraphBottomMargin = 7,
+    quoteParagraphTopMargin = 12,
+    quoteParagraphBottomMargin = 7,
+    quoteColor = Color(0xFF6B6884),
+    // Only used as the inline-image placeholder fill; blockquotes render without a background.
+    quoteBackground = Color(0x1AFF6A00),
+    quoteBorder = Color(0xFFFF6A00),
+    quoteHasBackground = false,
+    quoteHasMarks = false,
+    quoteHasHover = false,
+    quotePaddingStart = 13,
+    quotePaddingEnd = 0,
+    quotePaddingTop = 0,
+    quotePaddingBottom = 0,
+    quoteVerticalMargin = 12,
+    quoteNestedVerticalMargin = 12,
+    quoteBorderWidth = 3.2.dp,
+    inlineCodeColor = Color(0xFF272D38),
+    inlineCodeBackground = Color(0xFFFFFFFF),
+    inlineCodeFontScale = 0.9f,
+    inlineCodeCornerRadius = 4.8.dp,
+    inlineCodeBorderColor = Color(0xFFBFC1C4),
+    codeBlockTopMargin = 12,
+    codeBlockBottomMargin = 7,
+    codeBlockCornerShape = androidx.compose.foundation.shape.RoundedCornerShape(0.dp),
+    codeBlockPaddingVertical = 11,
+    codeBlockPaddingHorizontal = 16,
+    codeBlockFontSize = 14.4.sp,
+    codeBlockLineHeight = 24.sp,
+    codeBlockBorderColor = Color(0xFFBFC1C4),
+    codeBlockBorderWidth = 1.dp,
+    strikethroughColor = Color(0xFF8D8F95),
+    tableBorderColor = Color(0xFFBFC1C4),
+    tableBorderWidth = 1.dp,
+    tableHeaderBackground = Color.Transparent,
+    tableHeaderColor = Color(0xFF272D38),
+    tableHeaderFontWeight = FontWeight.Normal,
+    tableStripeBackground = Color.Transparent,
+    tableCellPaddingHorizontal = 16,
+    tableCellPaddingVertical = 11,
+    tableFontSize = 14.4.sp,
+    tableLineHeight = 25.6.sp,
+    ruleIsGradient = false,
+    ruleGradient = emptyList(),
+    ruleSolidColor = Color(0xFFBFC1C4),
+    ruleHeight = 1.dp,
+    ruleVerticalMargin = 12,
+    listPaddingStart = 21,
+    listTopMargin = 12,
+    listBottomMargin = 7,
+    listItemTopMargin = 4,
+    orderedItemExtraPaddingStart = 0,
+    nestedListPaddingStart = 32,
+    nestedListTopMargin = 0,
+    headingSpecs = listOf(
+        HeadingSpec(24f, FontWeight.Medium, 36, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(20.8f, FontWeight.Medium, 31, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(17.6f, FontWeight.Medium, 26, 13, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Medium, 24, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Medium, 24, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(16f, FontWeight.Medium, 24, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
     ),
 )
 

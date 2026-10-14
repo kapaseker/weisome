@@ -35,6 +35,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.rocybyte.weisome.article.MarkdownThemeId
 import com.rocybyte.weisome.generated.resources.Res
 import com.rocybyte.weisome.generated.resources.ic_palette
+import com.rocybyte.weisome.generated.resources.markdown_theme_ayu
 import com.rocybyte.weisome.generated.resources.markdown_theme_chocolate
 import com.rocybyte.weisome.generated.resources.markdown_theme_claudette
 import com.rocybyte.weisome.generated.resources.markdown_theme_cyan
@@ -71,6 +72,7 @@ private val MarkdownThemeEntries = listOf(
     MarkdownThemeId.CYAN,
     MarkdownThemeId.V_GREEN,
     MarkdownThemeId.CLAUDETTE,
+    MarkdownThemeId.AYU,
 )
 
 /** Returns the localized display name for a Markdown theme id. */
@@ -87,6 +89,7 @@ private fun MarkdownThemeId.displayName(): String = when (this) {
     MarkdownThemeId.CYAN -> stringResource(Res.string.markdown_theme_cyan)
     MarkdownThemeId.V_GREEN -> stringResource(Res.string.markdown_theme_v_green)
     MarkdownThemeId.CLAUDETTE -> stringResource(Res.string.markdown_theme_claudette)
+    MarkdownThemeId.AYU -> stringResource(Res.string.markdown_theme_ayu)
 }
 
 /**
