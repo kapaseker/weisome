@@ -487,14 +487,17 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
         val borderBottom: Boolean = false,
     )
 
-    /** Returns Paper's heading metrics with font sizes aligned to the hydrogen heading scale. */
+    /**
+     * Returns Paper's heading metrics: font sizes aligned to the hydrogen heading scale, a top margin
+     * descending 32/28/24/20/16/12 and a bottom margin 18/16/14/12/10/8 (even px, 4px/2px steps).
+     */
     private fun heading(level: Int): HeadingSpec = when (level) {
-        1 -> HeadingSpec("30px", "1.18", "27.72px", "36.288px", "#17172a", "-0.045em")
-        2 -> HeadingSpec("28px", "1.35", "67.2px", "23.04px", "#17172a", "-0.025em", borderBottom = true)
-        3 -> HeadingSpec("24px", "1.35", "45.36px", "15.552px", "#2b7fd8", "-0.025em")
-        4 -> HeadingSpec("20px", "1.35", "37.632px", "12.9024px", "#17172a", "-0.025em")
-        5 -> HeadingSpec("16px", "1.35", "32.928px", "11.2896px", "#17172a", "0.02em")
-        else -> HeadingSpec("16px", "1.35", "29.568px", "10.1376px", "#555568", "0.08em")
+        1 -> HeadingSpec("30px", "1.18", "32px", "18px", "#17172a", "-0.045em")
+        2 -> HeadingSpec("28px", "1.35", "28px", "16px", "#17172a", "-0.025em", borderBottom = true)
+        3 -> HeadingSpec("24px", "1.35", "24px", "14px", "#2b7fd8", "-0.025em")
+        4 -> HeadingSpec("20px", "1.35", "20px", "12px", "#17172a", "-0.025em")
+        5 -> HeadingSpec("16px", "1.35", "16px", "10px", "#17172a", "0.02em")
+        else -> HeadingSpec("16px", "1.35", "12px", "8px", "#555568", "0.08em")
     }
 
     /** Builds the Paper heading style without changing the application's selected font. */
@@ -694,17 +697,19 @@ internal object ChocolateExportStyles : MarkdownExportStyles() {
     /** Returns the chocolate typography for a heading level from 1 to 6. */
     private fun heading(level: Int): HeadingSpec = when (level) {
         // WeiSome: h1 is 24px with the shared 1.5 line height (36px, even). h1/h2 indent comes
-        // from the inline icon image plus its 6px margin.
+        // from the inline icon image plus its 6px margin. The top margin descends 28/24/20/16/12/8
+        // and the bottom margin 14/12/10/8/6/4 (even, 4px/2px steps) so higher levels sit further
+        // from the preceding content, and the shared 5px padding-bottom is folded into the bottom.
         1 -> HeadingSpec(
-            "24px", "#664900", "36px", "17px 0 10px", "padding-bottom: 0;",
+            "24px", "#664900", "36px", "28px 0 14px", "padding-bottom: 0;",
             borderBottom = "border-bottom: 5px solid #6d4e00; text-shadow: 1px 1px 1px #8a6200;",
         )
-        2 -> HeadingSpec("20px", "#614500", "1.5", "17px 0 10px", "padding: 0 0 5px;")
-        3 -> HeadingSpec("18px", "#614500", "1.5", "20px 10px 0 0", "padding: 0 0 0 10px;")
-        4 -> HeadingSpec("17px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
-        5 -> HeadingSpec("14px", "#a37400", "1.5", "23px 0 10px", "padding-bottom: 5px;")
+        2 -> HeadingSpec("20px", "#614500", "1.5", "24px 0 12px", "padding: 0;")
+        3 -> HeadingSpec("18px", "#614500", "1.5", "20px 10px 10px 0", "padding: 0 0 0 10px;")
+        4 -> HeadingSpec("17px", "#a37400", "1.5", "16px 0 8px", "padding: 0;")
+        5 -> HeadingSpec("14px", "#a37400", "1.5", "12px 0 6px", "padding: 0;")
         // WeiSome floor: 14px instead of the upstream 12px.
-        else -> HeadingSpec("14px", "#a37400", "1.5", "28px 0 10px", "padding-bottom: 5px;")
+        else -> HeadingSpec("14px", "#a37400", "1.5", "8px 0 4px", "padding: 0;")
     }
 
     override fun headingCss(level: Int): String {

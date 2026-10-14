@@ -568,12 +568,14 @@ internal val TyporaPaperPreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 26,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        HeadingSpec(30f, FontWeight.ExtraBold, 28, 36, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.18f),
-        HeadingSpec(28f, FontWeight.ExtraBold, 67, 23, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.35f, borderBottomGap = 12.dp),
-        HeadingSpec(24f, FontWeight.ExtraBold, 45, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
-        HeadingSpec(20f, FontWeight.ExtraBold, 38, 13, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
-        HeadingSpec(16f, FontWeight.ExtraBold, 33, 11, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
-        HeadingSpec(16f, FontWeight.ExtraBold, 30, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = true, lineHeightMultiplier = 1.35f),
+        // WeiSome: the top margin descends 32/28/24/20/16/12 and the bottom 18/16/14/12/10/8
+        // (even, 4px/2px steps); the h2 border gap stays 12px.
+        HeadingSpec(30f, FontWeight.ExtraBold, 32, 18, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.18f),
+        HeadingSpec(28f, FontWeight.ExtraBold, 28, 16, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.35f, borderBottomGap = 12.dp),
+        HeadingSpec(24f, FontWeight.ExtraBold, 24, 14, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
+        HeadingSpec(20f, FontWeight.ExtraBold, 20, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
+        HeadingSpec(16f, FontWeight.ExtraBold, 16, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.35f),
+        HeadingSpec(16f, FontWeight.ExtraBold, 12, 8, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = true, lineHeightMultiplier = 1.35f),
     ),
     h1AccentBar = true,
     h2AccentDots = true,
@@ -775,15 +777,16 @@ internal val ChocolatePreviewStyles = MarkdownPreviewStyles(
     nestedListPaddingStart = 28,
     nestedListTopMargin = 3,
     headingSpecs = listOf(
-        // WeiSome: h1 is 24sp with the shared 1.5 line height (36sp, even); keeps the 10px bottom
-        // margin and drops the shared 5px padding-bottom.
-        HeadingSpec(24f, FontWeight.Bold, 17, 10, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, borderBottomWidth = 5.dp),
-        HeadingSpec(20f, FontWeight.Bold, 17, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(18f, FontWeight.Bold, 20, 0, borderLeft = true, borderWidth = 5.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(17f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
-        HeadingSpec(14f, FontWeight.Bold, 23, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        // WeiSome: h1 is 24sp with the shared 1.5 line height (36sp, even). The top margin descends
+        // 28/24/20/16/12/8 and the bottom 14/12/10/8/6/4 (even, 4px/2px steps) so higher levels sit
+        // further from the preceding content; the export's 5px padding-bottom folds into the bottom.
+        HeadingSpec(24f, FontWeight.Bold, 28, 14, borderLeft = false, borderWidth = 0.dp, borderBottom = true, muted = false, lineHeightMultiplier = 1.5f, borderBottomWidth = 5.dp),
+        HeadingSpec(20f, FontWeight.Bold, 24, 12, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(18f, FontWeight.Bold, 20, 10, borderLeft = true, borderWidth = 5.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(17f, FontWeight.Bold, 16, 8, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(14f, FontWeight.Bold, 12, 6, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
         // WeiSome floor: 14sp instead of the upstream 12px.
-        HeadingSpec(14f, FontWeight.Bold, 28, 15, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
+        HeadingSpec(14f, FontWeight.Bold, 8, 4, borderLeft = false, borderWidth = 0.dp, borderBottom = false, muted = false, lineHeightMultiplier = 1.5f),
     ),
     h1Icon = chocolateIcon,
     h2Icon = chocolateIcon,

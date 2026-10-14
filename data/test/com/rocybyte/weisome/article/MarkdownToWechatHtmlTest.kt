@@ -185,7 +185,7 @@ class MarkdownToWechatHtmlTest {
 
         assertTrue(html.contains("font-size: 24px; font-weight: bold; line-height: 36px;"))
         assertTrue(html.contains("width: 24px; height: 24px; margin-right: 6px;"))
-        assertTrue(html.contains("font-size: 14px; font-weight: bold; line-height: 1.5; margin: 28px 0 10px;"))
+        assertTrue(html.contains("font-size: 14px; font-weight: bold; line-height: 1.5; margin: 8px 0 4px;"))
         assertTrue(html.contains("font-size: 14px; font-style: normal;"))
         assertTrue(html.contains("font-weight: 400; font-size: 14px; padding: 15px 12px;"))
         assertTrue(html.contains("margin: 0; font-size: 14px; width: 100%;"))
