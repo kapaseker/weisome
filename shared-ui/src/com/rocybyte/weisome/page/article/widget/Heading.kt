@@ -145,13 +145,20 @@ private fun PlainHeading(
             )
         }
         if (level == 1 && styles.h1AccentBar) {
+            // The export paints this stroke with "border-radius: 999px 52% 999px 46%", whose oversized
+            // px radii force the CSS radius-scaling rule to shrink every corner until top-start and
+            // bottom-end round to the full box height while the opposite two stay square; the bar then
+            // tilts 1.5 degrees. Percent corners on the shorter side reproduce that here.
             Box(
                 Modifier
                     .padding(top = 8.dp)
                     .width(51.2.dp)
                     .height(6.72.dp)
                     .rotate(-1.5f)
-                    .background(styles.ruleSolidColor, RoundedCornerShape(99.dp)),
+                    .background(
+                        styles.ruleSolidColor,
+                        RoundedCornerShape(topStartPercent = 100, bottomEndPercent = 100),
+                    ),
             )
         }
         if (spec.borderBottom) {

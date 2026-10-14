@@ -94,6 +94,9 @@ class HeadingTest {
         assertEquals(1, Regex("background: #f4d758").findAll(h1).count())
         assertEquals(1, Regex("background: #2b7fd8").findAll(h2).count())
         assertEquals(1, Regex("background: #f4d758").findAll(h2).count())
+        // The WeChat paste sanitizer drops contentless decorative spans, so each one must carry a
+        // placeholder: the h1 accent bar plus the h2 pair of dots total three.
+        assertEquals(3, Regex("&nbsp;</span>").findAll(h1 + h2).count())
     }
 
     @Test

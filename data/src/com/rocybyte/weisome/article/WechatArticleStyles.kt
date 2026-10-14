@@ -225,11 +225,14 @@ internal object HydrogenExportStyles : MarkdownExportStyles() {
     override val linkCss =
         "color: #027fff; text-decoration: none; margin: 0 4px; padding-bottom: 4px; border-bottom: 2px solid transparent;"
 
-    /** Real-element replacement of hydrogen's a::after link icon (18x18 inline SVG data URI). */
+    /**
+     * Real-element replacement of hydrogen's a::after link icon (18x18 inline SVG data URI). The span
+     * carries a `&nbsp;` so the WeChat paste sanitizer keeps this contentless decorative element.
+     */
     override val linkIconSpan =
         "<span style=\"display: inline-block; width: 18px; height: 18px; margin-left: 4px; " +
             "vertical-align: middle; background-size: cover; background-repeat: no-repeat; " +
-            "background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgdmlld0JveD0iMCAwIDIyIDIyIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMDI3RkZGIiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgICAgIDxwYXRoIGQ9Ik05LjgxNSA2LjQ0OGwxLjkzNi0xLjkzNmMxLjMzNy0xLjMzNiAzLjU4LTEuMjU5IDUuMDEzLjE3MyAxLjQzMiAxLjQzMiAxLjUxIDMuNjc2LjE3MyA1LjAxM2wtMS40NTIgMS40NTItLjk2OC45NjhjLTEuMzM3IDEuMzM2LTMuNTgxIDEuMjU5LTUuMDEzLS4xNzIiLz4KICAgICAgICA8cGF0aCBkPSJNMTEuMjY3IDE1LjM2N2wtMS45MzYgMS45MzZjLTEuMzM2IDEuMzM3LTMuNTggMS4yNi01LjAxMi0uMTczLTEuNDMyLTEuNDMyLTEuNTEtMy42NzYtLjE3My01LjAxMmwxLjQ1Mi0xLjQ1Mi45NjgtLjk2OGMxLjMzNi0xLjMzNyAzLjU4LTEuMjYgNS4wMTIuMTczIi8+CiAgICA8L2c+Cjwvc3ZnPgo=');\"></span>"
+            "background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgdmlld0JveD0iMCAwIDIyIDIyIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjMDI3RkZGIiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgICAgIDxwYXRoIGQ9Ik05LjgxNSA2LjQ0OGwxLjkzNi0xLjkzNmMxLjMzNy0xLjMzNiAzLjU4LTEuMjU5IDUuMDEzLjE3MyAxLjQzMiAxLjQzMiAxLjUxIDMuNjc2LjE3MyA1LjAxM2wtMS40NTIgMS40NTItLjk2OC45NjhjLTEuMzM3IDEuMzM2LTMuNTgxIDEuMjU5LTUuMDEzLS4xNzIiLz4KICAgICAgICA8cGF0aCBkPSJNMTEuMjY3IDE1LjM2N2wtMS45MzYgMS45MzZjLTEuMzM2IDEuMzM3LTMuNTggMS4yNi01LjAxMi0uMTczLTEuNDMyLTEuNDMyLTEuNTEtMy42NzYtLjE3My01LjAxMmwxLjQ1Mi0xLjQ1Mi45NjgtLjk2OGMxLjMzNi0xLjMzNyAzLjU4LTEuMjYgNS4wMTIuMTczIi8+CiAgICA8L2c+Cjwvc3ZnPgo=');\">&nbsp;</span>"
 
     /** Image styling including the Material elevation shadow from hydrogen's elevation mixin. */
     override val imgCss =
@@ -509,7 +512,12 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
             "margin: ${spec.top} 0 ${spec.bottom}; color: ${spec.color}; letter-spacing: ${spec.letterSpacing};$border"
     }
 
-    /** Renders Paper's paired blue and yellow dots before level-two headings, scaled to the h2 font size. */
+    /**
+     * Renders Paper's paired blue and yellow dots before level-two headings, scaled to the h2 font size.
+     * Each dot span carries a `&nbsp;` because the WeChat paste sanitizer strips decorative spans with no
+     * content: empty spans and zero-width-space placeholders both vanish, while `&nbsp;` keeps them and
+     * the absolute positioning survives unchanged.
+     */
     override fun headingPrefixHtml(level: Int): String = if (level == 2) {
         // The dot pair keeps its 23px reference geometry, scaled to the h2 font size so the icon
         // matches the text; every derived px value rounds to the nearest even integer, and
@@ -522,17 +530,21 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
         val yellowTop = evenPx(7f * unit)
         "<span style=\"position: relative; display: inline-block; width: $box; height: $box; margin-right: 8px; " +
             "vertical-align: middle;\"><span style=\"position: absolute; left: $yellowLeft; top: $yellowTop; " +
-            "width: $dot; height: $dot; border-radius: 50%; background: #f4d758;\"></span>" +
+            "width: $dot; height: $dot; border-radius: 50%; background: #f4d758;\">&nbsp;</span>" +
             "<span style=\"position: absolute; left: 0; top: 0; width: $dot; height: $dot; " +
-            "border-radius: 50%; background: #2b7fd8;\"></span></span>"
+            "border-radius: 50%; background: #2b7fd8;\">&nbsp;</span></span>"
     } else {
         ""
     }
 
-    /** Renders Paper's hand-drawn yellow accent bar after level-one headings. */
+    /**
+     * Renders Paper's hand-drawn yellow accent bar after level-one headings. The span carries a `&nbsp;`
+     * because the WeChat paste sanitizer strips contentless decorative spans; its `transform` slant and
+     * asymmetric border-radius survive the paste unchanged, so neither needs baking into an asset.
+     */
     override fun headingSuffixHtml(level: Int): String = if (level == 1) {
         "<span style=\"display: block; width: 51.2px; height: 6.72px; margin-top: 8px; " +
-            "border-radius: 999px 52% 999px 46%; background: #f4d758; transform: rotate(-1.5deg);\"></span>"
+            "border-radius: 999px 52% 999px 46%; background: #f4d758; transform: rotate(-1.5deg);\">&nbsp;</span>"
     } else {
         ""
     }
@@ -557,9 +569,9 @@ internal object TyporaPaperExportStyles : MarkdownExportStyles() {
     override fun codeBlockHeaderHtml(language: CodeLanguage?): String =
         "<span style=\"display: block; height: 38.4px; box-sizing: border-box; padding: 13px 19.2px; " +
             "border-bottom: 1px solid #d9dde5;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
-            "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; width: 10px; height: 10px; " +
-            "margin-left: 7px; border-radius: 50%; background: #febc2e;\"></span><span style=\"display: inline-block; " +
-            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #28c840;\"></span></span>"
+            "border-radius: 50%; background: #ff5f57;\">&nbsp;</span><span style=\"display: inline-block; width: 10px; height: 10px; " +
+            "margin-left: 7px; border-radius: 50%; background: #febc2e;\">&nbsp;</span><span style=\"display: inline-block; " +
+            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #28c840;\">&nbsp;</span></span>"
 
     /** Keeps the active code palette while applying Paper's inner spacing and line rhythm. */
     override fun codeElementCss(codeTheme: CodeTheme) =
@@ -1164,14 +1176,17 @@ internal object CyanExportStyles : MarkdownExportStyles() {
         "font-family: $monospaceFont; line-height: 1.75; margin: 16px; border-radius: 4px; " +
             "box-shadow: 0 0 8px rgba(110, 110, 110, 0.45); overflow: auto; position: relative;"
 
-    /** Renders the mac-style dots bar the stylesheet draws via pre::before. */
+    /**
+     * Renders the mac-style dots bar the stylesheet draws via pre::before. Each dot carries a `&nbsp;`
+     * so the WeChat paste sanitizer keeps these contentless decorative spans.
+     */
     override fun codeBlockHeaderHtml(language: CodeLanguage?): String =
         "<span style=\"display: block; height: 30px; margin-bottom: -7px; box-sizing: border-box; " +
             "padding: 10px 0 0 10px;\"><span style=\"display: inline-block; width: 10px; height: 10px; " +
-            "border-radius: 50%; background: #ff5f57;\"></span><span style=\"display: inline-block; " +
-            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #febc2e;\"></span>" +
+            "border-radius: 50%; background: #ff5f57;\">&nbsp;</span><span style=\"display: inline-block; " +
+            "width: 10px; height: 10px; margin-left: 7px; border-radius: 50%; background: #febc2e;\">&nbsp;</span>" +
             "<span style=\"display: inline-block; width: 10px; height: 10px; margin-left: 7px; " +
-            "border-radius: 50%; background: #28c840;\"></span></span>"
+            "border-radius: 50%; background: #28c840;\">&nbsp;</span></span>"
 
     /** Keeps the active code palette while applying cyan's compact code type. */
     override fun codeElementCss(codeTheme: CodeTheme) =
@@ -1391,18 +1406,24 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
         else -> 6
     }
 
-    /** Renders the clay accent dot claudette places before level-three headings. */
+    /**
+     * Renders the clay accent dot claudette places before level-three headings. The span carries a
+     * `&nbsp;` so the WeChat paste sanitizer keeps this contentless decorative element.
+     */
     override fun headingPrefixHtml(level: Int): String = if (level == 3) {
         "<span style=\"display: inline-block; width: 8px; height: 8px; border-radius: 50%; " +
-            "background: #d97757; margin-right: 12px; vertical-align: middle;\"></span>"
+            "background: #d97757; margin-right: 12px; vertical-align: middle;\">&nbsp;</span>"
     } else {
         ""
     }
 
-    /** Renders the short rounded clay underline claudette draws after level-one headings. */
+    /**
+     * Renders the short rounded clay underline claudette draws after level-one headings. The span
+     * carries a `&nbsp;` so the WeChat paste sanitizer keeps this contentless decorative element.
+     */
     override fun headingSuffixHtml(level: Int): String = if (level == 1) {
         "<span style=\"display: block; width: 40px; height: 2px; border-radius: 1px; " +
-            "background: #d97757; margin-top: 16px;\"></span>"
+            "background: #d97757; margin-top: 16px;\">&nbsp;</span>"
     } else {
         ""
     }
@@ -1503,8 +1524,9 @@ internal object ClaudetteExportStyles : MarkdownExportStyles() {
             "border: none; text-align: center; overflow: visible;"
 
     override val hrInnerHtml =
+        // The hairline carries a `&nbsp;` so the WeChat paste sanitizer keeps this contentless span.
         "<span style=\"position: absolute; left: 0; right: 0; top: 6px; height: 1px; " +
-            "background: $hairline;\"></span>" +
+            "background: $hairline;\">&nbsp;</span>" +
             "<span style=\"position: relative; padding: 0 10px; background: #ffffff; color: #d97757;\">\u2733</span>"
 
     // ponytail: th's upstream 8px bottom padding is flattened to the 10px the preview uses on every side.
