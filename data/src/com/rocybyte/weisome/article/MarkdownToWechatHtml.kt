@@ -13,7 +13,7 @@ object MarkdownToWechatHtml {
         val palette = CodeThemes.forId(codeTheme)
         // prev feeds the sibling-sensitive rules (claudette's h1 + p lead paragraph);
         // atDocumentStart drops the leading block's top margin for themes with a `:first-child` rule.
-        return document.blocks
+        val content = document.blocks
             .mapIndexed { index, block ->
                 renderBlock(
                     block = block,
@@ -25,5 +25,13 @@ object MarkdownToWechatHtml {
                 )
             }
             .joinToString("\n")
+        return if (theme == MarkdownThemeId.CHOCOLATE && content.isNotEmpty()) {
+            "<section style=\"overflow: hidden; " +
+                "background-image: linear-gradient(90deg, rgba(72, 42, 10, 0.05) 5%, rgba(72, 42, 10, 0) 5%), " +
+                "linear-gradient(360deg, rgba(72, 42, 10, 0.05) 5%, rgba(72, 42, 10, 0) 5%); " +
+                "background-size: 20px 20px; background-position: center center;\">$content</section>"
+        } else {
+            content
+        }
     }
 }

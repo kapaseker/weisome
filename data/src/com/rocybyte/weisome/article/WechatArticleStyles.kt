@@ -689,13 +689,17 @@ internal object RimExportStyles : MarkdownExportStyles() {
 
 /**
  * Chocolate export styles adapted from juejin-markdown-theme-qklhk at commit 4f2a290.
- * The `.markdown-body` grid background is not rendered: the export is a block fragment with no
- * body wrapper. The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
+ * MarkdownToWechatHtml wraps the blocks in a section carrying the `.markdown-body` grid background.
+ * The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
  * highlight are pseudo-element/combinator effects the inline-CSS model cannot express. Heading
  * top margins fall back to the browser defaults the stylesheet leaves in place.
  */
 internal object ChocolateExportStyles : MarkdownExportStyles() {
     override val fontColor = "#412c0c"
+
+    /** Covers the article grid across the entire code frame with the selected code palette. */
+    override fun codeBlockFrameCss(codeTheme: CodeTheme) =
+        "$codeBlockCss background: ${codeTheme.backgroundRgb.toCssColor()};"
 
     private data class HeadingSpec(
         val size: String,

@@ -5,8 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.dp
 import com.rocybyte.weisome.article.CodeThemeId
 import com.rocybyte.weisome.article.CodeThemes
 import com.rocybyte.weisome.article.MarkdownBlock
@@ -33,9 +37,31 @@ internal fun WechatArticlePreview(
         LocalMarkdownPreviewStyles provides previewStylesFor(markdownTheme),
         LocalCodeTheme provides CodeThemes.forId(codeTheme),
     ) {
-        Column(modifier) {
+        Column(if (markdownTheme == MarkdownThemeId.CHOCOLATE) modifier.chocolateGrid() else modifier) {
             RenderBlocks(document.blocks, onBlockPositioned = onBlockPositioned)
         }
+    }
+}
+
+/** Paints Chocolate's centered 20dp tiles behind the content; opaque code blocks cover the grid. */
+private fun Modifier.chocolateGrid(): Modifier = drawBehind {
+    val step = 20.dp.toPx()
+    val lineWidth = step * 0.05f
+    val color = Color(72, 42, 10).copy(alpha = 0.05f)
+    // CSS centers a tile, then repeats it in both directions; 360deg puts the horizontal line at its bottom.
+    var x = ((size.width - step) / 2f % step + step) % step - step
+    while (x < size.width) {
+        val left = x.coerceAtLeast(0f)
+        val right = (x + lineWidth).coerceAtMost(size.width)
+        if (right > left) drawRect(color, Offset(left, 0f), Size(right - left, size.height))
+        x += step
+    }
+    var y = ((size.height - step) / 2f % step + step) % step - lineWidth
+    while (y < size.height) {
+        val top = y.coerceAtLeast(0f)
+        val bottom = (y + lineWidth).coerceAtMost(size.height)
+        if (bottom > top) drawRect(color, Offset(0f, top), Size(size.width, bottom - top))
+        y += step
     }
 }
 

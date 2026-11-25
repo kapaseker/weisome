@@ -697,8 +697,8 @@ private val chocolateIcon: ImageBitmap? by lazy {
 }
 
 /** Chocolate preview styles adapted from juejin-markdown-theme-qklhk at commit 4f2a290.
- * The `.markdown-body` grid background is not rendered: the preview is a block flow with no
- * body wrapper. The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
+ * The `.markdown-body` grid background is painted by WechatArticlePreview behind the blocks.
+ * The h5/h6 trailing numbered circles, the strong 「」 brackets, and the em-strong
  * highlight have no preview equivalent. List items keep the body color although the stylesheet
  * grays them (#858585); the export carries the gray. Heading top margins fall back to the
  * browser defaults the stylesheet leaves in place.

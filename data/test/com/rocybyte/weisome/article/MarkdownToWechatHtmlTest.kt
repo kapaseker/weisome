@@ -7,6 +7,27 @@ import kotlin.test.assertTrue
 
 class MarkdownToWechatHtmlTest {
     @Test
+    /** Verifies only Chocolate gets a document-wide grid, while code keeps its own opaque frame and exact spacing. */
+    fun `chocolate grid surrounds content without entering code frames`() {
+        val markdown = "Before\n\n```text\n  alpha\n\tbeta\n```\n\nAfter"
+        CodeThemeId.entries.forEach { codeTheme ->
+            val html = MarkdownToWechatHtml.render(markdown, MarkdownThemeId.CHOCOLATE, codeTheme)
+            assertTrue(html.startsWith("<section style=\"overflow: hidden; background-image: linear-gradient(90deg,"))
+            assertTrue(html.contains("linear-gradient(360deg, rgba(72, 42, 10, 0.05) 5%, rgba(72, 42, 10, 0) 5%)"))
+            assertTrue(html.contains("background-size: 20px 20px; background-position: center center;"))
+            assertTrue(html.endsWith("</section>"))
+            assertEquals(1, "background-image:".toRegex().findAll(html).count())
+            val frame = html.substringAfter("<pre style=\"").substringBefore("\">")
+            assertTrue(frame.contains("background: ${CodeThemes.forId(codeTheme).backgroundRgb.toCssColor()};"))
+            assertTrue(html.contains("&nbsp;&nbsp;alpha<br/>&nbsp;&nbsp;&nbsp;&nbsp;beta"))
+            assertTrue(html.contains("white-space: nowrap; font-family:"))
+        }
+        assertFalse(MarkdownToWechatHtml.render(markdown, MarkdownThemeId.GITHUB, CodeThemeId.GITHUB_LIGHT)
+            .contains("background-image:"))
+        assertEquals("", MarkdownToWechatHtml.render("", MarkdownThemeId.CHOCOLATE, CodeThemeId.GITHUB_LIGHT))
+    }
+
+    @Test
     /** Verifies the public Markdown entry point preserves block order across renderer dispatch. */
     fun `renders parsed blocks in document order`() {
         assertEquals(
